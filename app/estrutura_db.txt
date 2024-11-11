@@ -1,0 +1,176 @@
+
+        -------- adicionar tabela   para diferentes serviços
+        -------- retificar com o xml de portugal os dados informacoes dos tsp -> página 15
+
+        -------- o tsp op criar um ts service
+        -------- criar o xml
+
+        -------- para criar um tsp tem de ter pelo menos uma tsl
+
+        -------- tsl operator -> tsl e emissao
+        -------- tsp operator -> tsp e ts
+
+1. Dashboard Principal
+    Exibe um resumo da TSL, incluindo o status geral, próxima data de atualização e número de TSPs e serviços registrados.
+    Mostra alertas importantes, como serviços expirados, próximos a expirar ou com erros.
+
+2. Gestão de Trusted Lists (TSL)
+    Visualizar TSL Atual: Permite que o operador veja a TSL ativa com todas as suas informações.
+    Criar Nova TSL: Opção para criar uma nova TSL (ou uma versão atualizada) seguindo os padrões.
+    Atualizar TSL Existente: Editar dados e atualizar a versão ou o número de sequência da TSL atual.
+    Assinar Digitalmente a TSL: Ferramenta para gerar ou verificar a assinatura digital da TSL.
+
+3. Gerenciamento de Provedores de Serviços de Confiança (TSP)
+    Listar TSPs: Visualizar todos os TSPs registrados com suas informações principais.
+    Adicionar Novo TSP: Opção para cadastrar um novo Provedor de Serviço de Confiança.
+    Editar/Remover TSP: Permite que o operador edite detalhes ou remova um TSP, se necessário.
+
+4. Gerenciamento de Serviços de Confiança
+    Listar Serviços de Confiança: Exibe todos os serviços vinculados aos TSPs.
+    Adicionar Novo Serviço: Opção para adicionar um serviço para um TSP existente.
+    Editar/Remover Serviço: Permite ao operador atualizar ou remover um serviço de confiança específico.
+    Histórico de Status do Serviço: Permite visualizar e editar o histórico de status de um serviço específico, garantindo o rastreamento de mudanças.
+
+5. Atualizações e Auditoria
+    Histórico de Atualizações: Exibe uma lista de atualizações realizadas na TSL, com informações como data, autor e descrição das alterações.
+    Registrar Nova Atualização: Adiciona registros de atualização com data e detalhes.
+    Exportar Log de Auditoria: Exporta um registro de auditoria para revisão e conformidade.
+
+6. Configurações de Operador
+    Perfil do Operador: Permite que o operador veja e edite suas informações (nome, email, papel).
+    Configurações de Segurança: Opções para alterar a senha ou configurar a autenticação.
+    Gerenciamento de Permissões: Se o operador tiver uma função de administrador, ele pode gerenciar permissões e papéis de outros operadores.
+
+7. Logout
+    Logout: Opção para sair da conta do operador com segurança.
+
+
+
+
+
+                            pagina 31
+CriteriaList(5.5.9.2.2)
+
+- Tipos de Serviços Qualificados (Regulamento EU 910/2014)
+    -> CA/QC:           Serviço de emissão de certificados qualificados, usado para assinaturas qualificadas.
+                -> General (5.5.9.2.0)
+                -> Qualifier (5.5.9.2.3)
+                -> QualificationElement (5.5.9.2.1)
+    -> QESValidation:   Serviço de validação de assinaturas eletrônicas qualificadas.
+    -> TSA/QTST:        Serviço de timestamp qualificado, para assinaturas qualificadas.
+
+-> Tipos de Serviços Não Qualificados
+    -> CA/PKC:          Serviço de emissão de certificados não qualificados.
+    -> Certstatus/OCSP: Protocolo de status de certificado em tempo real.
+    -> EDS:             Serviço de entrega eletrônica.
+
+- Extensões Adicionais
+    -> ForeSignatures:  Extensão que especifica o uso para assinaturas eletrônicas.
+    -> ForeSeals:       Extensão que especifica o uso para selos eletrônicos.
+
+1. Tabela countries
+    -> Armazena informações sobre os países que têm Trusted Lists
+
+    - A tabela countries armazena informações básicas sobre cada país que possui uma TSL. Seu propósito é organizar e agrupar as Trusted Lists e os respectivos operadores e serviços.
+    - Ao estruturar as TSLs por país, a tabela countries permite:
+
+        -> Identificar o país ou região de cada TSL: Cada Trusted List está vinculada a um país específico.
+        -> Gerenciar Políticas e Requisitos Específicos: As exigências para Trust Service Providers podem variar de acordo com o país, e essa tabela facilita a diferenciação.
+        -> Facilitar Consultas e Relatórios: Para verificar todos os Trusted Services de um determinado país ou região, a tabela countries oferece uma forma centralizada de pesquisa
+    
+    - Campos:
+        -> country_id (PK): Identificador único do país.
+        -> country_code: Código ISO do país (ex: PT, FR).
+        -> country_name: Nome do país.
+
+2. Tabela trusted_lists
+    -> Contém informações gerais sobre cada Trusted List para um país específico.
+
+    - A tabela trusted_lists organiza e centraliza as informações de uma TSL específica para cada país, incluindo detalhes como:
+
+        -> Versão e Sequência da TSL: Ajuda a rastrear mudanças e atualizações da TSL ao longo do tempo.
+        -> Datas de Emissão e Atualização: Mostra a data em que a TSL foi publicada e a data da próxima atualização programada.
+        -> Assinatura Digital: Armazena a assinatura digital da TSL para garantir sua autenticidade e integridade.
+        -> Identificação do Operador de Esquema: Relaciona cada TSL ao operador responsável pela sua publicação e manutenção.
+
+    - Campos:
+        -> tsl_id (PK): Identificador único da lista.
+        -> country_id (FK): ID do país relacionado -> à tabela countries.
+        -> version: Versão do TSL.
+        -> sequence_number: Sequence number para controle de versões.
+        -> issue_date: Data de emissão da lista.
+        -> next_update: Data da próxima atualização programada.
+        -> status: Status atual (ex: ativo, expirado).
+        -> signature: Assinatura digital da TSL para verificar autenticidade.
+        -> uri: Link para acessar a TSL pública.
+
+3. Tabela scheme_operators
+    -> Armazena informações sobre as entidades que gerenciam a Trusted List de um país.
+
+    - O Scheme Operator é uma entidade (geralmente um órgão governamental ou uma agência de certificação autorizada) responsável por:
+
+        -> Estabelecer a Lista de Confiança (TSL): Criar e definir o conteúdo da lista para os Trust Service Providers (TSPs) autorizados em seu país.
+        -> Publicar e Manter a TSL: Certificar-se de que a TSL esteja acessível publicamente e seja atualizada regularmente, conforme exigido pelas normas ETSI.
+        -> Assinar Digitalmente a TSL: A assinatura digital do operador de esquema autentica a TSL, garantindo sua integridade e que ela realmente vem de uma autoridade confiável.
+
+    - Campos:
+        -> operator_id (PK): Identificador único da entidade.
+        -> tsl_id (FK): ID da Trusted List associada -> à tabela trusted_lists.
+        -> operator_name: Nome da entidade responsável.
+        -> operator_address: Endereço físico.
+        -> operator_email: Email de contato.
+        -> operator_website: Website para informações adicionais.
+        -> user_role: Função do usuário (role).
+        -> pid_hash: Hash do PID para login seguro.
+
+4. Tabela trust_service_providers (TSP)
+    -> Armazena informações dos Trust Service Providers de cada país.
+
+    - Os TSPs desempenham um papel crítico em sistemas de assinatura digital e autenticação eletrônica:
+
+        -> Emitem Certificados Digitais: Certificados que autenticam a identidade de indivíduos ou empresas online.
+        -> Proporcionam Serviços de Assinatura e Selo Digital: Permitem assinaturas e selos digitais para documentos eletrônicos, garantindo integridade e autenticidade.
+        -> Fornecem timestamp e Outros Serviços de Confiança: Esses serviços garantem a validade temporal de uma transação ou assinatura.
+
+    - Campos:
+        -> tsp_id (PK): Identificador único do provedor.
+        -> tsl_id (FK): ID da lista confiável associada -> à tabela trusted_lists.
+        -> name: Nome do provedor.
+        -> trade_name: Nome comercial do provedor.
+        -> address: Endereço físico.
+        -> contact_email: Email de contato do provedor.
+        -> TakenOverBy (5.5.9.3): This field shall be present when a service that was formerly under the legal responsibility of a TSP
+is taken over by another TSP.
+
+5. Tabela trust_services
+    -> Contém dados dos serviços específicos fornecidos por cada TSP.
+
+    - Campos:
+        -> service_id (PK): Identificador único do serviço.
+        -> tsp_id (FK): ID do provedor -> à tabela trust_service_providers.
+        -> service_type: Tipo de serviço (ex: emissão de certificados, timestamp).
+        -> service_name: Nome do serviço.
+        -> digital_identity: Identidade digital do serviço.
+        -> status: Status atual do serviço (ex: ativo, suspenso).
+        -> status_start_date: Data de início do status atual.
+        -> uri: Link para mais detalhes do serviço.
+
+
+6. Tabela service_status_history
+    -> Mantém o histórico de status dos serviços oferecidos por cada TSP.
+
+    - Campos:
+        -> history_id (PK): Identificador único do registro de histórico.
+        -> service_id (FK): ID do serviço -> à tabela trust_services.
+        -> previous_status: Status anterior do serviço.
+        -> status_start_date: Data de início do status anterior.
+
+7. Tabela trusted_list_updates
+    -> Registra as atualizações da TSL para auditoria e acompanhamento de versões.
+
+    - Campos:
+        -> update_id (PK): Identificador único da atualização.
+        -> tsl_id (FK): ID da Trusted List associada -> à tabela trusted_lists.
+        -> update_date: Data da atualização.
+        -> description: Descrição das mudanças realizadas na TSL.
+        -> signature: Assinatura digital do XML atualizado.
