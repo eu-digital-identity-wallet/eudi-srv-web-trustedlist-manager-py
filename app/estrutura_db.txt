@@ -2,11 +2,14 @@
         -------- adicionar tabela   para diferentes serviços
         -------- retificar com o xml de portugal os dados informacoes dos tsp -> página 15
 
+
         -------- o tsp op criar um ts service
         -------- criar o xml
 
+condições:
         -------- para criar um tsp tem de ter pelo menos uma tsl
 
+roles:
         -------- tsl operator -> tsl e emissao
         -------- tsp operator -> tsp e ts
 

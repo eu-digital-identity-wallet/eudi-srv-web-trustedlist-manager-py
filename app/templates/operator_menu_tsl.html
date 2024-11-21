@@ -102,7 +102,7 @@
                         <a href="#dashboard" class="menu-option">Main Dashboard</a>
     
                         <h2>Trusted Lists Management (TSL)</h2>
-                        <a href="#view-tsl" class="menu-option">View Current TSL</a>
+                        <a href="{{ url_for('RPR.view_tsl') }}" class="menu-option">View Current TSL</a>
 
                         <a href="{{ url_for('RPR.create_tsl') }}" class="menu-option">Create New TSL</a>
                         <a href="#update-tsl" class="menu-option">Update Existing TSL</a>
@@ -118,7 +118,7 @@
                         <a href="#security" class="menu-option">Security Settings</a>
                         <a href="#permissions-management" class="menu-option">Permissions Management</a>
 
-                        <a href="#logout" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
+                        <a href="{{ url_for('RPR.logout') }}" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
 
                         <form>
                             <div class="col-md-12" id="hidden_elems">

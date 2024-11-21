@@ -108,7 +108,7 @@
 
                         <h2>Trust Services Management</h2>
                         <a href="#list-services" class="menu-option">List Trust Services</a>
-                        <a href="#add-service" class="menu-option">Add New Service</a>
+                        <a href="{{ url_for('RPR.create_service') }}" class="menu-option">Add New Service</a>
                         <a href="#edit-remove-service" class="menu-option">Edit/Remove Service</a>
                         <a href="#service-status-history" class="menu-option">Service Status History</a>
 
@@ -122,7 +122,7 @@
                         <a href="#security" class="menu-option">Security Settings</a>
                         <a href="#permissions-management" class="menu-option">Permissions Management</a>
 
-                        <a href="#logout" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
+                        <a href="{{ url_for('RPR.logout') }}" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
 
                         <form>
                             <div class="col-md-12" id="hidden_elems">

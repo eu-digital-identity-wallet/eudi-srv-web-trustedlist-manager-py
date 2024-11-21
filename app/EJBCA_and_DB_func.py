@@ -53,7 +53,6 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from requests_pkcs12 import Pkcs12Adapter
-from app_config.EJBCA_config import EJBCA_Config as ejbca
 import models as db
 import user as get_hash_user_pid
 
@@ -151,9 +150,9 @@ def user_db(user, user_name, country_id, log_id):
         return "Error processing the form.", 500
     
 
-def user_db_info(role, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
+def user_db_info(role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
     try:
-        check = db.insert_user_info(role, address, locality, stateProvince, postalCode, electronicAddress, id, log_id) 
+        check = db.insert_user_info(role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, id, log_id) 
 
         return check
     
@@ -179,11 +178,13 @@ def check_country(user_country, log_id):
             print(f"Error processing the form: {e}")
             return "Error processing the form.", 500
     
-def tsl_db_info(Version, Sequence_number, TSLType, SchemeName, Uri, SchemeTypeCommunityRules, PolicyOrLegalNotice, 
-                            PointerstootherTSL, DistributionPoints, Issue_date, NextUpdate, Status, Signature, country, log_id):
+def tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
+                SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
+                DistributionPoints, Issue_date, NextUpdate, Status, Signature, AdditionalInformation, country, log_id):
     try:
-        check = db.insert_tsl_info(Version, Sequence_number, TSLType, SchemeName, Uri, SchemeTypeCommunityRules, PolicyOrLegalNotice, 
-                            PointerstootherTSL, DistributionPoints, Issue_date, NextUpdate, Status, Signature, country, log_id) 
+        check = db.insert_tsl_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
+                             SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
+                             DistributionPoints, Issue_date, NextUpdate, Status, Signature, AdditionalInformation, country, log_id) 
 
         return check
     
@@ -214,7 +215,7 @@ def update_user_tsl(id, check,  log_id):
 def check_role_user(id, log_id):
     try:
         check = db.check_role_user(id, log_id) 
-
+        
         return check
     
     except Exception as e:
@@ -233,6 +234,42 @@ def tsp_db_info(id, name, trade_name, address, contact_email, log_id):
 
         return check
     
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+
+def service_db_info(id, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, log_id):
+    try:
+        check = db.get_user_tsl(id, log_id)
+        check = db.get_tsp_tsl(check, log_id)
+        check = db.insert_service_info(check, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, log_id) 
+
+        return check
+    
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+def get_tsl_info(id, log_id):
+    try:
+
+        check = db.get_user_tsl(id, log_id)
+        
+        if(check != None):
+            tsl = db.get_tsl(check, log_id)
+            return tsl
+        else:
+            return None
+        
     except Exception as e:
         
         # extra = {'code': log_id} 

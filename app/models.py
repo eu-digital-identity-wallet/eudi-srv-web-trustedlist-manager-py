@@ -149,7 +149,7 @@ def insert_user(pid_hash, user_name, country_id, log_id):
         if connection:
             cursor = connection.cursor()
 
-            insert_query = "INSERT INTO scheme_operators (operator_name, pid_hash, country_id) VALUES (%s, %s, %s)"
+            insert_query = "INSERT INTO scheme_operators (operator_name_lang, pid_hash, country_id) VALUES (%s, %s, %s)"
             
             cursor.execute(insert_query, (user_name, pid_hash, country_id,))
             
@@ -172,7 +172,7 @@ def insert_user(pid_hash, user_name, country_id, log_id):
 
 
 
-def insert_user_info(role, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
+def insert_user_info(role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
     try:
         connection = conn()
         if connection:
@@ -180,10 +180,11 @@ def insert_user_info(role, address, locality, stateProvince, postalCode, electro
 
             insert_query = """
                                 UPDATE scheme_operators 
-                                SET operator_role = %s, StreetAddress = %s, Locality = %s, StateOrProvince = %s, PostalCode = %s, ElectronicAddress = %s
+                                SET operator_role = %s, operator_name_en = %s, StreetAddress = %s, Locality = %s, 
+                                StateOrProvince = %s, PostalCode = %s, ElectronicAddress = %s
                                 WHERE operator_id = %s
                             """
-            cursor.execute(insert_query, (role, address, locality, stateProvince, postalCode, electronicAddress, id,))
+            cursor.execute(insert_query, (role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, id,))
             
             connection.commit()
             
@@ -244,8 +245,9 @@ def check_country(user_country, log_id):
 
 
 
-def insert_tsl_info(Version, Sequence_number, TSLType, SchemeName, Uri, SchemeTypeCommunityRules, PolicyOrLegalNotice, 
-                            PointerstootherTSL, DistributionPoints, Issue_date, NextUpdate, Status, Signature, country, log_id):
+def insert_tsl_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
+                    SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
+                    DistributionPoints, Issue_date, NextUpdate, Status, Signature, AdditionalInformation, country, log_id):
     try:
         connection = conn()
         if connection:
@@ -253,13 +255,15 @@ def insert_tsl_info(Version, Sequence_number, TSLType, SchemeName, Uri, SchemeTy
 
             insert_query = """
                             INSERT INTO trusted_lists 
-                            (Version, SequenceNumber, TSLType, SchemeName, Uri, SchemeTypeCommunityRules, PolicyOrLegalNotice, 
-                            pointers_to_other_tsl, DistributionPoints, issue_date, next_update, status, signature, country_id) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            (Version, SequenceNumber, TSLType, SchemeName_lang, SchemeName_en, Uri_lang, Uri_en, SchemeTypeCommunityRules_lang, 
+                            SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, pointers_to_other_tsl, 
+                            DistributionPoints, issue_date, next_update, status, signature, Additional_Information, country_id) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                             """
             
-            cursor.execute(insert_query, (Version, Sequence_number, TSLType, SchemeName, Uri, SchemeTypeCommunityRules, PolicyOrLegalNotice, 
-                            PointerstootherTSL, DistributionPoints, Issue_date, NextUpdate, Status, Signature, country,))
+            cursor.execute(insert_query, (Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
+                    SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
+                    DistributionPoints, Issue_date, NextUpdate, Status, Signature, AdditionalInformation, country,))
             
             connection.commit()
             
@@ -413,6 +417,110 @@ def insert_tsp_info(tsl_id, name, trade_name, address, contact_email, log_id):
         # extra = {'code': log_id} 
         # logger.error(f"Error inserting TSP: {e}", extra=extra)
         print(f"Error inserting TSP: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def get_tsp_tsl(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT tsp_id
+                FROM trust_service_providers
+                WHERE tsl_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                user_id = result[0]
+                
+                #extra = {'code': log_id} 
+                #logger.info(f"TSP found: {cursor.lastrowid}.", extra=extra)
+                return user_id
+            else:
+                #extra = {'code': log_id} 
+                #logger.info(f"No TSP found with the TSL.", extra=extra)
+                print(f"No TSP found with the TSL.")
+                return None
+
+    except pymysql.MySQLError as e:
+        
+        #extra = {'code': log_id} 
+        #logger.error(f"Error fetching TSP: {e}", extra=extra)
+        print(f"Error fetching TSP: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def insert_service_info(tsp_id, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            insert_query = """
+                            INSERT INTO trust_services 
+                            (tsp_id, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                            """
+            
+            cursor.execute(insert_query, (tsp_id, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri,))
+            
+            connection.commit()
+            
+            # extra = {'code': log_id} 
+            # logger.info(f"TSP successfully added. New TSL ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"SERVICE successfully added. New SERVICE ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        # extra = {'code': log_id} 
+        # logger.error(f"Error inserting SERVICE: {e}", extra=extra)
+        print(f"Error inserting SERVICE: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def get_tsl(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT *
+                FROM trusted_lists
+                WHERE tsl_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                tsl_info = dict(zip(column_names, result))
+                
+                return tsl_info
+            else:
+                print(f"No TSL found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching TSL info: {e}")
+        return None
     finally:
         if connection:
             cursor.close()

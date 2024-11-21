@@ -94,7 +94,15 @@
                                                         {% endfor %}
                                                     </select>
                                                 </div>
-                                            </div>      
+                                            </div>  
+                                        {% elif value == 'int' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <input type="number" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required>
+                                                </div>
+                                            </div> 
                                         {% elif value == 'string' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">

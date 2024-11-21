@@ -52,7 +52,6 @@ from app.data_management import oid4vp_requests
 from app.validate_vp_token import validate_vp_token, cbor2elems
 
 import user as get_hash_user_pid
-from app_config.EJBCA_config import EJBCA_Config as ejbca
 import app.EJBCA_and_DB_func as func
 from app_config.Crypto_Info import Crypto_Info as crypto
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -415,33 +414,37 @@ def getpidoid4vp():
 
             form_items={
                 "Role" : "select",
+                "Operator Name in English": "string",
                 "Operator Address": "string",
                 "Locality": "string",
                 "State or Province": "string",
                 "Postal Code": "string",
-                "Electronic Address": "string",
+                "Electronic Address": "string"
             }
             descriptions = {
-                "Role": "select",
+                "Role" : "select",
+                "Operator Name in English": "string",
                 "Operator Address": "string",
                 "Locality": "string",
                 "State or Province": "string",
                 "Postal Code": "string",
-                "Electronic Address": "string",
+                "Electronic Address": "string"
             }
 
             attributesForm.update(form_items)
             
             return render_template("dynamic-form.html", role = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "user_auth")
         else:
-
             check = func.check_role_user(aux, session["session_id"])
             session[temp_user_id]["role"] = check
+            print(check)
 
             if(check == "tsl_op"):
                 return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
             elif(check == "tsp_op"):
                 return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+            else:
+                return ("err")
     else:
         return ("país invalido")
 
@@ -452,25 +455,28 @@ def user_auth():
     user = session[temp_user_id]
 
     role = request.form.get('Role')
+    opName_en = request.form.get('Operator Name in English')
     address = request.form.get('Operator Address')
     locality = request.form.get('Locality')
     stateProvince = request.form.get('State or Province')
     postalCode = request.form.get('Postal Code')
     electronicAddress = request.form.get('Electronic Address')
 
-    check = func.user_db_info(role, address, locality, stateProvince, postalCode, electronicAddress, user['id'], session["session_id"])
+    check = func.user_db_info(role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, user['id'], session["session_id"])
 
-    if(check == None):
+    if check is None:
         return ("erro")
     else:
 
         check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
         session[temp_user_id]["role"] = check
-
+        print(check)
         if(check == "tsl_op"):
             return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
         elif(check == "tsp_op"):
             return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        else:
+            return ("error")
         
 def certificate_List(temp_user_id):
 
@@ -496,7 +502,16 @@ def certificate_List(temp_user_id):
 # TSL
 @rpr.route('/tsl/view')
 def view_tsl():
-    return "Visualizar TSL Atual"
+    
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    tsl = func.get_tsl_info(user["id"], session["session_id"])
+
+    if tsl is None:
+        return render_template("view.html", temp_user_id = temp_user_id, tsl = None, message = "User dont have a tsl created")
+    else:
+        return render_template("view.html", temp_user_id = temp_user_id, tsl = tsl)
 
 @rpr.route('/tsl/create')
 def create_tsl():
@@ -509,31 +524,41 @@ def create_tsl():
         "Version": "int",
         "Sequence_number": "int",
         "TSL Type" : "string",
-        "Scheme Name": "string", 
-        "Uri": "string",
-        "Scheme Type Community Rules": "string",
-        "Policy Or Legal Notice": "string",
-        "Pointers to other TSL": "string",
-        "Distribution Points": "string",
+        "Scheme Name in your country language": "string", 
+        "Scheme Name in English": "string", 
+        "Uri in your country language": "string",
+        "Uri in English": "string",
+        "Scheme Type Community Rules in your country language": "string",
+        "Scheme Type Community Rules in English": "string",
+        "Policy Or Legal Notice in your country language": "string",
+        "Policy Or Legal Notice in English": "string",
+        "Pointers to other TSL, if you have more than one, place the several pointers separated by commas (,)": "string",
+        "Distribution Points, if you have more than one, place the several Distribution Points separated by commas (,)": "string",
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
-        "Signature": "binary"
+        "Signature": "binary",
+        "Additiona lInformation": "string"
     }
     descriptions = {
         "Version": "int",
         "Sequence_number": "int",
         "TSL Type" : "string",
-        "Scheme Name": "string", 
-        "Uri": "string",
-        "Scheme Type Community Rules": "string",
-        "Policy Or Legal Notice": "string",
-        "Pointers to other TSL": "string",
-        "Distribution Points": "string",
+        "Scheme Name in your country language": "string", 
+        "Scheme Name in English": "string", 
+        "Uri in your country language": "string",
+        "Uri in English": "string",
+        "Scheme Type Community Rules in your country language": "string",
+        "Scheme Type Community Rules in English": "string",
+        "Policy Or Legal Notice in your country language": "string",
+        "Policy Or Legal Notice in English": "string",
+        "Pointers to other TSL, if you have more than one, place the several pointers separated by commas (,)": "string",
+        "Distribution Points, if you have more than one, place the several Distribution Points separated by commas (,)": "string",
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
-        "Signature": "binary"
+        "Signature": "binary",
+        "Additional Information": "string"
     }
 
     attributesForm.update(form_items)
@@ -550,30 +575,37 @@ def create_tsl_bd():
     Version = request.form.get('Version')
     Sequence_number = request.form.get('Sequence_number')
     TSLType = request.form.get('TSL Type')
-    SchemeName = request.form.get('Scheme Name')
-    Uri = request.form.get('Uri')
-    SchemeTypeCommunityRules = request.form.get('Scheme Type Community Rules')
-    PolicyOrLegalNotice = request.form.get('Policy Or Legal Notice')
+    SchemeName_lang = request.form.get('Scheme Name in your country language')
+    SchemeName_en = request.form.get('Scheme Name in English')
+    Uri_lang = request.form.get('Uri in your country language')
+    Uri_en = request.form.get('Uri in English')
+    SchemeTypeCommunityRules_lang = request.form.get('Scheme Type Community Rules in your country language')
+    SchemeTypeCommunityRules_en = request.form.get('Scheme Type Community Rules in English')
+    PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice in your country language')
+    PolicyOrLegalNotice_en = request.form.get('Policy Or Legal Notice in English')
     PointerstootherTSL = request.form.get('Pointers to other TSL')
     DistributionPoints = request.form.get('Distribution Points')
     Issue_date = request.form.get('Issue_date')
     NextUpdate = request.form.get('Next Update')
     Status = request.form.get('Status')
     Signature = request.form.get('Signature')
+    AdditionalInformation = request.form.get('Additional Information')
 
     check = func.check_country(user['issuing_country'], session["session_id"])
-    check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName, Uri, SchemeTypeCommunityRules, PolicyOrLegalNotice, 
-                        PointerstootherTSL, DistributionPoints, Issue_date, NextUpdate, Status, Signature, check, session["session_id"])
-
-    if(check == None):
+    check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
+                             SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
+                             DistributionPoints, Issue_date, NextUpdate, Status, Signature, AdditionalInformation, check, session["session_id"])
+    
+    
+    if check is None:
         return (check)
     else:
         check = func.update_user_tsl(user['id'], check, session["session_id"])
-        if(check == None):
+        if check is None:
             return (check)
         else:
             return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-       
+
 @rpr.route('/tsl/update')
 def update_tsl():
     return "Atualizar TSL Existente"
@@ -622,7 +654,67 @@ def create_tsp_bd():
     check = func.tsp_db_info(session[temp_user_id]["id"], name, trade_name, address, contact_email, session["session_id"])
 
     if check is None:
+        return "err"
+    else:
+        return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+       
+# Service
+@rpr.route('/service/create')
+def create_service():
+    
+    temp_user_id = session['temp_user_id']
+    
+    attributesForm={}
+
+    form_items={
+        "Service Type": "string",
+        "Service Name in your country language": "string",
+        "Service Name in English": "string",
+        "Digital Identity" : "string",
+        "Status": "string",
+        "Status_start_date": "full-date",
+        "Uri": "string"
+    }
+    descriptions = {
+        "Service Type": "string",
+        "Service Name in your country language": "string",
+        "Service Name in English": "string",
+        "Digital Identity" : "string",
+        "Status": "string",
+        "Status_start_date": "full-date",
+        "Uri": "string"
+    }
+
+    attributesForm.update(form_items)
+    
+    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "service/create/bd")
+
+
+@rpr.route('/service/create/bd', methods=["GET", "POST"])
+def service_tsp_bd():
+    
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    service_type = request.form.get('Service Type')
+    service_name_lang = request.form.get('Service Name in your country language')
+    service_name_en = request.form.get('Service Name in English')
+    digital_identity = request.form.get('Digital Identity')
+    status= request.form.get('Status')
+    status_start_date= request.form.get('Status Start Date')
+    uri= request.form.get('Uri')
+
+    check = func.service_db_info(session[temp_user_id]["id"], service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, session["session_id"])
+
+    if check is None:
         return (check)
     else:
         return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
        
+
+
+@rpr.route('/logout')
+def logout():
+    session.clear()
+    
+    return redirect(url_for('RPR.initial_page'))
