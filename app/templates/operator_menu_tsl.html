@@ -99,7 +99,7 @@
 
                         </div>
                         <h2>Hello {{ user }}</h2>
-                        <a href="#dashboard" class="menu-option">Main Dashboard</a>
+                        <a href="{{ url_for('RPR.xml') }}" class="menu-option">XML</a>
     
                         <h2>Trusted Lists Management (TSL)</h2>
                         <a href="{{ url_for('RPR.view_tsl') }}" class="menu-option">View Current TSL</a>

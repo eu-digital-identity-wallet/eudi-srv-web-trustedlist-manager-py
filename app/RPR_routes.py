@@ -56,7 +56,8 @@ import app.EJBCA_and_DB_func as func
 from app_config.Crypto_Info import Crypto_Info as crypto
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.backends import default_backend
-
+from xml_gen.xml_config import ConfXML as confxml
+from xml_gen.xmlGen import xml_gen
 
 rpr = Blueprint("RPR", __name__, url_prefix="/")
 
@@ -437,7 +438,6 @@ def getpidoid4vp():
         else:
             check = func.check_role_user(aux, session["session_id"])
             session[temp_user_id]["role"] = check
-            print(check)
 
             if(check == "tsl_op"):
                 return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
@@ -500,6 +500,92 @@ def certificate_List(temp_user_id):
         
 
 # TSL
+@rpr.route('/tsl/xml')
+def xml():
+    
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    user_info = func.get_user_info(user["id"], session["session_id"])
+
+    PostalAddress={
+        "StreetAddress"	:	user_info['StreetAddress'],
+        "Locality"	:	user_info['Locality'],
+        "StateOrProvince"	:	user_info['StateOrProvince'],
+        "PostalCode"	:	user_info['PostalCode'],
+        "CountryName"	:	user['issuing_country'],
+        "lang"	:	user['issuing_country']
+    }
+
+    dictFromDB_scheme_operator={
+        "operator_name":    user_info["operator_name_lang"],
+        "StreetAddress"	:   user_info["StreetAddress"],
+        "Locality"	:   user_info["Locality"],
+        "StateOrProvince"	:   user_info["StateOrProvince"],
+        "PostalCode"	:   user_info["PostalCode"],
+        "CountryName"	:   user["issuing_country"],
+        "EletronicAddress": user_info["ElectronicAddress"],
+        "country":  user['issuing_country']
+    }
+
+    tsl_info = func.tsl_info(user_info["tsl_id"], session["session_id"])
+
+    dictFromDB_trusted_lists={
+        "Version":  tsl_info["Version"],
+        "SequenceNumber":   tsl_info["SequenceNumber"],
+        "TSLType":  tsl_info["TSLType"],
+        "SchemeName":   tsl_info["SchemeName_lang"],
+        "SchemeInformationURI": tsl_info["Version"],
+        "StatusDeterminationApproach":  confxml.StatusDeterminationApproach.get("EU"),
+        "SchemeTypeCommunityRules": tsl_info["SchemeTypeCommunityRules_lang"],
+        "PolicyOrLegalNotice":  tsl_info["PolicyOrLegalNotice_lang"],
+        "pointers_to_other_tsl" :   tsl_info["pointers_to_other_tsl"],
+        "HistoricalInformationPeriod":  confxml.HistoricalInformationPeriod,
+        "TSLLocation"	:   "https://ec.europa.eu/tools/lotl/eu-lotl.xml",
+        #AdditionalInformation,ver
+
+        "DistributionPoints" :  tsl_info["DistributionPoints"],
+        "issue_date" :  tsl_info["issue_date"],
+        "next_update":  tsl_info["next_update"],
+        "status":   tsl_info["status"]
+    }
+
+    tsp_info = func.get_tsp_info(user_info["tsl_id"], session["session_id"])
+
+    dictFromDB_trust_service_providers={
+        "name" :    tsp_info["name"],
+        "trade_name" :  tsp_info["trade_name"],
+        "StreetAddress"	:   tsp_info["StreetAddress"],
+        "Locality"	:   tsp_info["Locality"],
+        "StateOrProvince"	:   tsp_info["StateOrProvince"],
+        "PostalCode"	:   tsp_info["PostalCode"],
+        "CountryName"	:   tsp_info["CountryName"],
+        "EletronicAddress": tsp_info["EletronicAddress"],
+        "TSPInformationURI":    tsp_info["TSPInformationURI"],
+        "country":  tsp_info["name"]
+    }
+
+    service_info = func.get_service_info(tsp_info["tsp_id"], session["session_id"])
+    
+    dictFromDB_trust_services={
+        "service_type": service_info["service_type"],
+        "service_name": service_info["service_name_lang"],
+        "digital_identity" :    service_info["digital_identity"],
+        "status" :  service_info["status"],
+        "status_start_date":    service_info["status_start_date"],
+        "SchemeServiceDefinitionURI":   service_info["uri"],
+        #"general":"JSON",
+        # "qualifier" varchar(255) DEFAULT NULL,
+        # "qualificationElement" varchar(255) DEFAULT NULL,
+        # "criteriaList" varchar(255) DEFAULT NULL,
+        # "takenOverBy" varchar(255) DEFAULT NULL,
+    }
+
+
+    xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists, dictFromDB_trust_services, dictFromDB_trust_service_providers)
+    
+    return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+    
 @rpr.route('/tsl/view')
 def view_tsl():
     
@@ -552,8 +638,8 @@ def create_tsl():
         "Scheme Type Community Rules in English": "string",
         "Policy Or Legal Notice in your country language": "string",
         "Policy Or Legal Notice in English": "string",
-        "Pointers to other TSL, if you have more than one, place the several pointers separated by commas (,)": "string",
-        "Distribution Points, if you have more than one, place the several Distribution Points separated by commas (,)": "string",
+        "Pointers to other TSL": "string",
+        "Distribution Points": "string",
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
@@ -625,14 +711,26 @@ def create_tsp():
     form_items={
         "Name": "string",
         "Trade Name": "string",
-        "Address" : "string",
-        "Contact Email": "string"
+        "StreetAddress" : "string",
+        "Locality": "string",
+        "State Or Province": "string",
+        "Postal Code": "string",
+        "Country Name": "string",
+        "Eletronic Address": "string",
+        "TSP Information URI": "string",
+        "country": "string"
     }
     descriptions = {
         "Name": "string",
         "Trade Name": "string",
-        "Address" : "string",
-        "Contact Email": "string"
+        "StreetAddress" : "string",
+        "Locality": "string",
+        "State Or Province": "string",
+        "Postal Code": "string",
+        "Country Name": "string",
+        "Eletronic Address": "string",
+        "TSP Information URI": "string",
+        "country": "string"
     }
 
     attributesForm.update(form_items)
@@ -648,10 +746,17 @@ def create_tsp_bd():
 
     name = request.form.get('Name')
     trade_name = request.form.get('Trade Name')
-    address = request.form.get('Address')
-    contact_email= request.form.get('Contact Email')
+    StreetAddress = request.form.get('StreetAddress')
+    Locality= request.form.get('Locality')
+    StateOrProvince= request.form.get('State Or Province')
+    PostalCode= request.form.get('Postal Code')
+    CountryName= request.form.get('Country Name')
+    EletronicAddress= request.form.get('Eletronic Address')
+    TSPInformationURI= request.form.get('TSP Information URI')
+    country= request.form.get('country')
 
-    check = func.tsp_db_info(session[temp_user_id]["id"], name, trade_name, address, contact_email, session["session_id"])
+    check = func.tsp_db_info(session[temp_user_id]["id"], name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country, session["session_id"])
 
     if check is None:
         return "err"
@@ -672,7 +777,7 @@ def create_service():
         "Service Name in English": "string",
         "Digital Identity" : "string",
         "Status": "string",
-        "Status_start_date": "full-date",
+        "Status Start Date": "full-date",
         "Uri": "string"
     }
     descriptions = {
@@ -681,7 +786,7 @@ def create_service():
         "Service Name in English": "string",
         "Digital Identity" : "string",
         "Status": "string",
-        "Status_start_date": "full-date",
+        "Status Start Date": "full-date",
         "Uri": "string"
     }
 
@@ -700,9 +805,9 @@ def service_tsp_bd():
     service_name_lang = request.form.get('Service Name in your country language')
     service_name_en = request.form.get('Service Name in English')
     digital_identity = request.form.get('Digital Identity')
-    status= request.form.get('Status')
-    status_start_date= request.form.get('Status Start Date')
-    uri= request.form.get('Uri')
+    status = request.form.get('Status')
+    status_start_date = request.form.get('Status Start Date')
+    uri = request.form.get('Uri')
 
     check = func.service_db_info(session[temp_user_id]["id"], service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, session["session_id"])
 

@@ -391,7 +391,8 @@ def get_user_tsl(id, log_id):
             connection.close()
 
 
-def insert_tsp_info(tsl_id, name, trade_name, address, contact_email, log_id):
+def insert_tsp_info(tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country, log_id):
     try:
         connection = conn()
         if connection:
@@ -399,11 +400,13 @@ def insert_tsp_info(tsl_id, name, trade_name, address, contact_email, log_id):
 
             insert_query = """
                             INSERT INTO trust_service_providers 
-                            (tsl_id, name, trade_name, address, contact_email) 
-                            VALUES (%s, %s, %s, %s, %s)
+                            (tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, CountryName, EletronicAddress,
+                            TSPInformationURI, country) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                             """
             
-            cursor.execute(insert_query, (tsl_id, name, trade_name, address, contact_email,))
+            cursor.execute(insert_query, (tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country,))
             
             connection.commit()
             
@@ -526,3 +529,102 @@ def get_tsl(id, log_id):
             cursor.close()
             connection.close()
 
+
+def get_user(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT *
+                FROM scheme_operators
+                WHERE operator_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                user_info = dict(zip(column_names, result))
+                
+                return user_info
+            else:
+                print(f"No USER found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching USER info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def get_tsp(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT *
+                FROM trust_service_providers
+                WHERE tsl_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                tsp_info = dict(zip(column_names, result))
+                
+                return tsp_info
+            else:
+                print(f"No TSP found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching TSP info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def get_service(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT *
+                FROM trust_services
+                WHERE tsp_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                service_info = dict(zip(column_names, result))
+                
+                return service_info
+            else:
+                print(f"No Service found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching Service info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()

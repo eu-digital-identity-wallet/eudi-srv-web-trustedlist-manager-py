@@ -214,8 +214,7 @@ def update_user_tsl(id, check,  log_id):
 
 def check_role_user(id, log_id):
     try:
-        check = db.check_role_user(id, log_id) 
-        
+        check = db.check_role_user(id, log_id)
         return check
     
     except Exception as e:
@@ -227,10 +226,12 @@ def check_role_user(id, log_id):
         return "Error processing the form.", 500
 
  
-def tsp_db_info(id, name, trade_name, address, contact_email, log_id):
+def tsp_db_info(id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country,  log_id):
     try:
         check = db.get_user_tsl(id, log_id)
-        check = db.insert_tsp_info(check, name, trade_name, address, contact_email, log_id) 
+        check = db.insert_tsp_info(check, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country, log_id) 
 
         return check
     
@@ -269,6 +270,74 @@ def get_tsl_info(id, log_id):
             return tsl
         else:
             return None
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+
+def get_user_info(id, log_id):
+    try:
+        
+        user_info = db.get_user(id, log_id)
+        
+        if user_info is None:
+            return None
+        else:
+            return user_info
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+def tsl_info(id, log_id):
+    try:
+        tsl = db.get_tsl(id, log_id)
+        if tsl is None:
+            return None
+        else:
+            return tsl
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+
+def get_tsp_info(id, log_id):
+    try:
+        tsp = db.get_tsp(id, log_id)
+        if tsp is None:
+            return None
+        else:
+            return tsp
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+
+def get_service_info(id, log_id):
+    try:
+        service = db.get_service(id, log_id)
+        if service is None:
+            return None
+        else:
+            return service
         
     except Exception as e:
         
