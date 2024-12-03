@@ -59,6 +59,9 @@ from cryptography.hazmat.backends import default_backend
 from xml_gen.xml_config import ConfXML as confxml
 from xml_gen.xmlGen import xml_gen
 
+import datetime
+from dateutil.relativedelta import relativedelta
+
 rpr = Blueprint("RPR", __name__, url_prefix="/")
 
 rpr.template_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'template/')
@@ -529,17 +532,17 @@ def xml():
     }
 
     tsl_info = func.tsl_info(user_info["tsl_id"], session["session_id"])
-
+    
     dictFromDB_trusted_lists={
-        "Version":  tsl_info["Version"],
+        "Version":  confxml.TLSIdentifier,
         "SequenceNumber":   tsl_info["SequenceNumber"],
-        "TSLType":  tsl_info["TSLType"],
+        "TSLType":  confxml.TSLType.get("EU"),
         "SchemeName":   tsl_info["SchemeName_lang"],
         "SchemeInformationURI": tsl_info["Version"],
         "StatusDeterminationApproach":  confxml.StatusDeterminationApproach.get("EU"),
         "SchemeTypeCommunityRules": tsl_info["SchemeTypeCommunityRules_lang"],
         "PolicyOrLegalNotice":  tsl_info["PolicyOrLegalNotice_lang"],
-        "pointers_to_other_tsl" :   tsl_info["pointers_to_other_tsl"],
+        "pointers_to_other_tsl" :   tsl_info["pointers_to_other_tsl"].encode('utf-8'),
         "HistoricalInformationPeriod":  confxml.HistoricalInformationPeriod,
         "TSLLocation"	:   "https://ec.europa.eu/tools/lotl/eu-lotl.xml",
         #AdditionalInformation,ver

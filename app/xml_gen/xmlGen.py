@@ -25,82 +25,11 @@ import xml_gen.trustedlists_api as test
 from signxml import DigestAlgorithm
 from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFormat)
 from xml_gen.xml_config import ConfXML as confxml
+from signxml import XMLSigner, algorithms
 
 def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists, dictFromDB_trust_services, dictFromDB_trust_service_providers):
-
-    # PostalAddress={
-    #     "StreetAddress"	:	"Rua da Junqueira, 69",
-    #     "Locality"	:	"Lisbon",
-    #     "StateOrProvince"	:	"Lisbon",
-    #     "PostalCode"	:	"1300-342 Lisboa",
-    #     "CountryName"	:	"PT",
-    #     "lang"	:	"en"
-    # }
-
+    
     PostalAddresses=PostalAddress
-
-    # dictFromDB_scheme_operator={
-    #     "operator_name":"test",
-    #     "StreetAddress"	:	"Rua da Junqueira, 69",
-    #     "Locality"	:	"Lisbon",
-    #     "StateOrProvince"	:	"Lisbon",
-    #     "PostalCode"	:	"1300-342 Lisboa",
-    #     "CountryName"	:	"PT",
-    #     "EletronicAddress":"teste@teste.pt",
-    #     "country":"PT"
-    # }
-
-    # issue_date=datetime.datetime.now(datetime.timezone.utc)
-    # next_update= issue_date + relativedelta(months=confxml.validity)
-
-    # dictFromDB_trusted_lists={
-    #     "Version":confxml.TLSIdentifier,
-    #     "SequenceNumber":1,
-    #     "TSLType":confxml.TSLType.get("EU"),
-    #     "SchemeName":"text",
-    #     "SchemeInformationURI":"link",
-    #     "StatusDeterminationApproach":confxml.StatusDeterminationApproach.get("EU"),
-    #     "SchemeTypeCommunityRules":"http://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUcommon",
-    #     "PolicyOrLegalNotice":"texto",
-    #     "pointers_to_other_tsl" :b"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",
-    #     "HistoricalInformationPeriod":confxml.HistoricalInformationPeriod,
-    #     "TSLLocation"	:	"https://ec.europa.eu/tools/lotl/eu-lotl.xml",
-    #     #AdditionalInformation,ver
-
-    #     "DistributionPoints" :"link",
-    #     "issue_date" :issue_date,
-    #     "next_update":next_update,
-    #     "status":"http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/EUappropriate",
-    # }
-
-
-    # dictFromDB_trust_services={
-    #     "service_type":"http://uri.etsi.org/TrstSvc/Svctype/CA/QC",
-    #     "service_name":"text",
-    #     "digital_identity" :b"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",
-    #     "status" :"	http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/withdrawn",
-    #     "status_start_date":datetime.datetime.now(datetime.timezone.utc),
-    #     "SchemeServiceDefinitionURI":"link",
-    #     #"general":"JSON",
-    #     # "qualifier" varchar(255) DEFAULT NULL,
-    #     # "qualificationElement" varchar(255) DEFAULT NULL,
-    #     # "criteriaList" varchar(255) DEFAULT NULL,
-    #     # "takenOverBy" varchar(255) DEFAULT NULL,
-    # }
-
-    # dictFromDB_trust_service_providers={
-    #     "name" :"text",
-    #     "trade_name" :"text",
-    #     "StreetAddress"	:	"Rua da Junqueira, 69",
-    #     "Locality"	:	"Lisbon",
-    #     "StateOrProvince"	:	"Lisbon",
-    #     "PostalCode"	:	"1300-342 Lisboa",
-    #     "CountryName"	:	"PT",
-    #     "EletronicAddress":"teste@teste.pt",
-    #     "TSPInformationURI":"link",
-    #     "country":"PT"
-    # }
-
     root=test.TrustStatusListType()
 
     root.set_TSLTag("http://uri.etsi.org/19612/TSLTag")
@@ -380,7 +309,7 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
         c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
     )
 
-    signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
+    signed_root = XMLSigner(signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256).sign(data=rootTemp, key=key, cert=cert)
     #verified_data = XMLVerifier().verify(signed_root)
 
     # with open ("teste.xml", "w") as file: 
@@ -393,5 +322,76 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
         tree.write(files)
 
 
-if __name__ == "__main__":  
-    xml_gen() 
+# if __name__ == "__main__":  
+    # PostalAddress={
+    #     "StreetAddress"	:	"Rua da Junqueira, 69",
+    #     "Locality"	:	"Lisbon",
+    #     "StateOrProvince"	:	"Lisbon",
+    #     "PostalCode"	:	"1300-342 Lisboa",
+    #     "CountryName"	:	"PT",
+    #     "lang"	:	"en"
+    # }
+
+    # dictFromDB_scheme_operator={
+    #     "operator_name":"test",
+    #     "StreetAddress"	:	"Rua da Junqueira, 69",
+    #     "Locality"	:	"Lisbon",
+    #     "StateOrProvince"	:	"Lisbon",
+    #     "PostalCode"	:	"1300-342 Lisboa",
+    #     "CountryName"	:	"PT",
+    #     "EletronicAddress":"teste@teste.pt",
+    #     "country":"PT"
+    # }
+
+    # issue_date=datetime.datetime.now(datetime.timezone.utc)
+    # next_update= issue_date + relativedelta(months=confxml.validity)
+
+    # dictFromDB_trusted_lists={
+    #     "Version":confxml.TLSIdentifier,
+    #     "SequenceNumber":1,
+    #     "TSLType":confxml.TSLType.get("EU"),
+    #     "SchemeName":"text",
+    #     "SchemeInformationURI":"link",
+    #     "StatusDeterminationApproach":confxml.StatusDeterminationApproach.get("EU"),
+    #     "SchemeTypeCommunityRules":"http://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUcommon",
+    #     "PolicyOrLegalNotice":"texto",
+    #     "pointers_to_other_tsl" :b"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",
+    #     "HistoricalInformationPeriod":confxml.HistoricalInformationPeriod,
+    #     "TSLLocation"	:	"https://ec.europa.eu/tools/lotl/eu-lotl.xml",
+    #     #AdditionalInformation,ver
+
+    #     "DistributionPoints" :"link",
+    #     "issue_date" :issue_date,
+    #     "next_update":next_update,
+    #     "status":"http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/EUappropriate",
+    # }
+
+
+    # dictFromDB_trust_services={
+    #     "service_type":"http://uri.etsi.org/TrstSvc/Svctype/CA/QC",
+    #     "service_name":"text",
+    #     "digital_identity" :b"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",
+    #     "status" :"	http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/withdrawn",
+    #     "status_start_date":datetime.datetime.now(datetime.timezone.utc),
+    #     "SchemeServiceDefinitionURI":"link",
+    #     #"general":"JSON",
+    #     # "qualifier" varchar(255) DEFAULT NULL,
+    #     # "qualificationElement" varchar(255) DEFAULT NULL,
+    #     # "criteriaList" varchar(255) DEFAULT NULL,
+    #     # "takenOverBy" varchar(255) DEFAULT NULL,
+    # }
+
+    # dictFromDB_trust_service_providers={
+    #     "name" :"text",
+    #     "trade_name" :"text",
+    #     "StreetAddress"	:	"Rua da Junqueira, 69",
+    #     "Locality"	:	"Lisbon",
+    #     "StateOrProvince"	:	"Lisbon",
+    #     "PostalCode"	:	"1300-342 Lisboa",
+    #     "CountryName"	:	"PT",
+    #     "EletronicAddress":"teste@teste.pt",
+    #     "TSPInformationURI":"link",
+    #     "country":"PT"
+    # }
+
+    #xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists, dictFromDB_trust_services, dictFromDB_trust_service_providers) 
