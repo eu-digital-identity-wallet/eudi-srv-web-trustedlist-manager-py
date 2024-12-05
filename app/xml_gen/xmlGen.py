@@ -242,23 +242,37 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
 
     #for cycle
     PolicyIdentifier=test.ObjectIdentifierType()
-    Identifier=test.IdentifierType(test.QualifierType().set_uri("teste.pt"))
-    PolicyIdentifier.set_Identifier(Identifier)
+    Identifier=test.IdentifierType()
+    Identifier.set_Qualifier("OIDAsURI")
+    Identifier.set_valueOf_("0.4.0.194112.1.2")
+    PolicyIdentifier.add_Identifier(Identifier)
 
     PolicySet.add_PolicyIdentifier(PolicyIdentifier)
 
     CriteriaList.add_PolicySet(PolicySet)
+    CriteriaList.set_assert("all")
 
     qualificationElement.set_CriteriaList(CriteriaList)
+    qualificationElement.set_Qualifiers(qualifiers)
+
+    Qualifications.add_QualificationElement(qualificationElement)
 
 
     #AdditionalServiceInformation		
     AdditionalServiceInformation=test.AdditionalServiceInformationType()
     AdditionalServiceInformation.set_URI(test.NonEmptyMultiLangURIType("en","	https://www.teste.com"))
-    Extension.set_anytypeobjs_(AdditionalServiceInformation)
+    
+    Extension.set_anytypeobjs_(test.QualificationsType())
+    Extension.set_valueOf_(Qualifications)
     Extension.set_Critical(True)
 
+    ExtensionAdditionalServiceInformation=test.ExtensionType()
+    ExtensionAdditionalServiceInformation.set_anytypeobjs_(test.AdditionalServiceInformationType())
+    ExtensionAdditionalServiceInformation.set_valueOf_(AdditionalServiceInformation)
+    ExtensionAdditionalServiceInformation.set_Critical(True)
+
     ServiceInformationExtensions.add_Extension(Extension)
+    ServiceInformationExtensions.add_Extension(ExtensionAdditionalServiceInformation)
     ServiceInformation.set_ServiceInformationExtensions(ServiceInformationExtensions)
 
     ##ServiceHistoryInstance
@@ -290,24 +304,9 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
     #     key = serialization.load_pem_private_key(key_file.read(),password=None,backend=default_backend())
         
     key=open("app/xml_gen/privkey_UT.pem", "rb").read()
+    xml.register_namespace("","http://uri.etsi.org/02231/v2#")
+    
     rootTemp=xml.fromstring(xml_string)
-
-    signature_policy = XAdESSignaturePolicy(
-        Identifier="MyPolicyIdentifier",
-        Description="Hello XAdES",
-        DigestMethod=DigestAlgorithm.SHA256,
-        DigestValue="Ohixl6upD6av8N7pEvDABhEL6hM=",
-    )
-    data_object_format = XAdESDataObjectFormat(
-        Description="My XAdES signature",
-        MimeType="text/xml",
-    )
-    signer = XAdESSigner(
-        signature_policy=signature_policy,
-        claimed_roles=["signer"],
-        data_object_format=data_object_format,
-        c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
-    )
 
     signed_root = XMLSigner(signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256).sign(data=rootTemp, key=key, cert=cert)
     #verified_data = XMLVerifier().verify(signed_root)
