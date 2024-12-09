@@ -465,7 +465,7 @@ def get_tsp_tsl(id, log_id):
             connection.close()
 
 
-def insert_service_info(tsp_id, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, log_id):
+def insert_service_info(tsp_id, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri, log_id):
     try:
         connection = conn()
         if connection:
@@ -473,11 +473,11 @@ def insert_service_info(tsp_id, service_type, service_name_lang, service_name_en
 
             insert_query = """
                             INSERT INTO trust_services 
-                            (tsp_id, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                            (tsp_id, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                             """
             
-            cursor.execute(insert_query, (tsp_id, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri,))
+            cursor.execute(insert_query, (tsp_id, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri,))
             
             connection.commit()
             

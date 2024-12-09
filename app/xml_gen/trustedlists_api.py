@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Generated Fri Nov 15 16:11:17 2024 by generateDS.py version 2.44.3.
+# Generated Tue Dec  3 15:28:20 2024 by generateDS.py version 2.44.3.
 # Python 3.11.4 (tags/v3.11.4:d2340ef, Jun  7 2023, 05:45:37) [MSC v.1934 64 bit (AMD64)]
 #
 # Command line options:
@@ -17,7 +17,7 @@
 #   generateDS.py -o "trustedlists_api.py" -s "trustedlists_sub.py" --super="trustedlists_api" ts_119612v020101_xsd_modified.xsd
 #
 # Current working directory (os.getcwd()):
-#   eudi-srv-web-trustedlist-manager-py
+#   trusted_lists
 #
 
 import sys
@@ -5586,12 +5586,12 @@ class QualifiersType(GeneratedsSuper):
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
         self.parent_object_ = kwargs_.get('parent_object_')
-        self.ns_prefix_ = None
+        self.ns_prefix_ = "tsl"
         if Qualifier is None:
             self.Qualifier = []
         else:
             self.Qualifier = Qualifier
-        self.Qualifier_nsprefix_ = None
+        self.Qualifier_nsprefix_ = "tsl"
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5617,21 +5617,6 @@ class QualifiersType(GeneratedsSuper):
         self.Qualifier.insert(index, value)
     def replace_Qualifier_at(self, index, value):
         self.Qualifier[index] = value
-    def validate_QualifierType1(self, value):
-        result = True
-        # Validate type QualifierType1, a restriction on xsd:string.
-        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
-            if not isinstance(value, str):
-                lineno = self.gds_get_node_lineno_()
-                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (str)' % {"value": value, "lineno": lineno, })
-                return False
-            value = value
-            enumerations = ['OIDAsURI', 'OIDAsURN']
-            if value not in enumerations:
-                lineno = self.gds_get_node_lineno_()
-                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s does not match xsd enumeration restriction on QualifierType1' % {"value" : encode_str_2_3(value), "lineno": lineno} )
-                result = False
-        return result
     def has__content(self):
         if (
             self.Qualifier
@@ -5639,7 +5624,7 @@ class QualifiersType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:None="http://www.w3.org/2001/XMLSchema" ', name_='QualifiersType', pretty_print=True):
+    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#"', name_='QualifiersType', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('QualifiersType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5664,15 +5649,14 @@ class QualifiersType(GeneratedsSuper):
             outfile.write('/>%s' % (eol_, ))
     def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='QualifiersType'):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:None="http://www.w3.org/2001/XMLSchema" ', name_='QualifiersType', fromsubclass_=False, pretty_print=True):
+    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#"', name_='QualifiersType', fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for Qualifier_ in self.Qualifier:
             namespaceprefix_ = self.Qualifier_nsprefix_ + ':' if (UseCapturedNS_ and self.Qualifier_nsprefix_) else ''
-            showIndent(outfile, level, pretty_print)
-            outfile.write('<%sQualifier>%s</%sQualifier>%s' % (namespaceprefix_ , self.gds_encode(self.gds_format_string(quote_xml(Qualifier_), input_name='Qualifier')), namespaceprefix_ , eol_))
+            Qualifier_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Qualifier', pretty_print=pretty_print)
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -5688,13 +5672,10 @@ class QualifiersType(GeneratedsSuper):
         pass
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
         if nodeName_ == 'Qualifier':
-            value_ = child_.text
-            value_ = self.gds_parse_string(value_, node, 'Qualifier')
-            value_ = self.gds_validate_string(value_, node, 'Qualifier')
-            self.Qualifier.append(value_)
-            self.Qualifier_nsprefix_ = child_.prefix
-            # validate type QualifierType1
-            self.validate_QualifierType1(self.Qualifier[-1])
+            obj_ = QualifierType.factory(parent_object_=self)
+            obj_.build(child_, gds_collector_=gds_collector_)
+            self.Qualifier.append(obj_)
+            obj_.original_tagname_ = 'Qualifier'
 # end class QualifiersType
 
 
@@ -5891,18 +5872,17 @@ class ObjectIdentifierType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
-    def __init__(self, Identifier=None, Description=None, DocumentationReferences=None, gds_collector_=None, **kwargs_):
+    def __init__(self, Identifier=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
         self.parent_object_ = kwargs_.get('parent_object_')
-        self.ns_prefix_ = None
-        self.Identifier = Identifier
+        self.ns_prefix_ = "tsl"
+        if Identifier is None:
+            self.Identifier = []
+        else:
+            self.Identifier = Identifier
         self.Identifier_nsprefix_ = "tsl"
-        self.Description = Description
-        self.Description_nsprefix_ = None
-        self.DocumentationReferences = DocumentationReferences
-        self.DocumentationReferences_nsprefix_ = "tsl"
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5922,24 +5902,20 @@ class ObjectIdentifierType(GeneratedsSuper):
         return self.Identifier
     def set_Identifier(self, Identifier):
         self.Identifier = Identifier
-    def get_Description(self):
-        return self.Description
-    def set_Description(self, Description):
-        self.Description = Description
-    def get_DocumentationReferences(self):
-        return self.DocumentationReferences
-    def set_DocumentationReferences(self, DocumentationReferences):
-        self.DocumentationReferences = DocumentationReferences
+    def add_Identifier(self, value):
+        self.Identifier.append(value)
+    def insert_Identifier_at(self, index, value):
+        self.Identifier.insert(index, value)
+    def replace_Identifier_at(self, index, value):
+        self.Identifier[index] = value
     def has__content(self):
         if (
-            self.Identifier is not None or
-            self.Description is not None or
-            self.DocumentationReferences is not None
+            self.Identifier
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:None="http://www.w3.org/2001/XMLSchema" ', name_='ObjectIdentifierType', pretty_print=True):
+    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#"', name_='ObjectIdentifierType', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ObjectIdentifierType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5964,21 +5940,14 @@ class ObjectIdentifierType(GeneratedsSuper):
             outfile.write('/>%s' % (eol_, ))
     def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='ObjectIdentifierType'):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:None="http://www.w3.org/2001/XMLSchema" ', name_='ObjectIdentifierType', fromsubclass_=False, pretty_print=True):
+    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#"', name_='ObjectIdentifierType', fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
-        if self.Identifier is not None:
+        for Identifier_ in self.Identifier:
             namespaceprefix_ = self.Identifier_nsprefix_ + ':' if (UseCapturedNS_ and self.Identifier_nsprefix_) else ''
-            self.Identifier.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Identifier', pretty_print=pretty_print)
-        if self.Description is not None:
-            namespaceprefix_ = self.Description_nsprefix_ + ':' if (UseCapturedNS_ and self.Description_nsprefix_) else ''
-            showIndent(outfile, level, pretty_print)
-            outfile.write('<%sDescription>%s</%sDescription>%s' % (namespaceprefix_ , self.gds_encode(self.gds_format_string(quote_xml(self.Description), input_name='Description')), namespaceprefix_ , eol_))
-        if self.DocumentationReferences is not None:
-            namespaceprefix_ = self.DocumentationReferences_nsprefix_ + ':' if (UseCapturedNS_ and self.DocumentationReferences_nsprefix_) else ''
-            self.DocumentationReferences.export(outfile, level, namespaceprefix_, namespacedef_='', name_='DocumentationReferences', pretty_print=pretty_print)
+            Identifier_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Identifier', pretty_print=pretty_print)
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -5996,32 +5965,33 @@ class ObjectIdentifierType(GeneratedsSuper):
         if nodeName_ == 'Identifier':
             obj_ = IdentifierType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
-            self.Identifier = obj_
+            self.Identifier.append(obj_)
             obj_.original_tagname_ = 'Identifier'
-        elif nodeName_ == 'Description':
-            value_ = child_.text
-            value_ = self.gds_parse_string(value_, node, 'Description')
-            value_ = self.gds_validate_string(value_, node, 'Description')
-            self.Description = value_
-            self.Description_nsprefix_ = child_.prefix
-        elif nodeName_ == 'DocumentationReferences':
-            obj_ = DocumentationReferencesType.factory(parent_object_=self)
-            obj_.build(child_, gds_collector_=gds_collector_)
-            self.DocumentationReferences = obj_
-            obj_.original_tagname_ = 'DocumentationReferences'
 # end class ObjectIdentifierType
 
 
-class IdentifierType(GeneratedsSuper):
+class IdentifierType(AnyType):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
-    superclass = None
-    def __init__(self, valueOf_=None, gds_collector_=None, **kwargs_):
+    superclass = AnyType
+    def __init__(self, anytypeobjs_=None, Qualifier=None, valueOf_=None, mixedclass_=None, content_=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
         self.parent_object_ = kwargs_.get('parent_object_')
         self.ns_prefix_ = "tsl"
+        super(globals().get("IdentifierType"), self).__init__(anytypeobjs_, valueOf_, mixedclass_, content_,  **kwargs_)
+        self.Qualifier = _cast(None, Qualifier)
+        self.Qualifier_nsprefix_ = None
+        self.valueOf_ = valueOf_
+        if mixedclass_ is None:
+            self.mixedclass_ = MixedContainer
+        else:
+            self.mixedclass_ = mixedclass_
+        if content_ is None:
+            self.content_ = []
+        else:
+            self.content_ = content_
         self.valueOf_ = valueOf_
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
@@ -6038,11 +6008,30 @@ class IdentifierType(GeneratedsSuper):
         return self.ns_prefix_
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+    def get_Qualifier(self):
+        return self.Qualifier
+    def set_Qualifier(self, Qualifier):
+        self.Qualifier = Qualifier
     def get_valueOf_(self): return self.valueOf_
     def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+    def validate_QualifierType1(self, value):
+        # Validate type QualifierType1, a restriction on xsd:string.
+        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
+            if not isinstance(value, str):
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (str)' % {"value": value, "lineno": lineno, })
+                return False
+            value = value
+            enumerations = ['OIDAsURI', 'OIDAsURN']
+            if value not in enumerations:
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s does not match xsd enumeration restriction on QualifierType1' % {"value" : encode_str_2_3(value), "lineno": lineno} )
+                result = False
     def has__content(self):
         if (
-            (1 if type(self.valueOf_) in [int,float] else self.valueOf_)
+            (1 if type(self.valueOf_) in [int,float] else self.valueOf_) or
+            self.content_ or
+            super(IdentifierType, self).has__content()
         ):
             return True
         else:
@@ -6068,9 +6057,12 @@ class IdentifierType(GeneratedsSuper):
         outfile.write(self.convert_unicode(self.valueOf_))
         outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
     def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='IdentifierType'):
-        pass
+        super(IdentifierType, self)._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='IdentifierType')
+        if self.Qualifier is not None and 'Qualifier' not in already_processed:
+            already_processed.add('Qualifier')
+            outfile.write(' Qualifier=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.Qualifier), input_name='Qualifier')), ))
     def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#"', name_='IdentifierType', fromsubclass_=False, pretty_print=True):
-        pass
+        super(IdentifierType, self)._exportChildren(outfile, level, namespaceprefix_, namespacedef_, name_, True, pretty_print=pretty_print)
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -6079,13 +6071,27 @@ class IdentifierType(GeneratedsSuper):
         self.ns_prefix_ = node.prefix
         self._buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
+        if node.text is not None:
+            obj_ = self.mixedclass_(MixedContainer.CategoryText,
+                MixedContainer.TypeNone, '', node.text)
+            self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
     def _buildAttributes(self, node, attrs, already_processed):
-        pass
+        value = find_attr_value_('Qualifier', node)
+        if value is not None and 'Qualifier' not in already_processed:
+            already_processed.add('Qualifier')
+            self.Qualifier = value
+            self.validate_QualifierType1(self.Qualifier)    # validate type QualifierType1
+        super(IdentifierType, self)._buildAttributes(node, attrs, already_processed)
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
+        if not fromsubclass_ and child_.tail is not None:
+            obj_ = self.mixedclass_(MixedContainer.CategoryText,
+                MixedContainer.TypeNone, '', child_.tail)
+            self.content_.append(obj_)
+        super(IdentifierType, self)._buildChildren(child_, node, nodeName_, True)
         pass
 # end class IdentifierType
 
@@ -10661,5 +10667,4 @@ if __name__ == '__main__':
     main()
 
 RenameMappings_ = {
-    "{http://uri.etsi.org/02231/v2#}QualifierType": "QualifierType1",
 }

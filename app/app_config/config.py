@@ -48,6 +48,12 @@ class ConfService:
       "tsp_op":"TSP Operator"
     }
 
+    qualifiers = {
+      "QCForESig": "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCForESig",
+      "QCStatement": "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCStatement",
+      "QCQSCDStatusAsInCert": "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCQSCDStatusAsInCert"
+    }
+
 
     # log_dir = "/tmp/log"
     # #log_dir = "../../log"

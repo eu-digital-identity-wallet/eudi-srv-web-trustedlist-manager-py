@@ -172,7 +172,7 @@ def authentication():
         + response_same_device["request_uri"]
     )
 
-    oid4vp_requests.update({session["session_id"]:{"response": response_same_device, "expires":datetime.now() + timedelta(minutes=cfgserv.deffered_expiry)}})
+    oid4vp_requests.update({session["session_id"]:{"response": response_same_device, "expires":datetime.datetime.now() + timedelta(minutes=cfgserv.deffered_expiry)}})
 
 
     # Generate QR code
@@ -437,7 +437,7 @@ def getpidoid4vp():
 
             attributesForm.update(form_items)
             
-            return render_template("dynamic-form.html", role = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "user_auth")
+            return render_template("dynamic-form.html", countries = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "user_auth")
         else:
             check = func.check_role_user(aux, session["session_id"])
             session[temp_user_id]["role"] = check
@@ -569,7 +569,10 @@ def xml():
     }
 
     service_info = func.get_service_info(tsp_info["tsp_id"], session["session_id"])
-    
+
+    qualifiers = cfgserv.qualifiers.get(service_info["qualifier"])
+    print(qualifiers)
+
     dictFromDB_trust_services={
         "service_type": service_info["service_type"],
         "service_name": service_info["service_name_lang"],
@@ -585,10 +588,31 @@ def xml():
     }
 
 
-    xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists, dictFromDB_trust_services, dictFromDB_trust_service_providers)
+    file = xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists, dictFromDB_trust_services, dictFromDB_trust_service_providers, qualifiers)
     
-    return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+    return render_template("download_tsl.html", dictFromDB_trusted_lists = dictFromDB_trusted_lists, dictFromDB_trust_services = dictFromDB_trust_services, file_data = file, temp_user_id = temp_user_id)
     
+@rpr.route('/download', methods=["GET", "POST"])
+def download_tsl():
+
+    encoded_file = request.form.get("file_data")
+
+    file_data = base64.b64decode(encoded_file)
+
+    return send_file(
+        io.BytesIO(file_data),
+        download_name="generated_file.xml",
+        as_attachment=True,
+        mimetype='application/xml'
+    )
+
+@rpr.route('/operator_menu_tsl', methods=["GET"])
+def operator_menu_tsl():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    return render_template("operator_menu_tsl.html", user=user['given_name'], temp_user_id=temp_user_id)
+
 @rpr.route('/tsl/view')
 def view_tsl():
     
@@ -778,24 +802,27 @@ def create_service():
         "Service Type": "string",
         "Service Name in your country language": "string",
         "Service Name in English": "string",
+        "Qualifier": "select",
         "Digital Identity" : "string",
         "Status": "string",
         "Status Start Date": "full-date",
         "Uri": "string"
     }
     descriptions = {
-        "Service Type": "string",
-        "Service Name in your country language": "string",
-        "Service Name in English": "string",
-        "Digital Identity" : "string",
-        "Status": "string",
-        "Status Start Date": "full-date",
-        "Uri": "string"
+        "Service Type": "Type of service provided",
+        "Service Name in your country language": "Provide the service name in your local language",
+        "Service Name in English": "Provide the service name in English",
+        "Qualifier": "Select applicable qualifiers",
+        "Digital Identity": "Specify the digital identity",
+        "Status": "Service status",
+        "Status Start Date": "Start date of the current status",
+        "Uri": "Service URI"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "service/create/bd")
+    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+                           data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/create/bd")
 
 
 @rpr.route('/service/create/bd', methods=["GET", "POST"])
@@ -807,12 +834,13 @@ def service_tsp_bd():
     service_type = request.form.get('Service Type')
     service_name_lang = request.form.get('Service Name in your country language')
     service_name_en = request.form.get('Service Name in English')
+    qualifier = request.form.get('Qualifier')
     digital_identity = request.form.get('Digital Identity')
     status = request.form.get('Status')
     status_start_date = request.form.get('Status Start Date')
     uri = request.form.get('Uri')
 
-    check = func.service_db_info(session[temp_user_id]["id"], service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, session["session_id"])
+    check = func.service_db_info(session[temp_user_id]["id"], service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri, session["session_id"])
 
     if check is None:
         return (check)

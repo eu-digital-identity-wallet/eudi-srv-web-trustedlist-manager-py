@@ -15,10 +15,13 @@
 # limitations under the License.
 #
 ###############################################################################
+import base64
 import datetime
 from io import StringIO
+import io
 import xml.etree.ElementTree as xml
 from dateutil.relativedelta import relativedelta
+from flask import send_file
 from signxml import DigestAlgorithm
 from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFormat)
 import xml_gen.trustedlists_api as test
@@ -27,7 +30,8 @@ from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFor
 from xml_gen.xml_config import ConfXML as confxml
 from signxml import XMLSigner, algorithms
 
-def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists, dictFromDB_trust_services, dictFromDB_trust_service_providers):
+def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists, dictFromDB_trust_services, 
+            dictFromDB_trust_service_providers, qualif):
     
     PostalAddresses=PostalAddress
     root=test.TrustStatusListType()
@@ -232,7 +236,7 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
 
     #for cycle
     qualifier=test.QualifierType()
-    qualifier.set_uri("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCStatement")
+    qualifier.set_uri(qualif)
     qualifiers.add_Qualifier(qualifier)
 
     #for cycle
@@ -316,9 +320,18 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
     
     
     tree = xml.ElementTree(signed_root) 
-      
-    with open ("xmlTest.xml", "wb") as files : 
-        tree.write(files)
+    
+    xml_data = io.BytesIO()
+    tree.write(xml_data, encoding='utf-8', xml_declaration=True)
+    xml_data.seek(0)
+
+    encoded_file = base64.b64encode(xml_data.read()).decode('utf-8')
+
+
+    return encoded_file
+
+    # with open ("xmlTest.xml", "wb") as files : 
+    #     tree.write(files)
 
 
 # if __name__ == "__main__":  

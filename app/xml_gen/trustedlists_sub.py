@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Generated Fri Nov 15 16:11:20 2024 by generateDS.py version 2.44.3.
+# Generated Tue Dec  3 15:28:21 2024 by generateDS.py version 2.44.3.
 # Python 3.11.4 (tags/v3.11.4:d2340ef, Jun  7 2023, 05:45:37) [MSC v.1934 64 bit (AMD64)]
 #
 # Command line options:
@@ -16,7 +16,7 @@
 #   generateDS.py -o "trustedlists_api.py" -s "trustedlists_sub.py" --super="trustedlists_api" ts_119612v020101_xsd_modified.xsd
 #
 # Current working directory (os.getcwd()):
-#   eudi-srv-web-trustedlist-manager-py
+#   trusted_lists
 #
 
 import os
@@ -329,15 +329,15 @@ supermod.PoliciesListType.subclass = PoliciesListTypeSub
 
 
 class ObjectIdentifierTypeSub(supermod.ObjectIdentifierType):
-    def __init__(self, Identifier=None, Description=None, DocumentationReferences=None, **kwargs_):
-        super(ObjectIdentifierTypeSub, self).__init__(Identifier, Description, DocumentationReferences,  **kwargs_)
+    def __init__(self, Identifier=None, **kwargs_):
+        super(ObjectIdentifierTypeSub, self).__init__(Identifier,  **kwargs_)
 supermod.ObjectIdentifierType.subclass = ObjectIdentifierTypeSub
 # end class ObjectIdentifierTypeSub
 
 
 class IdentifierTypeSub(supermod.IdentifierType):
-    def __init__(self, valueOf_=None, **kwargs_):
-        super(IdentifierTypeSub, self).__init__(valueOf_,  **kwargs_)
+    def __init__(self, anytypeobjs_=None, Qualifier=None, valueOf_=None, mixedclass_=None, content_=None, **kwargs_):
+        super(IdentifierTypeSub, self).__init__(anytypeobjs_, Qualifier, valueOf_, mixedclass_, content_,  **kwargs_)
 supermod.IdentifierType.subclass = IdentifierTypeSub
 # end class IdentifierTypeSub
 

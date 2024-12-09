@@ -244,11 +244,11 @@ def tsp_db_info(id, name, trade_name, StreetAddress, Locality, StateOrProvince, 
         return "Error processing the form.", 500
     
 
-def service_db_info(id, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, log_id):
+def service_db_info(id, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri, log_id):
     try:
         check = db.get_user_tsl(id, log_id)
         check = db.get_tsp_tsl(check, log_id)
-        check = db.insert_service_info(check, service_type, service_name_lang, service_name_en, digital_identity, status, status_start_date, uri, log_id) 
+        check = db.insert_service_info(check, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri, log_id) 
 
         return check
     
