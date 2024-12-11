@@ -54,6 +54,9 @@
 ## Run
 
   ### 1. Database
+  1. Change app/app_config/database.py to your DB settings
+
+  2. Populate "countries" Table with at least one country. Recommended: 
   
   ```shell     
 INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 'Fake Country');
