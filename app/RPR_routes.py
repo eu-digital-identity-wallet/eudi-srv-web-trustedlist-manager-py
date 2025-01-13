@@ -441,13 +441,17 @@ def getpidoid4vp():
         else:
             check = func.check_role_user(aux, session["session_id"])
             session[temp_user_id]["role"] = check
-
-            if(check == "tsl_op"):
-                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-            elif(check == "tsp_op"):
-                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+            if(cfgserv.two_operators == True):
+                print("teste3")
+                if(check == "tsl_op"):
+                    return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+                elif(check == "tsp_op"):
+                    return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+                else:
+                    return ("err")
             else:
-                return ("err")
+                return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+
     else:
         return ("país invalido")
 
@@ -473,13 +477,16 @@ def user_auth():
 
         check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
         session[temp_user_id]["role"] = check
-        print(check)
-        if(check == "tsl_op"):
-            return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-        elif(check == "tsp_op"):
-            return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        
+        if(cfgserv.two_operators):
+            if(check == "tsl_op"):
+                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+            elif(check == "tsp_op"):
+                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+            else:
+                return ("error")
         else:
-            return ("error")
+            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
         
 def certificate_List(temp_user_id):
 
@@ -611,7 +618,10 @@ def operator_menu_tsl():
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
 
-    return render_template("operator_menu_tsl.html", user=user['given_name'], temp_user_id=temp_user_id)
+    if(cfgserv.two_operators):
+        return render_template("operator_menu_tsl.html", user=user['given_name'], temp_user_id=temp_user_id)
+    else:
+        return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
 
 @rpr.route('/tsl/view')
 def view_tsl():
@@ -635,7 +645,6 @@ def create_tsl():
 
     form_items={
         "Version": "int",
-        "Sequence_number": "int",
         "TSL Type" : "string",
         "Scheme Name in your country language": "string", 
         "Scheme Name in English": "string", 
@@ -650,12 +659,10 @@ def create_tsl():
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
-        "Signature": "binary",
         "Additiona lInformation": "string"
     }
     descriptions = {
         "Version": "int",
-        "Sequence_number": "int",
         "TSL Type" : "string",
         "Scheme Name in your country language": "string", 
         "Scheme Name in English": "string", 
@@ -670,7 +677,6 @@ def create_tsl():
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
-        "Signature": "binary",
         "Additional Information": "string"
     }
 
@@ -686,7 +692,7 @@ def create_tsl_bd():
     user = session[temp_user_id]
 
     Version = request.form.get('Version')
-    Sequence_number = request.form.get('Sequence_number')
+    Sequence_number = 1
     TSLType = request.form.get('TSL Type')
     SchemeName_lang = request.form.get('Scheme Name in your country language')
     SchemeName_en = request.form.get('Scheme Name in English')
@@ -701,13 +707,12 @@ def create_tsl_bd():
     Issue_date = request.form.get('Issue_date')
     NextUpdate = request.form.get('Next Update')
     Status = request.form.get('Status')
-    Signature = request.form.get('Signature')
     AdditionalInformation = request.form.get('Additional Information')
 
     check = func.check_country(user['issuing_country'], session["session_id"])
     check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
                              SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
-                             DistributionPoints, Issue_date, NextUpdate, Status, Signature, AdditionalInformation, check, session["session_id"])
+                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, check, session["session_id"])
     
     
     if check is None:
@@ -717,7 +722,10 @@ def create_tsl_bd():
         if check is None:
             return (check)
         else:
-            return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+            if(cfgserv.two_operators):
+                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+            else:
+                return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
 
 @rpr.route('/tsl/update')
 def update_tsl():
@@ -788,7 +796,10 @@ def create_tsp_bd():
     if check is None:
         return "err"
     else:
-        return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        if(cfgserv.two_operators):
+            return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        else:
+            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
        
 # Service
 @rpr.route('/service/create')
@@ -845,7 +856,10 @@ def service_tsp_bd():
     if check is None:
         return (check)
     else:
-        return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        if(cfgserv.two_operators):
+            return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        else:
+            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
        
 
 

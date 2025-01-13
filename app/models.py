@@ -247,7 +247,7 @@ def check_country(user_country, log_id):
 
 def insert_tsl_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
                     SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
-                    DistributionPoints, Issue_date, NextUpdate, Status, Signature, AdditionalInformation, country, log_id):
+                    DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, country, log_id):
     try:
         connection = conn()
         if connection:
@@ -257,13 +257,13 @@ def insert_tsl_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeNa
                             INSERT INTO trusted_lists 
                             (Version, SequenceNumber, TSLType, SchemeName_lang, SchemeName_en, Uri_lang, Uri_en, SchemeTypeCommunityRules_lang, 
                             SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, pointers_to_other_tsl, 
-                            DistributionPoints, issue_date, next_update, status, signature, Additional_Information, country_id) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            DistributionPoints, issue_date, next_update, status, Additional_Information, country_id) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                             """
             
             cursor.execute(insert_query, (Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
                     SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
-                    DistributionPoints, Issue_date, NextUpdate, Status, Signature, AdditionalInformation, country,))
+                    DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, country,))
             
             connection.commit()
             
