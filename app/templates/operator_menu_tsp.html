@@ -99,10 +99,12 @@
 
                         </div>
                         <h2>Hello {{ user }}</h2>
+                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">New Info lang</a>
 
                         <h2>Trust Service Providers Management (TSP)</h2>
                         <a href="#list-tsp" class="menu-option">List TSPs</a>
                         <a href="{{ url_for('RPR.create_tsp') }}" class="menu-option">Add New TSP</a>
+                        <a href="{{ url_for('RPR.tsp_lang') }}" class="menu-option">New Info lang</a>
                         <a href="#edit-remove-tsp" class="menu-option">Edit/Remove TSP</a>
 
                         <h2>Trust Services Management</h2>

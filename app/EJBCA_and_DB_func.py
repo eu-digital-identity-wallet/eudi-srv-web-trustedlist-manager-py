@@ -149,10 +149,36 @@ def user_db(user, user_name, country_id, log_id):
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
     
-
-def user_db_info(role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
+def get_data_op(id, log_id):
     try:
-        check = db.insert_user_info(role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, id, log_id) 
+        check = db.get_data_op(id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+def update_db_info(combined, id, log_id):
+    try:
+        check = db.update_data_op(combined, id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+
+def user_db_info(role, op_json, id, log_id):
+    try:
+        check = db.insert_user_info(role, op_json, id, log_id) 
 
         return check
     
@@ -226,12 +252,40 @@ def check_role_user(id, log_id):
         return "Error processing the form.", 500
 
  
-def tsp_db_info(id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
-                             CountryName, EletronicAddress, TSPInformationURI, country,  log_id):
+def tsp_db_info(id, tsp_json,  log_id):
     try:
         check = db.get_user_tsl(id, log_id)
-        check = db.insert_tsp_info(check, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
-                             CountryName, EletronicAddress, TSPInformationURI, country, log_id) 
+        check = db.insert_tsp_info(check, tsp_json, log_id) 
+
+        return check
+    
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+def get_data_tsp(id,  log_id):
+    try:
+        tsl_id = db.get_user_tsl(id, log_id)
+        check = db.get_data_tsp(tsl_id, log_id) 
+
+        return check, tsl_id
+    
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+
+def tsp_db_lang(id, tsl_id, combined,  log_id):
+    try:
+        check = db.update_data_tsp(tsl_id, combined, log_id) 
 
         return check
     
@@ -244,11 +298,41 @@ def tsp_db_info(id, name, trade_name, StreetAddress, Locality, StateOrProvince, 
         return "Error processing the form.", 500
     
 
-def service_db_info(id, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri, log_id):
+def service_db_info(id, service_json, digital_identity, service_type, status, status_start_date, qualifier, log_id):
     try:
         check = db.get_user_tsl(id, log_id)
         check = db.get_tsp_tsl(check, log_id)
-        check = db.insert_service_info(check, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri, log_id) 
+        check = db.insert_service_info(check, service_json, digital_identity, service_type, status, status_start_date, qualifier, log_id) 
+
+        return check
+    
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+
+def get_data_service(id, log_id):
+    try:
+        check = db.get_user_tsl(id, log_id)
+        tsp_id = db.get_tsp_tsl(check, log_id)
+        check = db.get_data_service(tsp_id, log_id) 
+
+        return check, tsp_id
+    
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+
+def service_db_lang(id, tsp_id, combined, log_id):
+    try:
+        check = db.update_data_service(tsp_id, combined, log_id) 
 
         return check
     

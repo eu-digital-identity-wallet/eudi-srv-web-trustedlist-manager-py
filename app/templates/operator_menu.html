@@ -100,6 +100,7 @@
                         </div>
                         <h2>Hello {{ user }}</h2>
                         <a href="{{ url_for('RPR.xml') }}" class="menu-option">XML</a>
+                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">New Info lang</a>
     
                         <h2>Trusted Lists Management (TSL)</h2>
                         <a href="{{ url_for('RPR.view_tsl') }}" class="menu-option">View Current TSL</a>
@@ -122,11 +123,13 @@
                         <h2>Trust Service Providers Management (TSP)</h2>
                         <a href="#list-tsp" class="menu-option">List TSPs</a>
                         <a href="{{ url_for('RPR.create_tsp') }}" class="menu-option">Add New TSP</a>
+                        <a href="{{ url_for('RPR.tsp_lang') }}" class="menu-option">New Info lang</a>
                         <a href="#edit-remove-tsp" class="menu-option">Edit/Remove TSP</a>
 
                         <h2>Trust Services Management</h2>
                         <a href="#list-services" class="menu-option">List Trust Services</a>
                         <a href="{{ url_for('RPR.create_service') }}" class="menu-option">Add New Service</a>
+                        <a href="{{ url_for('RPR.service_lang') }}" class="menu-option">New Info lang</a>
                         <a href="#edit-remove-service" class="menu-option">Edit/Remove Service</a>
                         <a href="#service-status-history" class="menu-option">Service Status History</a>
 

@@ -30,7 +30,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 class ConfService:
     
-    two_operators = True
+    two_operators = False
 
     secret_key = "secret_key"
 

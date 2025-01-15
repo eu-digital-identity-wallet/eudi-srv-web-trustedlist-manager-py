@@ -172,7 +172,7 @@ def insert_user(pid_hash, user_name, country_id, log_id):
 
 
 
-def insert_user_info(role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
+def insert_user_info(role, op_json, id, log_id):
     try:
         connection = conn()
         if connection:
@@ -180,11 +180,10 @@ def insert_user_info(role, opName_en, address, locality, stateProvince, postalCo
 
             insert_query = """
                                 UPDATE scheme_operators 
-                                SET operator_role = %s, operator_name_en = %s, StreetAddress = %s, Locality = %s, 
-                                StateOrProvince = %s, PostalCode = %s, ElectronicAddress = %s
+                                SET operator_role = %s, data = %s
                                 WHERE operator_id = %s
                             """
-            cursor.execute(insert_query, (role, opName_en, address, locality, stateProvince, postalCode, electronicAddress, id,))
+            cursor.execute(insert_query, (role, op_json, id,))
             
             connection.commit()
             
@@ -391,22 +390,19 @@ def get_user_tsl(id, log_id):
             connection.close()
 
 
-def insert_tsp_info(tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
-                             CountryName, EletronicAddress, TSPInformationURI, country, log_id):
+def insert_tsp_info(tsl_id, tsp_json, log_id):
     try:
         connection = conn()
         if connection:
             cursor = connection.cursor()
-
+            
             insert_query = """
                             INSERT INTO trust_service_providers 
-                            (tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, CountryName, EletronicAddress,
-                            TSPInformationURI, country) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            (tsl_id, data) 
+                            VALUES (%s, %s)
                             """
             
-            cursor.execute(insert_query, (tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
-                             CountryName, EletronicAddress, TSPInformationURI, country,))
+            cursor.execute(insert_query, (tsl_id, tsp_json,))
             
             connection.commit()
             
@@ -465,7 +461,47 @@ def get_tsp_tsl(id, log_id):
             connection.close()
 
 
-def insert_service_info(tsp_id, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri, log_id):
+def get_data_tsp(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT data
+                FROM trust_service_providers
+                WHERE tsl_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                user_id = result[0]
+                
+                #extra = {'code': log_id} 
+                #logger.info(f"TSP found: {cursor.lastrowid}.", extra=extra)
+                return user_id
+            else:
+                #extra = {'code': log_id} 
+                #logger.info(f"No TSP found with the TSL.", extra=extra)
+                print(f"No TSP found with the TSL.")
+                return None
+
+    except pymysql.MySQLError as e:
+        
+        #extra = {'code': log_id} 
+        #logger.error(f"Error fetching TSP: {e}", extra=extra)
+        print(f"Error fetching TSP: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+
+def insert_service_info(tsp_id, service_json, digital_identity, service_type, status, status_start_date, qualifier, log_id):
     try:
         connection = conn()
         if connection:
@@ -473,11 +509,11 @@ def insert_service_info(tsp_id, service_type, service_name_lang, service_name_en
 
             insert_query = """
                             INSERT INTO trust_services 
-                            (tsp_id, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            (tsp_id, data, digital_identity, service_type, status, status_start_date, qualifier) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
                             """
             
-            cursor.execute(insert_query, (tsp_id, service_type, service_name_lang, service_name_en, qualifier, digital_identity, status, status_start_date, uri,))
+            cursor.execute(insert_query, (tsp_id, service_json, digital_identity, service_type, status, status_start_date, qualifier,))
             
             connection.commit()
             
@@ -628,3 +664,162 @@ def get_service(id, log_id):
         if connection:
             cursor.close()
             connection.close()
+
+
+def get_data_service(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT data
+                FROM trust_services
+                WHERE tsp_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                service_info = dict(zip(column_names, result))
+                
+                return service_info
+            else:
+                print(f"No Service found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching Service info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def get_data_op(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT data
+                FROM scheme_operators
+                WHERE operator_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                user_info = dict(zip(column_names, result))
+                
+                return user_info
+            else:
+                print(f"No USER found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching USER info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def update_data_op(combined, id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            insert_query = """
+                                UPDATE scheme_operators 
+                                SET data = %s
+                                WHERE operator_id = %s
+                            """
+            cursor.execute(insert_query, (combined, id,))
+            
+            connection.commit()
+            
+            # extra = {'code': log_id} 
+            # logger.info(f"User successfully added. New user ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"User successfully updated. User updated ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        # extra = {'code': log_id} 
+        # logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def update_data_tsp(tsl_id, combined, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            insert_query = """
+                                UPDATE trust_service_providers 
+                                SET data = %s
+                                WHERE tsl_id = %s
+                            """
+            cursor.execute(insert_query, (combined, tsl_id,))
+            
+            connection.commit()
+            
+            # extra = {'code': log_id} 
+            # logger.info(f"User successfully added. New user ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"User successfully updated. User updated ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        # extra = {'code': log_id} 
+        # logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def update_data_service(tsp_id, combined, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            insert_query = """
+                                UPDATE trust_services 
+                                SET data = %s
+                                WHERE tsp_id = %s
+                            """
+            cursor.execute(insert_query, (combined, tsp_id,))
+            
+            connection.commit()
+            
+            # extra = {'code': log_id} 
+            # logger.info(f"User successfully added. New user ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"User successfully updated. User updated ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        # extra = {'code': log_id} 
+        # logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
