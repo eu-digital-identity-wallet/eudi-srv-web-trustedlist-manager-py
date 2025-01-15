@@ -149,9 +149,9 @@ def insert_user(pid_hash, user_name, country_id, log_id):
         if connection:
             cursor = connection.cursor()
 
-            insert_query = "INSERT INTO scheme_operators (operator_name_lang, pid_hash, country_id) VALUES (%s, %s, %s)"
+            insert_query = "INSERT INTO scheme_operators (pid_hash, country_id) VALUES (%s, %s)"
             
-            cursor.execute(insert_query, (user_name, pid_hash, country_id,))
+            cursor.execute(insert_query, (pid_hash, country_id,))
             
             connection.commit()
             
