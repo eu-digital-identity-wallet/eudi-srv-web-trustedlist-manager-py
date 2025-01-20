@@ -444,7 +444,6 @@ def getpidoid4vp():
             check = func.check_role_user(aux, session["session_id"])
             session[temp_user_id]["role"] = check
             if(cfgserv.two_operators == True):
-                print("teste3")
                 if(check == "tsl_op"):
                     return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
                 elif(check == "tsp_op"):
@@ -651,12 +650,6 @@ def xml():
         operator_info.append(dictFromDB_scheme_operator)
 
 
-    for item in PostalAddress_info:
-        print(json.dumps(item, indent=4))
-        
-    for item in operator_info:
-        print(json.dumps(item, indent=4))
-
     tsl_info = func.tsl_info(user_info["tsl_id"], session["session_id"])
     
     dictFromDB_trusted_lists={
@@ -702,9 +695,6 @@ def xml():
         }
         tsp_info.append(dictFromDB_trust_service_providers)
 
-    for item in tsp_info:
-        print(json.dumps(item, indent=4))
-
     service_data = func.get_service_info(tsp_data["tsp_id"], session["session_id"])
 
     qualifiers = cfgserv.qualifiers.get(service_data["qualifier"])
@@ -722,19 +712,9 @@ def xml():
             "digital_identity" :    service_data["digital_identity"],
             "status" :  service_data["status"],
             "status_start_date":    service_data["status_start_date"],
-            "SchemeServiceDefinitionURI":   entry["SchemeServiceDefinitionURI"],
-            #"general":"JSON",
-            # "qualifier" varchar(255) DEFAULT NULL,
-            # "qualificationElement" varchar(255) DEFAULT NULL,
-            # "criteriaList" varchar(255) DEFAULT NULL,
-            # "takenOverBy" varchar(255) DEFAULT NULL,
+            "SchemeServiceDefinitionURI":   entry["SchemeServiceDefinitionURI"]
         }
         service_info.append(dictFromDB_trust_services)
-
-    for item in service_info:
-        print(item)
-
-    print(qualifiers)
 
     file = xml_gen(PostalAddress_info, operator_info, dictFromDB_trusted_lists, tsp_info, service_info, qualifiers)
     
