@@ -417,24 +417,24 @@ def getpidoid4vp():
             attributesForm={}
 
             form_items={
+                "Lang": "lang",
                 "Role" : "select",
                 "Operator Name": "string",
                 "Operator Address": "string",
                 "Locality": "string",
                 "State or Province": "string",
                 "Postal Code": "string",
-                "Electronic Address": "string",
-                "Lang": "string"
+                "Electronic Address": "string"
             }
             descriptions = {
+                "Lang": "string",
                 "Role" : "select",
                 "Operator Name": "string",
                 "Operator Address": "string",
                 "Locality": "string",
                 "State or Province": "string",
                 "Postal Code": "string",
-                "Electronic Address": "string",
-                "Lang": "string"
+                "Electronic Address": "string"
             }
 
             attributesForm.update(form_items)
@@ -532,22 +532,22 @@ def op_lang():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Operator Name": "string",
         "Operator Address": "string",
         "Locality": "string",
         "State or Province": "string",
         "Postal Code": "string",
-        "Electronic Address": "string",
-        "Lang": "string"
+        "Electronic Address": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Operator Name": "string",
         "Operator Address": "string",
         "Locality": "string",
         "State or Province": "string",
         "Postal Code": "string",
-        "Electronic Address": "string",
-        "Lang": "string"
+        "Electronic Address": "string"
     }
 
     attributesForm.update(form_items)
@@ -767,16 +767,12 @@ def create_tsl():
     form_items={
         "Version": "int",
         "TSL Type" : "string",
-        "Scheme Name in your country language": "string", 
-        "Scheme Name in English": "string", 
-        "Uri in your country language": "string",
-        "Uri in English": "string",
-        "Scheme Type Community Rules in your country language": "string",
-        "Scheme Type Community Rules in English": "string",
-        "Policy Or Legal Notice in your country language": "string",
-        "Policy Or Legal Notice in English": "string",
-        "Pointers to other TSL, if you have more than one, place the several pointers separated by commas (,)": "string",
-        "Distribution Points, if you have more than one, place the several Distribution Points separated by commas (,)": "string",
+        "Scheme Name": "string", 
+        "Uri": "string",
+        "Scheme Type Community Rules": "string",
+        "Policy Or Legal Notice": "string",
+        "Pointers to other TSL": "string",
+        "Distribution Points": "string",
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
@@ -785,25 +781,21 @@ def create_tsl():
     descriptions = {
         "Version": "int",
         "TSL Type" : "string",
-        "Scheme Name in your country language": "string", 
-        "Scheme Name in English": "string", 
-        "Uri in your country language": "string",
-        "Uri in English": "string",
-        "Scheme Type Community Rules in your country language": "string",
-        "Scheme Type Community Rules in English": "string",
-        "Policy Or Legal Notice in your country language": "string",
-        "Policy Or Legal Notice in English": "string",
+        "Scheme Name": "string", 
+        "Uri": "string",
+        "Scheme Type Community Rules": "string",
+        "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
         "Distribution Points": "string",
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
-        "Additional Information": "string"
+        "Additiona lInformation": "string"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
+    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
 
 
 @rpr.route('/tsl/create/db', methods=["GET", "POST"])
@@ -815,14 +807,10 @@ def create_tsl_db():
     Version = request.form.get('Version')
     Sequence_number = 1
     TSLType = request.form.get('TSL Type')
-    SchemeName_lang = request.form.get('Scheme Name in your country language')
-    SchemeName_en = request.form.get('Scheme Name in English')
-    Uri_lang = request.form.get('Uri in your country language')
-    Uri_en = request.form.get('Uri in English')
-    SchemeTypeCommunityRules_lang = request.form.get('Scheme Type Community Rules in your country language')
-    SchemeTypeCommunityRules_en = request.form.get('Scheme Type Community Rules in English')
-    PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice in your country language')
-    PolicyOrLegalNotice_en = request.form.get('Policy Or Legal Notice in English')
+    SchemeName_lang = request.form.get('Scheme Name')
+    Uri_lang = request.form.get('Uri')
+    SchemeTypeCommunityRules_lang = request.form.get('Scheme Type Community Rules')
+    PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice')
     PointerstootherTSL = request.form.get('Pointers to other TSL')
     DistributionPoints = request.form.get('Distribution Points')
     Issue_date = request.form.get('Issue_date')
@@ -831,8 +819,8 @@ def create_tsl_db():
     AdditionalInformation = request.form.get('Additional Information')
 
     check = func.check_country(user['issuing_country'], session["session_id"])
-    check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
-                             SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
+    check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+                             PolicyOrLegalNotice_lang, PointerstootherTSL, 
                              DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, check, session["session_id"])
     
     
@@ -865,6 +853,7 @@ def create_tsp():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Name": "string",
         "Trade Name": "string",
         "StreetAddress" : "string",
@@ -874,10 +863,10 @@ def create_tsp():
         "Country Name": "string",
         "Eletronic Address": "string",
         "TSP Information URI": "string",
-        "country": "string",
-        "Lang": "string"
+        "country": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Name": "string",
         "Trade Name": "string",
         "StreetAddress" : "string",
@@ -887,13 +876,12 @@ def create_tsp():
         "Country Name": "string",
         "Eletronic Address": "string",
         "TSP Information URI": "string",
-        "country": "string",
-        "Lang": "string"
+        "country": "string"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/create/db")
+    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/create/db")
 
 
 @rpr.route('/tsp/create/db', methods=["GET", "POST"])
@@ -948,6 +936,7 @@ def tsp_lang():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Name": "string",
         "Trade Name": "string",
         "StreetAddress" : "string",
@@ -957,10 +946,10 @@ def tsp_lang():
         "Country Name": "string",
         "Eletronic Address": "string",
         "TSP Information URI": "string",
-        "country": "string",
-        "Lang": "string"
+        "country": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Name": "string",
         "Trade Name": "string",
         "StreetAddress" : "string",
@@ -970,13 +959,12 @@ def tsp_lang():
         "Country Name": "string",
         "Eletronic Address": "string",
         "TSP Information URI": "string",
-        "country": "string",
-        "Lang": "string"
+        "country": "string"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/tsp_db_data_lang")
+    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/tsp_db_data_lang")
 
 
 @rpr.route('/tsp/tsp_db_data_lang', methods=["GET", "POST"])
@@ -1035,30 +1023,31 @@ def create_service():
     attributesForm={}
 
     form_items={
-        "Service Type": "string",
-        "Service Name": "string",
+        "Lang": "lang",
+        "Service Type": "select_type",
+        "Service Name": "select_name",
         "Qualifier": "select",
         "Digital Identity" : "string",
         "Status": "string",
         "Status Start Date": "full-date",
-        "Uri": "string",
-        "Lang": "string"
+        "Uri": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Service Type": "Type of service provided",
         "Service Name": "Provide the service name",
         "Qualifier": "Select applicable qualifiers",
         "Digital Identity": "Specify the digital identity",
         "Status": "Service status",
         "Status Start Date": "Start date of the current status",
-        "Uri": "Service URI",
-        "Lang": "string"
+        "Uri": "Service URI"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
-                           data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/create/db")
+    return render_template("form_service.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+                           data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/create/db", qualified = cfgserv.qualified,
+                           non_qualified = cfgserv.non_qualified, national = cfgserv.national, serv_cat = cfgserv.service_category)
 
 
 @rpr.route('/service/create/db', methods=["GET", "POST"])
@@ -1066,9 +1055,9 @@ def service_tsp_db():
     
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
-
-    service_type = request.form.get('Service Type')
-    service_name = request.form.get('Service Name')
+    
+    service_type = request.form.get('category')
+    service_name = request.form.get('option')
     qualifier = request.form.get('Qualifier')
     digital_identity = request.form.get('Digital Identity')
     status = request.form.get('Status')
@@ -1103,19 +1092,19 @@ def service_lang():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Service Name": "string",
-        "Uri": "string",
-        "Lang": "string"
+        "Uri": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Service Name": "Provide the service name",
-        "Uri": "Service URI",
-        "Lang": "string"
+        "Uri": "Service URI"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
                            data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/service_lang_db")
 
 

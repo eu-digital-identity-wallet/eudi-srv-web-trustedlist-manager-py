@@ -41,6 +41,8 @@
     <!--
     <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/locval/locval_en_9.7.1.20.1679559965505.js" integrity="sha256-fGdBvjTPjOPZBmgDo8xMKgZUwmXXCzYZ+BbHErfhc/Q= sha384-Y9eAdYjT/TZ0VPUxw3Ex/TVSZZzPsV1mRoKD0BTkrQn0L615z24j26O2CZdT1Xl+ sha512-T9HoOOy1OkJ0l1GWqvT2RAR9frKd4zImDm1uyHxjmB/nxNBhmdjEhR9MckiWiNv2/UrFrMZJwSMB4Po/ExbFOw==" charset="UTF-8"></script>
 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <title>Form for your TSL Registration</title>
 </head>
@@ -88,13 +90,36 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" name="{{ name }}" required>
+                                                    <select class="js-example-basic-single" name="{{ name }}" style="width: 100%; box-sizing: border-box;" required>
                                                         {% for code, description in data.items() %}
                                                             <option value="{{ code }}">{{ code }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
-                                            </div>      
+                                            </div> 
+                                        {% elif value == 'select_type' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <select class="js-example-basic-single" id="category" name="category" onchange="updateOptions()" style="width: 100%; box-sizing: border-box;">
+                                                        <option value="">--Select--</option>
+                                                        {% for name, value in serv_cat.items() %}
+                                                            <option value="{{ value }}">{{ name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        {% elif value == 'select_name' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <select class="js-example-basic-single"id="options" name="option" style="width: 100%; box-sizing: border-box;">
+                                                        <option value="">--Choose an option--</option>
+                                                    </select>
+                                                </div>
+                                            </div>  
                                         {% elif value == 'lang' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">
@@ -107,7 +132,7 @@
                                                         {% endfor %}
                                                     </select>
                                                 </div>
-                                            </div>                      
+                                            </div>                                
                                         {% elif value == 'int' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">
@@ -199,6 +224,30 @@
     <!-- Version 9.7.1.20 - 23/03/2023 - 09:26 -->
 </body>
 <script>
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+    });
+    const data = {
+        qualified: {{ qualified | tojson | safe }},
+        non_qualified: {{ non_qualified | tojson | safe }},
+        national: {{ national | tojson | safe }}
+    };
+    function updateOptions() {  
+        const category = document.getElementById("category").value;
+        const secondSelect = document.getElementById("options");
+
+        secondSelect.innerHTML = "";
+
+        if (data[category]) {
+            data[category].forEach(item => {
+                const option = document.createElement("option");
+                option.value = item;
+                option.textContent = item;
+                secondSelect.appendChild(option);
+            });
+        }
+    }
+
     var room = 1;
 
     function AddCategories() {
