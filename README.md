@@ -66,6 +66,17 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
   Initial Page of the Trusted Lists Registration Service (<http://127.0.0.1:5000/> or <http://localhost:5000/>) :
   + AUTH: <http://localhost:5000/authentication>
 
+  There are two ways to use it:
+
+    + With 1 user -> 1 user has access to both menus.
+    + With 2 users (TSL user and TSP user) -> each user only has access to their corresponding menu.
+
+    To switch between these two modes, simply go to the file "config.py" inside "app_config", and look for the "two_operators" option.
+      + "False" -> 1 user
+      + "True"  -> 2 users
+
+      + Note: By default, the option is set to "False".
+
   ### 3. Menu - Scheme Operator Trusted List user
 
   1. Once the user has logged in with the EUDI Wallet, they are presented with a menu. It contains the following options:
@@ -73,7 +84,8 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
      + View Current TSL: View Trusted Lists associated to user;
      + Create TSL: Create Trusted List;
      + Update Existing TSL: Update Trusted Lists data that are associated to user;
-     + Digitally sign the TSL: Inserts Xades Signature into Trusted List.
+     + Digitally sign the TSL: Inserts Xades Signature into Trusted List;
+     + New Info lang: To add new information to the data in different languages:
      
   2. Other options are currentelly under development:
      + Update History: View past updates of Trusted List;
