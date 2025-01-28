@@ -552,7 +552,7 @@ def op_lang():
 
     attributesForm.update(form_items)
     
-    return render_template("dynamic-form.html", role = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "op_data_lang_db")
+    return render_template("form.html", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "op_data_lang_db")
 
 
 @rpr.route('/op_data_lang_db', methods=["GET", "POST"])
@@ -672,6 +672,8 @@ def xml():
         "status":   tsl_info["status"]
     }
 
+    print(dictFromDB_trusted_lists)
+
     tsp_data = func.get_tsp_info(user_info["tsl_id"], session["session_id"])
 
     json_objects = tsp_data['data'].replace('}{', '}\n{').splitlines()
@@ -761,6 +763,7 @@ def view_tsl():
 def create_tsl():
     
     temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
     
     attributesForm={}
 
@@ -769,20 +772,22 @@ def create_tsl():
         "TSL Type" : "string",
         "Scheme Name": "string", 
         "Uri": "string",
-        "Scheme Type Community Rules": "string",
+        "Scheme Territory": "string",
+        "Scheme Type Community Rules": "rules",
         "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
         "Distribution Points": "string",
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
-        "Additiona lInformation": "string"
+        "Additional Information": "string"
     }
     descriptions = {
         "Version": "int",
         "TSL Type" : "string",
         "Scheme Name": "string", 
         "Uri": "string",
+        "Scheme Territory": "string",
         "Scheme Type Community Rules": "string",
         "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
@@ -790,12 +795,17 @@ def create_tsl():
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
-        "Additiona lInformation": "string"
+        "Additional Information": "string"
     }
 
     attributesForm.update(form_items)
-    
-    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
+    rules = cfgserv.SchemeTypeCommunityRules
+
+    # for items in rules:
+    #     if 'Scheme Territory' in items:
+    #         rules[items] = rules[items] + user['issuing_country']
+            
+    return render_template("form.html", rules = rules, lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
 
 
 @rpr.route('/tsl/create/db', methods=["GET", "POST"])
@@ -809,7 +819,11 @@ def create_tsl_db():
     TSLType = request.form.get('TSL Type')
     SchemeName_lang = request.form.get('Scheme Name')
     Uri_lang = request.form.get('Uri')
-    SchemeTypeCommunityRules_lang = request.form.get('Scheme Type Community Rules')
+    print(request.form)
+    options = request.form.getlist('rules')
+    SchemeTypeCommunityRules_lang = ", ".join(options)
+
+    schemeTerritory = request.form.get('Scheme Territory')
     PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice')
     PointerstootherTSL = request.form.get('Pointers to other TSL')
     DistributionPoints = request.form.get('Distribution Points')
@@ -817,15 +831,16 @@ def create_tsl_db():
     NextUpdate = request.form.get('Next Update')
     Status = request.form.get('Status')
     AdditionalInformation = request.form.get('Additional Information')
+   
 
     check = func.check_country(user['issuing_country'], session["session_id"])
     check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
                              PolicyOrLegalNotice_lang, PointerstootherTSL, 
-                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, check, session["session_id"])
+                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, check, session["session_id"])
     
     
     if check is None:
-        return (check)
+        return ("err")
     else:
         check = func.update_user_tsl(user['id'], check, session["session_id"])
         if check is None:
@@ -835,6 +850,8 @@ def create_tsl_db():
                 return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
             else:
                 return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+            
+            
 
 @rpr.route('/tsl/update')
 def update_tsl():

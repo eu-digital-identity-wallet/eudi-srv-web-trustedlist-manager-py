@@ -60,6 +60,12 @@ class ConfService:
       "Portugues": "pt", 
       "English": "en"
     }
+
+    SchemeTypeCommunityRules ={
+      "Eu Common": "https://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUcommon/", 
+      "Scheme Territory": "http://uri.etsi.org/TrstSvc/TrustedList/schemerules/"
+    }
+
     #Service Identifiers
     service_category = {
       "Qualified": "qualified", 
