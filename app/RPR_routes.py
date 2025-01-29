@@ -62,6 +62,8 @@ from xml_gen.xmlGen import xml_gen
 import datetime
 from dateutil.relativedelta import relativedelta
 
+import ast
+
 rpr = Blueprint("RPR", __name__, url_prefix="/")
 
 rpr.template_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'template/')
@@ -471,19 +473,14 @@ def user_auth():
     electronicAddress = request.form.get('Electronic Address')
     lang = request.form.get('Lang')
 
-    op={
-        "lang": lang,
-        "operator_name":    opName,
-        "StreetAddress"	:   address,
-        "Locality"	:   locality,
-        "StateOrProvince"	: stateProvince,
-        "PostalCode"	: postalCode,
-        "CountryName"	: user["issuing_country"],
-        "EletronicAddress": electronicAddress,
-        "country": user['issuing_country']
-    }
-    op_json = json.dumps(op)
-    check = func.user_db_info(role, op_json, user['id'], session["session_id"])
+    operator_name = '[{"lang":"' + lang + '", "operator_name":"'+ opName + '"}]'
+    address = '[{"lang":"' + lang + '", "address":"'+ address + '"}]'
+    locality = '[{"lang":"' + lang + '", "locality":"'+ locality + '"}]'
+    stateProvince = '[{"lang":"' + lang + '", "stateProvince":"'+ stateProvince + '"}]'
+    postalCode = '[{"lang":"' + lang + '", "postalCode":"'+ postalCode + '"}]'
+    electronicAddress = '[{"lang":"' + lang + '", "electronicAddress":"'+ electronicAddress + '"}]'
+
+    check = func.user_db_info(role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, user['id'], session["session_id"])
 
     if check is None:
         return ("erro")
@@ -569,25 +566,41 @@ def op_lang_db():
     electronicAddress = request.form.get('Electronic Address')
     lang = request.form.get('Lang')
 
-    op={
-        "lang":lang,
-        "operator_name": opName,
-        "StreetAddress": address,
-        "Locality": locality,
-        "StateOrProvince": stateProvince,
-        "PostalCode": postalCode,
-        "CountryName": user["issuing_country"],
-        "EletronicAddress": electronicAddress,
-        "country": user['issuing_country']
-    }
+    operator_name = {"lang": lang, "operator_name": opName}
+    address = {"lang": lang, "address": address}
+    locality = {"lang": lang, "locality": locality}
+    stateProvince = {"lang": lang, "stateProvince": stateProvince}
+    postalCode = {"lang": lang, "postalCode": postalCode}
+    electronicAddress = {"lang": lang, "electronicAddress": electronicAddress}
 
     db_data = func.get_data_op(user['id'], session["session_id"])
     
-    op_json = json.dumps(op)
+    current_data_operator_name = json.loads(db_data['operator_name'])
+    current_data_operator_name.append(operator_name)
+    current_data_operator_name = json.dumps(current_data_operator_name)
     
-    combined = db_data['data']+ op_json
+    current_data_address = json.loads(db_data['StreetAddress'])
+    current_data_address.append(address)
+    current_data_address = json.dumps(current_data_address)
     
-    check = func.update_db_info(combined, user['id'], session["session_id"])
+    current_data_locality = json.loads(db_data['Locality'])
+    current_data_locality.append(locality)
+    current_data_locality = json.dumps(current_data_locality)
+    
+    current_data_stateProvince = json.loads(db_data['StateOrProvince'])
+    current_data_stateProvince.append(stateProvince)
+    current_data_stateProvince = json.dumps(current_data_stateProvince)
+    
+    current_data_postalCode = json.loads(db_data['PostalCode'])
+    current_data_postalCode.append(postalCode)
+    current_data_postalCode = json.dumps(current_data_postalCode)
+    
+    current_data_electronicAddress = json.loads(db_data['EletronicAddress'])
+    current_data_electronicAddress.append(electronicAddress)
+    current_data_electronicAddress = json.dumps(current_data_electronicAddress)
+    
+    check = func.update_db_info(current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
+                                current_data_postalCode, current_data_electronicAddress, user['id'], session["session_id"])
 
     if check is None:
         return ("erro")
@@ -819,7 +832,7 @@ def create_tsl_db():
     TSLType = request.form.get('TSL Type')
     SchemeName_lang = request.form.get('Scheme Name')
     Uri_lang = request.form.get('Uri')
-    print(request.form)
+    
     options = request.form.getlist('rules')
     SchemeTypeCommunityRules_lang = ", ".join(options)
 
@@ -919,23 +932,19 @@ def create_tsp_db():
     country= request.form.get('country')
     lang = request.form.get('Lang')
 
-    tsp = {
-        "lang" :    lang,
-        "name" :    name,
-        "trade_name" :  trade_name,
-        "StreetAddress"	:   StreetAddress,
-        "Locality"	:   Locality,
-        "StateOrProvince"	:   StateOrProvince,
-        "PostalCode"	:   PostalCode,
-        "CountryName"	:   CountryName,
-        "EletronicAddress": EletronicAddress,
-        "TSPInformationURI":    TSPInformationURI,
-        "country":  country
-    }
-    
-    tsp_json = json.dumps(tsp)
+    name = '[{"lang":"' + lang + '", "name":"'+ name + '"}]'
+    trade_name = '[{"lang":"' + lang + '", "trade_name":"'+ trade_name + '"}]'
+    StreetAddress = '[{"lang":"' + lang + '", "StreetAddress":"'+ StreetAddress + '"}]'
+    Locality = '[{"lang":"' + lang + '", "Locality":"'+ Locality + '"}]'
+    StateOrProvince = '[{"lang":"' + lang + '", "StateOrProvince":"'+ StateOrProvince + '"}]'
+    PostalCode = '[{"lang":"' + lang + '", "PostalCode":"'+ PostalCode + '"}]'
+    CountryName = '[{"lang":"' + lang + '", "CountryName":"'+ CountryName + '"}]'
+    EletronicAddress = '[{"lang":"' + lang + '", "EletronicAddress":"'+ EletronicAddress + '"}]'
+    TSPInformationURI = '[{"lang":"' + lang + '", "TSPInformationURI":"'+ TSPInformationURI + '"}]'
+    country = '[{"lang":"' + lang + '", "country":"'+ country + '"}]'
 
-    check = func.tsp_db_info(session[temp_user_id]["id"], tsp_json, session["session_id"])
+    check = func.tsp_db_info(session[temp_user_id]["id"], name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country, session["session_id"])
 
     if check is None:
         return "err"
@@ -1001,26 +1010,62 @@ def tsp_db_lang():
     country= request.form.get('country')
     lang = request.form.get('Lang')
 
-    tsp = {
-        "lang" :    lang,
-        "name" :    name,
-        "trade_name" :  trade_name,
-        "StreetAddress"	:   StreetAddress,
-        "Locality"	:   Locality,
-        "StateOrProvince"	:   StateOrProvince,
-        "PostalCode"	:   PostalCode,
-        "CountryName"	:   CountryName,
-        "EletronicAddress": EletronicAddress,
-        "TSPInformationURI":    TSPInformationURI,
-        "country":  country
-    }
-    
+    name = {"lang": lang, "name": name}
+    trade_name = {"lang":lang, "trade_name":trade_name}
+    StreetAddress = {"lang":lang, "StreetAddress":StreetAddress}
+    Locality = {"lang":lang, "Locality": Locality}
+    StateOrProvince = {"lang":lang,"StateOrProvince":StateOrProvince}
+    PostalCode = {"lang":lang, "PostalCode":PostalCode}
+    CountryName = {"lang":lang, "CountryName":CountryName}
+    EletronicAddress = {"lang":lang, "EletronicAddress":EletronicAddress}
+    TSPInformationURI = {"lang":lang, "TSPInformationURI":TSPInformationURI}
+    country = {"lang":lang, "country":country}
+
     db_data, tsl_id = func.get_data_tsp(user['id'], session["session_id"])
+
+    current_data_name = json.loads(db_data['name'])
+    current_data_name.append(name)
+    current_data_name = json.dumps(current_data_name)
+
+    current_data_trade_name = json.loads(db_data['trade_name'])
+    current_data_trade_name.append(trade_name)
+    current_data_trade_name = json.dumps(current_data_trade_name)
+
+    current_data_StreetAddress = json.loads(db_data['StreetAddress'])
+    current_data_StreetAddress.append(StreetAddress)
+    current_data_StreetAddress = json.dumps(current_data_StreetAddress)
+
+    current_data_Locality = json.loads(db_data['Locality'])
+    current_data_Locality.append(Locality)
+    current_data_Locality = json.dumps(current_data_Locality)
+
+    current_data_StateOrProvince = json.loads(db_data['StateOrProvince'])
+    current_data_StateOrProvince.append(StateOrProvince)
+    current_data_StateOrProvince = json.dumps(current_data_StateOrProvince)
+
+    current_data_PostalCode = json.loads(db_data['PostalCode'])
+    current_data_PostalCode.append(PostalCode)
+    current_data_PostalCode = json.dumps(current_data_PostalCode)
+
+    current_data_CountryName = json.loads(db_data['CountryName'])
+    current_data_CountryName.append(CountryName)
+    current_data_CountryName = json.dumps(current_data_CountryName)
+
+    current_data_EletronicAddress = json.loads(db_data['EletronicAddress'])
+    current_data_EletronicAddress.append(EletronicAddress)
+    current_data_EletronicAddress = json.dumps(current_data_EletronicAddress)
+
+    current_data_TSPInformationURI = json.loads(db_data['TSPInformationURI'])
+    current_data_TSPInformationURI.append(TSPInformationURI)
+    current_data_TSPInformationURI = json.dumps(current_data_TSPInformationURI)
+
+    current_data_country = json.loads(db_data['country'])
+    current_data_country.append(country)
+    current_data_country = json.dumps(current_data_country)
     
-    tsp_json = json.dumps(tsp)
-    combined = db_data+ tsp_json
-    
-    check = func.tsp_db_lang(session[temp_user_id]["id"], tsl_id, combined, session["session_id"])
+    check = func.tsp_db_lang(session[temp_user_id]["id"], tsl_id, current_data_name, current_data_trade_name, current_data_StreetAddress,
+                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country, session["session_id"])
 
     if check is None:
         return "err"
@@ -1029,8 +1074,7 @@ def tsp_db_lang():
             return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
         else:
             return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
-        
-       
+
 # Service
 @rpr.route('/service/create')
 def create_service():
@@ -1082,15 +1126,10 @@ def service_tsp_db():
     uri = request.form.get('Uri')
     lang = request.form.get('Lang')
 
-    service = {
-        "lang":    lang, 
-        "ServiceName" :    service_name,
-        "SchemeServiceDefinitionURI" :  uri
-    }
+    ServiceName = '[{"lang":"' + lang + '", "name":"'+ service_name + '"}]'
+    SchemeServiceDefinitionURI = '[{"lang":"' + lang + '", "name":"'+ uri + '"}]'
 
-    service_json = json.dumps(service)
-
-    check = func.service_db_info(session[temp_user_id]["id"], service_json, digital_identity, service_type, status, status_start_date, qualifier, session["session_id"])
+    check = func.service_db_info(session[temp_user_id]["id"], ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, session["session_id"])
 
     if check is None:
         return (check)
@@ -1135,19 +1174,21 @@ def service_db():
     uri = request.form.get('Uri')
     lang = request.form.get('Lang')
 
-    service = {
-        "lang":    lang, 
-        "ServiceName" :    service_name,
-        "SchemeServiceDefinitionURI" :  uri
-    }
+    ServiceName = {"lang": lang, "name": service_name}
+    SchemeServiceDefinitionURI = {"lang": lang, "name": uri}
 
     db_data, tsp_id = func.get_data_service(user['id'], session["session_id"])
     
-    service_json = json.dumps(service)
+    current_data_ServiceName = json.loads(db_data['ServiceName'])
+    current_data_ServiceName.append(ServiceName)
+    current_data_ServiceName = json.dumps(current_data_ServiceName)
+    
+    current_data_SchemeServiceDefinitionURI = json.loads(db_data['SchemeServiceDefinitionURI'])
+    current_data_SchemeServiceDefinitionURI.append(SchemeServiceDefinitionURI)
+    current_data_SchemeServiceDefinitionURI = json.dumps(current_data_SchemeServiceDefinitionURI)
 
-    combined = db_data['data'] + service_json
-
-    check = func.service_db_lang(session[temp_user_id]["id"], tsp_id, combined, session["session_id"])
+    check = func.service_db_lang(session[temp_user_id]["id"], tsp_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, 
+                                 session["session_id"])
 
     if check is None:
         return ("err")

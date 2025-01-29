@@ -172,7 +172,7 @@ def insert_user(pid_hash, user_name, country_id, log_id):
 
 
 
-def insert_user_info(role, op_json, id, log_id):
+def insert_user_info(role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
     try:
         connection = conn()
         if connection:
@@ -180,10 +180,11 @@ def insert_user_info(role, op_json, id, log_id):
 
             insert_query = """
                                 UPDATE scheme_operators 
-                                SET operator_role = %s, data = %s
+                                SET operator_role = %s, operator_name = %s, StreetAddress = %s, Locality = %s, StateOrProvince = %s, 
+                                PostalCode = %s, EletronicAddress = %s, country = %s
                                 WHERE operator_id = %s
                             """
-            cursor.execute(insert_query, (role, op_json, id,))
+            cursor.execute(insert_query, (role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, id,))
             
             connection.commit()
             
@@ -390,7 +391,8 @@ def get_user_tsl(id, log_id):
             connection.close()
 
 
-def insert_tsp_info(tsl_id, tsp_json, log_id):
+def insert_tsp_info(tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country, log_id):
     try:
         connection = conn()
         if connection:
@@ -398,11 +400,13 @@ def insert_tsp_info(tsl_id, tsp_json, log_id):
             
             insert_query = """
                             INSERT INTO trust_service_providers 
-                            (tsl_id, data) 
-                            VALUES (%s, %s)
+                            (tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, CountryName, EletronicAddress, 
+                            TSPInformationURI, country) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                             """
             
-            cursor.execute(insert_query, (tsl_id, tsp_json,))
+            cursor.execute(insert_query, (tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country,))
             
             connection.commit()
             
@@ -468,7 +472,7 @@ def get_data_tsp(id, log_id):
             cursor = connection.cursor()
 
             select_query = """
-                SELECT data
+                SELECT *
                 FROM trust_service_providers
                 WHERE tsl_id = %s
             """
@@ -478,7 +482,8 @@ def get_data_tsp(id, log_id):
             result = cursor.fetchone()
 
             if result:
-                user_id = result[0]
+                column_names = [desc[0] for desc in cursor.description]
+                user_id = dict(zip(column_names, result))
                 
                 #extra = {'code': log_id} 
                 #logger.info(f"TSP found: {cursor.lastrowid}.", extra=extra)
@@ -501,7 +506,7 @@ def get_data_tsp(id, log_id):
 
 
 
-def insert_service_info(tsp_id, service_json, digital_identity, service_type, status, status_start_date, qualifier, log_id):
+def insert_service_info(tsp_id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, log_id):
     try:
         connection = conn()
         if connection:
@@ -509,11 +514,11 @@ def insert_service_info(tsp_id, service_json, digital_identity, service_type, st
 
             insert_query = """
                             INSERT INTO trust_services 
-                            (tsp_id, data, digital_identity, service_type, status, status_start_date, qualifier) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                            (tsp_id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                             """
             
-            cursor.execute(insert_query, (tsp_id, service_json, digital_identity, service_type, status, status_start_date, qualifier,))
+            cursor.execute(insert_query, (tsp_id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier,))
             
             connection.commit()
             
@@ -673,7 +678,7 @@ def get_data_service(id, log_id):
             cursor = connection.cursor()
 
             select_query = """
-                SELECT data
+                SELECT ServiceName, SchemeServiceDefinitionURI
                 FROM trust_services
                 WHERE tsp_id = %s
             """
@@ -707,7 +712,7 @@ def get_data_op(id, log_id):
             cursor = connection.cursor()
 
             select_query = """
-                SELECT data
+                SELECT *
                 FROM scheme_operators
                 WHERE operator_id = %s
             """
@@ -734,17 +739,20 @@ def get_data_op(id, log_id):
             connection.close()
 
 
-def update_data_op(combined, id, log_id):
+def update_data_op(current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
+                                current_data_postalCode, current_data_electronicAddress, id, log_id):
     try:
         connection = conn()
         if connection:
             cursor = connection.cursor()
             insert_query = """
                                 UPDATE scheme_operators 
-                                SET data = %s
+                                SET operator_name = %s, StreetAddress = %s, Locality = %s, StateOrProvince = %s, PostalCode = %s,
+                                EletronicAddress = %s
                                 WHERE operator_id = %s
                             """
-            cursor.execute(insert_query, (combined, id,))
+            cursor.execute(insert_query, (current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
+                                current_data_postalCode, current_data_electronicAddress, id,))
             
             connection.commit()
             
@@ -764,17 +772,22 @@ def update_data_op(combined, id, log_id):
             connection.close()
 
 
-def update_data_tsp(tsl_id, combined, log_id):
+def update_data_tsp(tsl_id, current_data_name, current_data_trade_name, current_data_StreetAddress,
+                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country, log_id):
     try:
         connection = conn()
         if connection:
             cursor = connection.cursor()
             insert_query = """
                                 UPDATE trust_service_providers 
-                                SET data = %s
+                                SET name = %s, trade_name = %s, StreetAddress = %s, Locality = %s, StateOrProvince = %s, 
+                                PostalCode = %s, CountryName = %s, EletronicAddress = %s, TSPInformationURI = %s, country = %s
                                 WHERE tsl_id = %s
                             """
-            cursor.execute(insert_query, (combined, tsl_id,))
+            cursor.execute(insert_query, (current_data_name, current_data_trade_name, current_data_StreetAddress,
+                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country, tsl_id,))
             
             connection.commit()
             
@@ -794,17 +807,17 @@ def update_data_tsp(tsl_id, combined, log_id):
             connection.close()
 
 
-def update_data_service(tsp_id, combined, log_id):
+def update_data_service(tsp_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, log_id):
     try:
         connection = conn()
         if connection:
             cursor = connection.cursor()
             insert_query = """
                                 UPDATE trust_services 
-                                SET data = %s
+                                SET ServiceName = %s, SchemeServiceDefinitionURI = %s
                                 WHERE tsp_id = %s
                             """
-            cursor.execute(insert_query, (combined, tsp_id,))
+            cursor.execute(insert_query, (current_data_ServiceName, current_data_SchemeServiceDefinitionURI, tsp_id,))
             
             connection.commit()
             

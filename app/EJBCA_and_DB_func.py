@@ -162,9 +162,11 @@ def get_data_op(id, log_id):
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
     
-def update_db_info(combined, id, log_id):
+def update_db_info(current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
+                                current_data_postalCode, current_data_electronicAddress, id, log_id):
     try:
-        check = db.update_data_op(combined, id, log_id)
+        check = db.update_data_op(current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
+                                current_data_postalCode, current_data_electronicAddress, id, log_id)
         return check
         
     except Exception as e:
@@ -176,9 +178,9 @@ def update_db_info(combined, id, log_id):
         return "Error processing the form.", 500
     
 
-def user_db_info(role, op_json, id, log_id):
+def user_db_info(role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
     try:
-        check = db.insert_user_info(role, op_json, id, log_id) 
+        check = db.insert_user_info(role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, id, log_id) 
 
         return check
     
@@ -252,10 +254,12 @@ def check_role_user(id, log_id):
         return "Error processing the form.", 500
 
  
-def tsp_db_info(id, tsp_json,  log_id):
+def tsp_db_info(id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country,  log_id):
     try:
         check = db.get_user_tsl(id, log_id)
-        check = db.insert_tsp_info(check, tsp_json, log_id) 
+        check = db.insert_tsp_info(check, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
+                             CountryName, EletronicAddress, TSPInformationURI, country, log_id) 
 
         return check
     
@@ -283,9 +287,13 @@ def get_data_tsp(id,  log_id):
         return "Error processing the form.", 500
     
 
-def tsp_db_lang(id, tsl_id, combined,  log_id):
+def tsp_db_lang(id, tsl_id, current_data_name, current_data_trade_name, current_data_StreetAddress,
+                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country,  log_id):
     try:
-        check = db.update_data_tsp(tsl_id, combined, log_id) 
+        check = db.update_data_tsp(tsl_id, current_data_name, current_data_trade_name, current_data_StreetAddress,
+                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country, log_id) 
 
         return check
     
@@ -298,11 +306,11 @@ def tsp_db_lang(id, tsl_id, combined,  log_id):
         return "Error processing the form.", 500
     
 
-def service_db_info(id, service_json, digital_identity, service_type, status, status_start_date, qualifier, log_id):
+def service_db_info(id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, log_id):
     try:
         check = db.get_user_tsl(id, log_id)
         check = db.get_tsp_tsl(check, log_id)
-        check = db.insert_service_info(check, service_json, digital_identity, service_type, status, status_start_date, qualifier, log_id) 
+        check = db.insert_service_info(check, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, log_id) 
 
         return check
     
@@ -330,9 +338,9 @@ def get_data_service(id, log_id):
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
 
-def service_db_lang(id, tsp_id, combined, log_id):
+def service_db_lang(id, tsp_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, log_id):
     try:
-        check = db.update_data_service(tsp_id, combined, log_id) 
+        check = db.update_data_service(tsp_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, log_id) 
 
         return check
     
