@@ -143,15 +143,15 @@ def get_relying_party_names_by_user_id(user_id, log_id):
             connection.close()
 
 
-def insert_user(pid_hash, user_name, country_id, log_id):
+def insert_user(pid_hash, user_name, issuing_country, country_id, log_id):
     try:
         connection = conn()
         if connection:
             cursor = connection.cursor()
 
-            insert_query = "INSERT INTO scheme_operators (pid_hash, country_id) VALUES (%s, %s)"
+            insert_query = "INSERT INTO scheme_operators (pid_hash, country, country_id) VALUES (%s, %s, %s)"
             
-            cursor.execute(insert_query, (pid_hash, country_id,))
+            cursor.execute(insert_query, (pid_hash, issuing_country, country_id,))
             
             connection.commit()
             
@@ -172,7 +172,7 @@ def insert_user(pid_hash, user_name, country_id, log_id):
 
 
 
-def insert_user_info(role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
+def insert_user_info(role, operator_name, PostalAddress, electronicAddress, id, log_id):
     try:
         connection = conn()
         if connection:
@@ -180,11 +180,10 @@ def insert_user_info(role, operator_name, address, locality, stateProvince, post
 
             insert_query = """
                                 UPDATE scheme_operators 
-                                SET operator_role = %s, operator_name = %s, StreetAddress = %s, Locality = %s, StateOrProvince = %s, 
-                                PostalCode = %s, EletronicAddress = %s, country = %s
+                                SET operator_role = %s, operator_name = %s, postal_address = %s, EletronicAddress = %s
                                 WHERE operator_id = %s
                             """
-            cursor.execute(insert_query, (role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, id,))
+            cursor.execute(insert_query, (role, operator_name, PostalAddress, electronicAddress, id,))
             
             connection.commit()
             
@@ -391,8 +390,7 @@ def get_user_tsl(id, log_id):
             connection.close()
 
 
-def insert_tsp_info(tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
-                             CountryName, EletronicAddress, TSPInformationURI, country, log_id):
+def insert_tsp_info(tsl_id, name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI, log_id):
     try:
         connection = conn()
         if connection:
@@ -400,13 +398,11 @@ def insert_tsp_info(tsl_id, name, trade_name, StreetAddress, Locality, StateOrPr
             
             insert_query = """
                             INSERT INTO trust_service_providers 
-                            (tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, CountryName, EletronicAddress, 
-                            TSPInformationURI, country) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            (tsl_id, name, trade_name, postal_address, EletronicAddress, TSPInformationURI) 
+                            VALUES (%s, %s, %s, %s, %s, %s)
                             """
             
-            cursor.execute(insert_query, (tsl_id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
-                             CountryName, EletronicAddress, TSPInformationURI, country,))
+            cursor.execute(insert_query, (tsl_id, name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI,))
             
             connection.commit()
             
@@ -739,20 +735,17 @@ def get_data_op(id, log_id):
             connection.close()
 
 
-def update_data_op(current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
-                                current_data_postalCode, current_data_electronicAddress, id, log_id):
+def update_data_op(current_data_operator_name, current_data_postal_address, current_data_electronicAddress, id, log_id):
     try:
         connection = conn()
         if connection:
             cursor = connection.cursor()
             insert_query = """
                                 UPDATE scheme_operators 
-                                SET operator_name = %s, StreetAddress = %s, Locality = %s, StateOrProvince = %s, PostalCode = %s,
-                                EletronicAddress = %s
+                                SET operator_name = %s, postal_address = %s, EletronicAddress = %s
                                 WHERE operator_id = %s
                             """
-            cursor.execute(insert_query, (current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
-                                current_data_postalCode, current_data_electronicAddress, id,))
+            cursor.execute(insert_query, (current_data_operator_name, current_data_postal_address, current_data_electronicAddress, id,))
             
             connection.commit()
             
@@ -772,22 +765,19 @@ def update_data_op(current_data_operator_name, current_data_address, current_dat
             connection.close()
 
 
-def update_data_tsp(tsl_id, current_data_name, current_data_trade_name, current_data_StreetAddress,
-                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
-                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country, log_id):
+def update_data_tsp(tsl_id, current_data_name, current_data_trade_name, current_data_postal_address,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, log_id):
     try:
         connection = conn()
         if connection:
             cursor = connection.cursor()
             insert_query = """
                                 UPDATE trust_service_providers 
-                                SET name = %s, trade_name = %s, StreetAddress = %s, Locality = %s, StateOrProvince = %s, 
-                                PostalCode = %s, CountryName = %s, EletronicAddress = %s, TSPInformationURI = %s, country = %s
+                                SET name = %s, trade_name = %s, postal_address = %s, EletronicAddress = %s, TSPInformationURI = %s
                                 WHERE tsl_id = %s
                             """
-            cursor.execute(insert_query, (current_data_name, current_data_trade_name, current_data_StreetAddress,
-                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
-                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country, tsl_id,))
+            cursor.execute(insert_query, (current_data_name, current_data_trade_name, current_data_postal_address,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, tsl_id,))
             
             connection.commit()
             

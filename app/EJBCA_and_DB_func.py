@@ -129,7 +129,7 @@ def user_db(user, user_name, country_id, log_id):
         aux = db.check_user(hash_pid, log_id)
 
         if(aux == None):
-            user_id = db.insert_user(hash_pid, user_name, country_id, log_id) 
+            user_id = db.insert_user(hash_pid, user_name, issuing_country, country_id, log_id) 
         
             if not user_id:
                 # extra = {'code': log_id} 
@@ -162,11 +162,9 @@ def get_data_op(id, log_id):
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
     
-def update_db_info(current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
-                                current_data_postalCode, current_data_electronicAddress, id, log_id):
+def update_db_info(current_data_operator_name, current_data_postal_address, current_data_electronicAddress, id, log_id):
     try:
-        check = db.update_data_op(current_data_operator_name, current_data_address, current_data_locality, current_data_stateProvince, 
-                                current_data_postalCode, current_data_electronicAddress, id, log_id)
+        check = db.update_data_op(current_data_operator_name, current_data_postal_address, current_data_electronicAddress, id, log_id)
         return check
         
     except Exception as e:
@@ -178,9 +176,9 @@ def update_db_info(current_data_operator_name, current_data_address, current_dat
         return "Error processing the form.", 500
     
 
-def user_db_info(role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, id, log_id):
+def user_db_info(role, operator_name, PostalAddress, electronicAddress, id, log_id):
     try:
-        check = db.insert_user_info(role, operator_name, address, locality, stateProvince, postalCode, electronicAddress, id, log_id) 
+        check = db.insert_user_info(role, operator_name, PostalAddress, electronicAddress, id, log_id) 
 
         return check
     
@@ -254,12 +252,10 @@ def check_role_user(id, log_id):
         return "Error processing the form.", 500
 
  
-def tsp_db_info(id, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
-                             CountryName, EletronicAddress, TSPInformationURI, country,  log_id):
+def tsp_db_info(id, name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI,  log_id):
     try:
         check = db.get_user_tsl(id, log_id)
-        check = db.insert_tsp_info(check, name, trade_name, StreetAddress, Locality, StateOrProvince, PostalCode, 
-                             CountryName, EletronicAddress, TSPInformationURI, country, log_id) 
+        check = db.insert_tsp_info(check, name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI, log_id) 
 
         return check
     
@@ -287,13 +283,11 @@ def get_data_tsp(id,  log_id):
         return "Error processing the form.", 500
     
 
-def tsp_db_lang(id, tsl_id, current_data_name, current_data_trade_name, current_data_StreetAddress,
-                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
-                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country,  log_id):
+def tsp_db_lang(id, tsl_id, current_data_name, current_data_trade_name, current_data_postal_address,
+                             current_data_EletronicAddress, current_data_TSPInformationURI,  log_id):
     try:
-        check = db.update_data_tsp(tsl_id, current_data_name, current_data_trade_name, current_data_StreetAddress,
-                             current_data_Locality, current_data_StateOrProvince, current_data_PostalCode, current_data_CountryName,
-                             current_data_EletronicAddress, current_data_TSPInformationURI, current_data_country, log_id) 
+        check = db.update_data_tsp(tsl_id, current_data_name, current_data_trade_name, current_data_postal_address,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, log_id) 
 
         return check
     

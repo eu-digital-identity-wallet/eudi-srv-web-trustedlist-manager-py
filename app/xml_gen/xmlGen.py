@@ -29,11 +29,16 @@ from signxml import DigestAlgorithm
 from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFormat)
 from xml_gen.xml_config import ConfXML as confxml
 from signxml import XMLSigner, algorithms
+import json
 
-def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists, dictFromDB_trust_service_providers,
-            dictFromDB_trust_services, qualif):
+def parse_json_field(field):
+    try:
+        return json.loads(field) if isinstance(field, str) else field
+    except json.JSONDecodeError:
+        return field
     
-    PostalAddresses=PostalAddress
+def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif):
+    
     root=test.TrustStatusListType()
 
     root.set_TSLTag("http://uri.etsi.org/19612/TSLTag")
@@ -52,7 +57,8 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
     schemeOName = test.InternationalNamesType()
 
     #for cycle
-    for item in dictFromDB_scheme_operator:
+    op_name = parse_json_field(user_info["operator_name"])
+    for item in op_name:
         schemeOName.add_Name(test.MultiLangNormStringType(item['lang'], item["operator_name"]))
 
     schemeInfo.SchemeOperatorName=schemeOName
@@ -63,18 +69,21 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
     eletronic=test.ElectronicAddressType()
 
     #for cycle
-    for item in dictFromDB_scheme_operator:
-        eletronic.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["EletronicAddress"]))
+    EletronicAddress = parse_json_field(user_info["EletronicAddress"])
+    for item in EletronicAddress:
+        eletronic.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["electronicAddress"]))
     #----------------------------------------------------#
     schemeOAddress.set_ElectronicAddress(eletronic)
 
     PostalAdresses=test.PostalAddressListType()
 
     #for cycle for postal address
-    for item in dictFromDB_scheme_operator:
+    postal = parse_json_field(user_info["postal_address"])
+    for item in postal:
         postal=test.PostalAddressType()
         postal.set_lang(item['lang'])
-        postal.set_CountryName(item["country"])
+        postal.set_CountryName(item["CountryName"])
+        postal.set_StreetAddress(item["StreetAddress"])
         postal.set_Locality(item["Locality"])
         postal.set_StateOrProvince(item["StateOrProvince"])
         postal.set_PostalCode(item["PostalCode"])
@@ -111,8 +120,7 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
     schemeInfo.set_SchemeTypeCommunityRules(schemeCRules)
 
     #SchemeTerritory
-    for item in dictFromDB_scheme_operator:
-        schemeInfo.set_SchemeTerritory(item["country"])
+    schemeInfo.set_SchemeTerritory(user_info["country"])
 
     #PolicyOrLegalNotice
     PolicyOrLegalNotice= test.PolicyOrLegalnoticeType()
@@ -169,32 +177,42 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
 
     TrustServiceProviderList=test.TrustServiceProviderListType()
 
-    for item in dictFromDB_trust_service_providers:
-        print(item)
+    name = parse_json_field(tsp_data["name"])
+
+    for item in name:
         TrustServiceProvider= test.TSPType()
         TSPInformation=test.TSPInformationType()
         TSPName=test.InternationalNamesType()
         TSPName.add_Name(test.MultiLangNormStringType(item['lang'], item["name"]))
-        
+
+    trade_name = parse_json_field(tsp_data["trade_name"])
+    for item in trade_name:
         TSPTradeName= test.InternationalNamesType()
         TSPTradeName.add_Name(test.MultiLangNormStringType(item['lang'], item["trade_name"]))
 
+    address = parse_json_field(tsp_data["postal_address"])
+    for item in address:
         TSPAddress=test.AddressType()
 
         TSPPostalAddress=test.PostalAddressListType()
         postal1=test.PostalAddressType()
-        postal1.set_CountryName(item["country"])
+        postal1.set_CountryName(item["CountryName"])
+        postal1.set_StreetAddress(item["StreetAddress"])
         postal1.set_Locality(item["Locality"])
         postal1.set_StateOrProvince(item["StateOrProvince"])
         postal1.set_PostalCode(item["PostalCode"])
         TSPPostalAddress.add_PostalAddress(postal1)
-
+    
+    ele_address = parse_json_field(tsp_data["EletronicAddress"])
+    for item in ele_address:
         TSPEletronicAddress=test.ElectronicAddressType()
         TSPEletronicAddress.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["EletronicAddress"]))
 
         TSPAddress.set_ElectronicAddress(TSPEletronicAddress)
         TSPAddress.set_PostalAddresses(TSPPostalAddress)
 
+    uri = parse_json_field(tsp_data["TSPInformationURI"])
+    for item in uri:
         TSPInformationURI= test.NonEmptyMultiLangURIListType()
         TSPInformationURI.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["TSPInformationURI"]))
 
@@ -208,22 +226,25 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
     TSPServices=test.TSPServicesListType()
 
     #for cycle
-    for item in dictFromDB_trust_services:
-        TSPService=test.TSPServiceType()
-        ServiceInformation=test.TSPServiceInformationType()
-        ServiceInformation.set_ServiceTypeIdentifier(test.NonEmptyURIType(item["service_type"]))
+    TSPService=test.TSPServiceType()
+    ServiceInformation=test.TSPServiceInformationType()
+    ServiceInformation.set_ServiceTypeIdentifier(test.NonEmptyURIType(service_data["service_type"]))
 
+    serv_name = parse_json_field(service_data["ServiceName"])
+    for item in serv_name:
         ServiceName=test.InternationalNamesType()
-        ServiceName.add_Name(test.MultiLangNormStringType(item["lang"], item["service_name"]))
+        ServiceName.add_Name(test.MultiLangNormStringType(item["lang"], item["name"]))
         ServiceInformation.set_ServiceName(ServiceName)
 
-        ServiceDigitalIdentity=test.ServiceDigitalIdentityListType()
-        ServiceDigitalIdentity.add_ServiceDigitalIdentity(test.DigitalIdentityType(item["digital_identity"]))
-        ServiceInformation.set_ServiceDigitalIdentity(ServiceDigitalIdentities)
+    ServiceDigitalIdentity=test.ServiceDigitalIdentityListType()
+    ServiceDigitalIdentity.add_ServiceDigitalIdentity(test.DigitalIdentityType(service_data["digital_identity"]))
+    ServiceInformation.set_ServiceDigitalIdentity(ServiceDigitalIdentities)
 
-        ServiceInformation.set_ServiceStatus(test.NonEmptyURIType(item["status"]))
-        ServiceInformation.set_StatusStartingTime(datetime.datetime.now(datetime.timezone.utc))
+    ServiceInformation.set_ServiceStatus(test.NonEmptyURIType(service_data["status"]))
+    ServiceInformation.set_StatusStartingTime(datetime.datetime.now(datetime.timezone.utc))
 
+    uri = parse_json_field(service_data["SchemeServiceDefinitionURI"])
+    for item in uri:
         SchemeServiceDefinitionURI=test.NonEmptyMultiLangURIListType()
         SchemeServiceDefinitionURI.add_URI(test.NonEmptyMultiLangURIType(item["lang"],item["SchemeServiceDefinitionURI"]))
         ServiceInformation.set_SchemeServiceDefinitionURI(SchemeServiceDefinitionURI)
