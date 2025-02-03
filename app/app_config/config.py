@@ -56,6 +56,7 @@ class ConfService:
       "QCQSCDStatusAsInCert": "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCQSCDStatusAsInCert"
     }
 
+    url_verifier="verifier-backend.eudiw.dev"
 
     # log_dir = "/tmp/log"
     # #log_dir = "../../log"

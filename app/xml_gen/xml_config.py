@@ -23,7 +23,7 @@ NOTE: You should only change it if you understand what you're doing.
 
 class ConfXML:
 
-    TLSIdentifier=5
+    TLSVersionIdentifier=6
     TSLType={
         "EU":"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric",
     }

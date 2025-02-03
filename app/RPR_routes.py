@@ -21,10 +21,12 @@ This rpr_routes.py file is the blueprint of the Web RelyingParty Registration se
 
 import base64
 import binascii
+from collections import defaultdict
 from datetime import datetime, timedelta
 import io
 import json
 import os
+import re
 from uuid import uuid4
 import uuid
 import cbor2
@@ -76,7 +78,7 @@ def initial_page():
 @rpr.route("/authentication", methods=["GET","POST"])
 def authentication():
 
-    url = "https://dev.verifier-backend.eudiw.dev/ui/presentations"
+    url = "https://" + cfgserv.url_verifier +"/ui/presentations"
     payload ={
         "type": "vp_token",
         "nonce": "hiCV7lZi5qAeCy7NFzUWSR4iCfSmRb99HfIvCkPaCLc=",
@@ -150,7 +152,7 @@ def authentication():
     response = requests.request("POST", url, headers=headers, data=json.dumps(payload)).json()
 
     QR_code_url = (
-        "eudi-openid4vp://dev.verifier-backend.eudiw.dev?client_id="
+        "eudi-openid4vp://" + cfgserv.url_verifier + "?client_id="
         + response["client_id"]
         + "&request_uri="
         + response["request_uri"]
@@ -166,7 +168,7 @@ def authentication():
     response_same_device= requests.request("POST", url, headers=headers, data=json.dumps(payload_sameDevice)).json()
 
     deeplink_url = (
-        "eudi-openid4vp://dev.verifier-backend.eudiw.dev?client_id="
+        "eudi-openid4vp://" + cfgserv.url_verifier + "?client_id="
         + response_same_device["client_id"]
         + "&request_uri="
         + response_same_device["request_uri"]
@@ -206,7 +208,7 @@ def authentication():
 @rpr.route("/authentication_List", methods=["GET","POST"])
 def authentication_List():
 
-    url = "https://dev.verifier-backend.eudiw.dev/ui/presentations"
+    url = "https://" + cfgserv.url_verifier +"/ui/presentations"
     payload ={
         "type": "vp_token",
         "nonce": "hiCV7lZi5qAeCy7NFzUWSR4iCfSmRb99HfIvCkPaCLc=",
@@ -280,7 +282,7 @@ def authentication_List():
     response = requests.request("POST", url, headers=headers, data=json.dumps(payload)).json()
 
     QR_code_url = (
-        "eudi-openid4vp://dev.verifier-backend.eudiw.dev?client_id="
+        "eudi-openid4vp://" + cfgserv.url_verifier + "?client_id="
         + response["client_id"]
         + "&request_uri="
         + response["request_uri"]
@@ -296,7 +298,7 @@ def authentication_List():
     response_same_device= requests.request("POST", url, headers=headers, data=json.dumps(payload_sameDevice)).json()
 
     deeplink_url = (
-        "eudi-openid4vp://dev.verifier-backend.eudiw.dev?client_id="
+        "eudi-openid4vp://" + cfgserv.url_verifier + "?client_id="
         + response_same_device["client_id"]
         + "&request_uri="
         + response_same_device["request_uri"]
@@ -339,7 +341,7 @@ def pid_authorization_get():
 
     presentation_id= request.args.get("presentation_id")
 
-    url = "https://dev.verifier-backend.eudiw.dev/ui/presentations/" + presentation_id + "?nonce=hiCV7lZi5qAeCy7NFzUWSR4iCfSmRb99HfIvCkPaCLc="
+    url = "https://" + cfgserv.url_verifier+ "/ui/presentations/" + presentation_id + "?nonce=hiCV7lZi5qAeCy7NFzUWSR4iCfSmRb99HfIvCkPaCLc="
     headers = {
     'Content-Type': 'application/json',
     }
@@ -364,7 +366,7 @@ def getpidoid4vp():
         if oid4vp_requests[request.args.get("session_id")]["certificate_List"] !=None:
             session["certificate_List"]=True
         url = (
-            "https://dev.verifier-backend.eudiw.dev/ui/presentations/"
+            "https://" + cfgserv.url_verifier+ "/ui/presentations/"
             + presentation_id
             + "?nonce=hiCV7lZi5qAeCy7NFzUWSR4iCfSmRb99HfIvCkPaCLc="
             + "&response_code=" + response_code
@@ -372,7 +374,7 @@ def getpidoid4vp():
 
     elif "presentation_id" in request.args:
         presentation_id = request.args.get("presentation_id")
-        url = "https://dev.verifier-backend.eudiw.dev/ui/presentations/" + presentation_id + "?nonce=hiCV7lZi5qAeCy7NFzUWSR4iCfSmRb99HfIvCkPaCLc="
+        url = "https://" + cfgserv.url_verifier+ "/ui/presentations/" + presentation_id + "?nonce=hiCV7lZi5qAeCy7NFzUWSR4iCfSmRb99HfIvCkPaCLc="
 
     headers = {
     'Content-Type': 'application/json',
@@ -823,8 +825,7 @@ def create_tsl():
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
-
+    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db") 
 
 @rpr.route('/tsl/create/db', methods=["GET", "POST"])
 def create_tsl_db():
@@ -870,7 +871,57 @@ def create_tsl_db():
 
 @rpr.route('/tsl/update')
 def update_tsl():
-    return "Atualizar TSL Existente"
+    data= {'SchemeName': [{'lang':"en", "text":"Test"}, {'lang':"en", "text":"Testes"}],
+           'SchemeOperatorName': [{'lang':"en", "text":"Test"}, {'lang':"fr", "text":"Testeer"}],
+           'PostalAddress':[{"lang":"en","StreetAddress":"Rua da Junqueira, 69", "Locality":"Lisbon","StateOrProvince":"Lisbon","PostalCode":"1300-342 Lisboa","CountryName":"PT"}],
+            'EletronicAddress':[{'lang':"en", "URI":"Test"}],
+            'SchemeTypeCommunityRules':[{'lang':"en", "URI":"Test"}],
+            "SchemeInformationURI":[{'lang':"en", "URI":"Test"}],
+            "SchemeTerritory":"PT",
+            "PolicyOrLegalNotice":[{'lang':"en", "text":"Test"}],
+            'DistributionPoints': ["url", "url"],
+            # 'StatusDeterminationApproach': "http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/EUappropriate",
+            # 'Additional_Information': None
+            }
+
+    return render_template("dynamic-form_edit_TLS.html",redirect_url= cfgserv.service_url + "tsl/test", data_edit=data)
+
+@rpr.route('/tsl/test', methods=["GET", "POST"])
+def test():
+
+    form = dict(request.form)
+    form.pop("proceed")
+
+    grouped = defaultdict(list)
+
+    for key, value in form.items():
+        print(key, value)
+        match = re.match(r"(lang|text|URI)_(.*?).(\d+)", key)
+        match2=re.match(r"(PostalAddress)_(.*?).(\d+)",key)
+        if match:
+            attr, prefix, index = match.groups()
+            index = int(index)
+            while len(grouped[prefix]) <= index:
+                grouped[prefix].append({})
+            grouped[prefix][index][attr] = value
+        elif match2:
+            attr, prefix, index = match2.groups()
+            index = int(index)
+            while len(grouped[attr]) <= index:
+                grouped[attr].append({})
+            grouped[attr][index][prefix] = value
+
+        elif "DistributionPoints" in key:
+                key_dict=key.split(".")
+                grouped[key_dict[0]].append(value)
+                
+        else:
+            grouped[key] = value
+        
+    print(grouped)
+
+    return dict(grouped)
+
 
 @rpr.route('/tsl/sign')
 def sign_tsl():

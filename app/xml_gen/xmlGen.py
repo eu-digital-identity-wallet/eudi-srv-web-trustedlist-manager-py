@@ -41,7 +41,7 @@ def xml_gen(PostalAddress, dictFromDB_scheme_operator, dictFromDB_trusted_lists,
 
     schemeInfo = test.TSLSchemeInformationType()
 
-    schemeInfo.TSLVersionIdentifier=dictFromDB_trusted_lists["Version"]
+    schemeInfo.TSLVersionIdentifier=confxml.TLSVersionIdentifier
     schemeInfo.TSLSequenceNumber=dictFromDB_trusted_lists["SequenceNumber"] + 1
     TSLType=test.NonEmptyURIType()
     TSLType.set_valueOf_(dictFromDB_trusted_lists["TSLType"])
