@@ -884,7 +884,7 @@ def update_tsl():
             # 'Additional_Information': None
             }
 
-    return render_template("dynamic-form_edit_TLS.html",redirect_url= cfgserv.service_url + "tsl/test", data_edit=data)
+    return render_template("dynamic-form_edit_TLS.html",redirect_url= cfgserv.service_url + "tsl/test", data_edit=data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries)
 
 @rpr.route('/tsl/test', methods=["GET", "POST"])
 def test():

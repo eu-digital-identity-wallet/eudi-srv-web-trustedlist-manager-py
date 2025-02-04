@@ -42,7 +42,9 @@
     <!--
     <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/locval/locval_en_9.7.1.20.1679559965505.js" integrity="sha256-fGdBvjTPjOPZBmgDo8xMKgZUwmXXCzYZ+BbHErfhc/Q= sha384-Y9eAdYjT/TZ0VPUxw3Ex/TVSZZzPsV1mRoKD0BTkrQn0L615z24j26O2CZdT1Xl+ sha512-T9HoOOy1OkJ0l1GWqvT2RAR9frKd4zImDm1uyHxjmB/nxNBhmdjEhR9MckiWiNv2/UrFrMZJwSMB4Po/ExbFOw==" charset="UTF-8"></script>
 -->
-
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
     <title>Edit Trusted List Information</title>
 </head>
 
@@ -85,12 +87,10 @@
                                         <div class="content">
                                             {% for data in value %}
                                                 <label for="Lang">Lang</label>
-                                                <select aria-label="Lang" name="PostalAddress_lang.{{loop.index0}}" class="form-control">
-                                                    <option value="pt" {% if data['lang'] == "pt" %} selected {% endif %}>PT</option>
-                                                    <option value="fr" {% if data['lang']  == "fr" %} selected {% endif %}>FR</option>
-                                                    <option value="es" {% if data['lang']  == "es" %} selected {% endif %}>ES</option>
-                                                    <option value="fc" {% if data['lang']  == "fc" %} selected {% endif %}>FC</option>
-                                                    <option value="en" {% if data['lang'] == "en" %} selected {% endif %}>EN</option>
+                                                <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;" name="PostalAddress_lang.{{loop.index0}}"  required>
+                                                    {% for lang1 in Langs %}
+                                                        <option value="{{ lang1 }}" {% if data['lang'] == lang1 %} selected {% endif %}>{{ lang1 }}</option>
+                                                    {% endfor %}
                                                 </select>
                                                 
                                                 <label for="StreetAddress">StreetAddress</label>
@@ -106,12 +106,10 @@
                                                 <input type="text" class="form-control" placeholder="PostalCode" name="PostalAddress_PostalCode.{{loop.index0}}" value="{{ data['PostalCode']}}"required >
                                                 
                                                 <label for="CountryName">CountryName</label>
-                                                <select aria-label="CountryName" name="PostalAddress_CountryName.{{loop.index0}}"   class="form-control">
-                                                    <option value="PT" {% if data['CountryName'] == "PT" %} selected {% endif %}>PT</option>
-                                                    <option value="FR" {% if data['CountryName'] == "FR" %} selected {% endif %}>FR</option>
-                                                    <option value="ES" {% if data['CountryName'] == "ES" %} selected {% endif %}>ES</option>
-                                                    <option value="FC" {% if data['CountryName'] == "FC" %} selected {% endif %}>FC</option>
-                                                    <option value="EN" {% if data['CountryName'] == "EN" %} selected {% endif %}>EN</option>
+                                                <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="PostalAddress_CountryName.{{loop.index0}}"  required>
+                                                    {% for country in Countries %}
+                                                        <option value="{{ lang }}" {% if data['CountryName'] == country %} selected {% endif %}>{{ country }}</option>
+                                                    {% endfor %}
                                                 </select>
                                             {% endfor %}
                                         </div>
@@ -121,12 +119,10 @@
                                         <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">SchemeTerritory</button>
                                         <div class="content">
                                             <label for="SchemeCountry">SchemeCountry</label>
-                                            <select aria-label="SchemeCountry" name="SchemeCountry" class="form-control">
-                                                <option value="PT" {% if value == "PT" %} selected {% endif %}>PT</option>
-                                                <option value="FR" {% if value == "FR" %} selected {% endif %}>FR</option>
-                                                <option value="ES" {% if value == "ES" %} selected {% endif %}>ES</option>
-                                                <option value="FC" {% if value == "FC" %} selected {% endif %}>FC</option>
-                                                <option value="EN" {% if value == "EN" %} selected {% endif %}>EN</option>
+                                            <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="SchemeCountry"  required>
+                                                {% for country in Countries %}
+                                                    <option value="{{ country}}" {% if value == country %} selected {% endif %}>{{ country }}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                     </div>
@@ -152,12 +148,10 @@
                                                 {% for key, key_data in data.items() %}
                                                     {% if key == "lang" %}
                                                         <label for="Lang">Lang</label>
-                                                        <select aria-label="Lang" name="{{key}}_{{name}}.{{outer_loop.index0}}" class="form-control">
-                                                            <option value="pt" {% if key_data == "pt" %} selected {% endif %}>PT</option>
-                                                            <option value="fr" {% if key_data  == "fr" %} selected {% endif %}>FR</option>
-                                                            <option value="es" {% if key_data  == "es" %} selected {% endif %}>ES</option>
-                                                            <option value="fc" {% if key_data  == "fc" %} selected {% endif %}>FC</option>
-                                                            <option value="en" {% if key_data  == "en" %} selected {% endif %}>EN</option>
+                                                        <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="{{key}}_{{name}}.{{outer_loop.index0}}"  required>
+                                                            {% for lang in Langs %}
+                                                                <option value="{{ lang }}" {% if key_data == lang %} selected {% endif %}>{{ lang }}</option>
+                                                            {% endfor %}
                                                         </select>
                                                     {% else %}
                                                         <label for="{{ key }}">{{ key }}</label>
@@ -211,6 +205,9 @@
     <!-- Version 9.7.1.20 - 23/03/2023 - 09:26 -->
 </body>
 <script>
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+    });
     var coll = document.getElementsByClassName("collapsible");
     var i;
 

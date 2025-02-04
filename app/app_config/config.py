@@ -76,3 +76,12 @@ class ConfService:
     # logger_info = logging.getLogger("info")
     # logger_info.addHandler(log_handler_info)
     # logger_info.setLevel(logging.INFO)
+
+    eu_languages = [
+    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr",
+    "ga", "hr", "hu", "it", "lt", "lv", "mt", "nl", "pl", "pt",
+    "ro", "sk", "sl", "sv"]
+    eu_countries = [
+    "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+    "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+    "PL", "PT", "RO", "SK", "SI", "ES", "SE"]
