@@ -81,32 +81,32 @@
                             <!-- <div class="nodisplay"><input type="hidden" name="TxId" value="ECAS_TX-7404446-Rej9lkLFeXORXm9rG7q4Xqo1xGRJ86gt3hoJcfMG3XyxQrAyn8mu9PbXRCZoKKUbCzLlIzG5jKgHy4vlfgkG5M-rS0vSrmBGYCAxyMeVAWeYi-PVgrhNnzagSfzJvUraGtvIPzqv8cbsV46ZMUiinVIlcDkNWEKzr5uBS6CMnabjUfRGxDHabrZictNyNLy0AsLWy" /></div><input type="hidden" name="loginRequestId" value="ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" id="loginRequestId" /> -->
                             <h3>Trusted List Form</h3>
                             {% for name, value in data_edit.items() %}
-                                {% if name == "PostalAddress" %}
+                                {% if name == "postal_address" %}
                                     <div class="row g-3">
                                         <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">{{name}}</button>
                                         <div class="content">
                                             {% for data in value %}
                                                 <label for="Lang">Lang</label>
-                                                <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;" name="PostalAddress_lang.{{loop.index0}}"  required>
+                                                <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;" name="postal_address_lang.{{loop.index0}}"  required>
                                                     {% for lang1 in Langs %}
                                                         <option value="{{ lang1 }}" {% if data['lang'] == lang1 %} selected {% endif %}>{{ lang1 }}</option>
                                                     {% endfor %}
                                                 </select>
                                                 
                                                 <label for="StreetAddress">StreetAddress</label>
-                                                <input type="text" class="form-control" placeholder="StreetAddress"  name="PostalAddress_StreetAddress.{{loop.index0}}" value="{{ data['StreetAddress'] }}" required >
+                                                <input type="text" class="form-control" placeholder="StreetAddress"  name="postal_address_StreetAddress.{{loop.index0}}" value="{{ data['StreetAddress'] }}" required >
                                                 
                                                 <label for="Locality">Locality</label>
-                                                <input type="text" class="form-control" placeholder="Locality" name="PostalAddress_Locality.{{loop.index0}}" value="{{ data['Locality'] }}"required >
+                                                <input type="text" class="form-control" placeholder="Locality" name="postal_address_Locality.{{loop.index0}}" value="{{ data['Locality'] }}"required >
                                                 
                                                 <label for="StateOrProvince">StateOrProvince</label>
-                                                <input type="text" class="form-control" placeholder="StateOrProvince" name="PostalAddress_StateOrProvince.{{loop.index0}}" value="{{ data['StateOrProvince'] }}"required >
+                                                <input type="text" class="form-control" placeholder="StateOrProvince" name="postal_address_StateOrProvince.{{loop.index0}}" value="{{ data['StateOrProvince'] }}"required >
                                                 
                                                 <label for="PostalCode">PostalCode</label>
-                                                <input type="text" class="form-control" placeholder="PostalCode" name="PostalAddress_PostalCode.{{loop.index0}}" value="{{ data['PostalCode']}}"required >
+                                                <input type="text" class="form-control" placeholder="PostalCode" name="postal_address_PostalCode.{{loop.index0}}" value="{{ data['PostalCode']}}"required >
                                                 
                                                 <label for="CountryName">CountryName</label>
-                                                <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="PostalAddress_CountryName.{{loop.index0}}"  required>
+                                                <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="postal_address_CountryName.{{loop.index0}}"  required>
                                                     {% for country in Countries %}
                                                         <option value="{{ lang }}" {% if data['CountryName'] == country %} selected {% endif %}>{{ country }}</option>
                                                     {% endfor %}
@@ -114,9 +114,9 @@
                                             {% endfor %}
                                         </div>
                                     </div>
-                                {% elif name=="SchemeTerritory" %}
+                                {% elif name=="schemeTerritory" %}
                                     <div class="row g-3">
-                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">SchemeTerritory</button>
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">schemeTerritory</button>
                                         <div class="content">
                                             <label for="SchemeCountry">SchemeCountry</label>
                                             <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="SchemeCountry"  required>

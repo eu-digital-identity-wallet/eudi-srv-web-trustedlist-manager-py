@@ -476,8 +476,8 @@ def user_auth():
     Country = request.form.get('Country')
     lang = request.form.get('Lang')
 
-    operator_name = '[{"lang":"' + lang + '", "operator_name":"'+ opName + '"}]'
-    electronicAddress = '[{"lang":"' + lang + '", "electronicAddress":"'+ electronicAddress + '"}]'
+    operator_name = '[{"lang":"' + lang + '", "text":"'+ opName + '"}]'
+    electronicAddress = '[{"lang":"' + lang + '", "URI":"'+ electronicAddress + '"}]'
 
     PostalAddress = '[{"lang":"' + lang + '", "address":"'+ address + '", "locality":"'+ locality + '", "StateOrProvince":"'+ stateProvince + '", "postalCode":"'+ postalCode + '", "CountryName":"'+ Country + '"}]'
 
@@ -532,21 +532,21 @@ def op_lang():
     form_items={
         "Lang": "lang",
         "Operator Name": "string",
+        "Electronic Address": "string",
         "Operator Address": "string",
         "Locality": "string",
         "State or Province": "string",
         "Postal Code": "string",
-        "Electronic Address": "string",
         "Country": "string"
     }
     descriptions = {
         "Lang": "string",
         "Operator Name": "string",
+        "Electronic Address": "string",
         "Operator Address": "string",
         "Locality": "string",
         "State or Province": "string",
         "Postal Code": "string",
-        "Electronic Address": "string",
         "Country": "string"
     }
 
@@ -570,26 +570,45 @@ def op_lang_db():
     Country = request.form.get('Country')
     lang = request.form.get('Lang')
 
-    operator_name = {"lang": lang, "operator_name": opName}
-    electronicAddress = {"lang": lang, "electronicAddress": electronicAddress}
-    postal_address = {"lang": lang, "StreetAddress": address, "Locality": locality,"StateOrProvince": stateProvince,"PostalCode": postalCode,"CountryName": Country}
-
+    
     db_data = func.get_data_op(user['id'], session["session_id"])
-    
-    current_data_operator_name = json.loads(db_data['operator_name'])
-    current_data_operator_name.append(operator_name)
-    current_data_operator_name = json.dumps(current_data_operator_name)
-    
-    current_data_electronicAddress = json.loads(db_data['EletronicAddress'])
-    current_data_electronicAddress.append(electronicAddress)
-    current_data_electronicAddress = json.dumps(current_data_electronicAddress)
-    
-    current_data_postal_address = json.loads(db_data['postal_address'])
-    current_data_postal_address.append(postal_address)
-    current_data_postal_address = json.dumps(current_data_postal_address)
-    
-    check = func.update_db_info(current_data_operator_name, current_data_postal_address, current_data_electronicAddress, 
-                                user['id'], session["session_id"])
+
+    current_data_operator_name = None
+    current_data_postal_address = None
+    current_data_electronicAddress = None
+
+    if opName:
+        operator_name = {"lang": lang, "text": opName}
+        current_data_operator_name = json.loads(db_data.get('operator_name', '[]'))
+        current_data_operator_name.append(operator_name)
+        current_data_operator_name = json.dumps(current_data_operator_name)
+
+    if electronicAddress:
+        electronic_address_data = {"lang": lang, "URI": electronicAddress}
+        current_data_electronicAddress = json.loads(db_data.get('EletronicAddress', '[]'))
+        current_data_electronicAddress.append(electronic_address_data)
+        current_data_electronicAddress = json.dumps(current_data_electronicAddress)
+
+    if all([address, locality, stateProvince, postalCode, Country]):
+        postal_address = {
+            "lang": lang,
+            "StreetAddress": address,
+            "Locality": locality,
+            "StateOrProvince": stateProvince,
+            "PostalCode": postalCode,
+            "CountryName": Country
+        }
+        current_data_postal_address = json.loads(db_data.get('postal_address', '[]'))
+        current_data_postal_address.append(postal_address)
+        current_data_postal_address = json.dumps(current_data_postal_address)
+
+    check = func.update_db_info(
+        current_data_operator_name, 
+        current_data_postal_address, 
+        current_data_electronicAddress, 
+        user['id'], 
+        session["session_id"]
+    )
 
     if check is None:
         return ("erro")
@@ -608,6 +627,75 @@ def op_lang_db():
         else:
             return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
 
+@rpr.route('/op_edit')
+def op_edit():
+        
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    db_data = func.get_data_op_edit(user['id'], session["session_id"])
+
+    for key in db_data: 
+        db_data[key] = json.loads(db_data[key])
+    
+    return render_template("dynamic-form_edit_TLS.html", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "op_edit_db")
+
+@rpr.route('/op_edit_db', methods=["GET", "POST"])
+def op_edit_db():
+
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    form = dict(request.form)
+    form.pop("proceed")
+    grouped = defaultdict(list)
+
+    for key, value in form.items():
+        match = re.match(r"(lang|text|URI)_(.*?).(\d+)", key)
+        match2=re.match(r"(postal_address)_(.*?).(\d+)",key)
+        if match:
+            attr, prefix, index = match.groups()
+            index = int(index)
+            while len(grouped[prefix]) <= index:
+                grouped[prefix].append({})
+            grouped[prefix][index][attr] = value
+        elif match2:
+            attr, prefix, index = match2.groups()
+            index = int(index)
+            while len(grouped[attr]) <= index:
+                grouped[attr].append({})
+            grouped[attr][index][prefix] = value
+
+        elif "DistributionPoints" in key:
+                key_dict=key.split(".")
+                grouped[key_dict[0]].append(value)
+                
+        else:
+            grouped[key] = value
+    
+    check = func.edit_op_db_info(
+        grouped, 
+        user['id'], 
+        session["session_id"]
+    )
+
+    if check is None:
+        return ("erro")
+    else:
+        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        session[temp_user_id]["role"] = check
+        
+        if(cfgserv.two_operators):
+            if(check == "tsl_op"):
+                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+            elif(check == "tsp_op"):
+                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+            else:
+                return ("error")
+        else:
+            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+
+
 # TSL
 @rpr.route('/tsl/xml')
 def xml():
@@ -620,7 +708,7 @@ def xml():
     tsl_info = func.tsl_info(user_info["tsl_id"], session["session_id"])
     
     dictFromDB_trusted_lists={
-        "Version":  confxml.TLSIdentifier,
+        "Version":  confxml.TLSVersionIdentifier,
         "SequenceNumber":   tsl_info["SequenceNumber"],
         "TSLType":  confxml.TSLType.get("EU"),
         "SchemeName":   tsl_info["SchemeName_lang"],
@@ -777,38 +865,30 @@ def create_tsl_db():
                 return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
             else:
                 return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
-            
-            
 
-@rpr.route('/tsl/update')
-def update_tsl():
-    data= {'SchemeName': [{'lang':"en", "text":"Test"}, {'lang':"en", "text":"Testes"}],
-           'SchemeOperatorName': [{'lang':"en", "text":"Test"}, {'lang':"fr", "text":"Testeer"}],
-           'PostalAddress':[{"lang":"en","StreetAddress":"Rua da Junqueira, 69", "Locality":"Lisbon","StateOrProvince":"Lisbon","PostalCode":"1300-342 Lisboa","CountryName":"PT"}],
-            'EletronicAddress':[{'lang':"en", "URI":"Test"}],
-            'SchemeTypeCommunityRules':[{'lang':"en", "URI":"Test"}],
-            "SchemeInformationURI":[{'lang':"en", "URI":"Test"}],
-            "SchemeTerritory":"PT",
-            "PolicyOrLegalNotice":[{'lang':"en", "text":"Test"}],
-            'DistributionPoints': ["url", "url"],
-            # 'StatusDeterminationApproach': "http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/EUappropriate",
-            # 'Additional_Information': None
-            }
+@rpr.route('/tsl/edit')
+def tsl_edit():
+        
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
 
-    return render_template("dynamic-form_edit_TLS.html",redirect_url= cfgserv.service_url + "tsl/test", data_edit=data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries)
+    db_data = func.get_data_tsl_edit(user['id'], session["session_id"])
+    
+    return render_template("dynamic-form_edit_TLS.html", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "tsl/edit_db")
 
-@rpr.route('/tsl/test', methods=["GET", "POST"])
-def test():
+@rpr.route('/tsl/edit_db', methods=["GET", "POST"])
+def tsl_edit_db():
+
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
 
     form = dict(request.form)
     form.pop("proceed")
-
     grouped = defaultdict(list)
 
     for key, value in form.items():
-        print(key, value)
         match = re.match(r"(lang|text|URI)_(.*?).(\d+)", key)
-        match2=re.match(r"(PostalAddress)_(.*?).(\d+)",key)
+        match2=re.match(r"(postal_address)_(.*?).(\d+)",key)
         if match:
             attr, prefix, index = match.groups()
             index = int(index)
@@ -828,10 +908,28 @@ def test():
                 
         else:
             grouped[key] = value
-        
     print(grouped)
+    check = func.edit_tsl_db_info(
+        grouped, 
+        user['id'], 
+        session["session_id"]
+    )
 
-    return dict(grouped)
+    if check is None:
+        return ("erro")
+    else:
+        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        session[temp_user_id]["role"] = check
+        
+        if(cfgserv.two_operators):
+            if(check == "tsl_op"):
+                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+            elif(check == "tsp_op"):
+                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+            else:
+                return ("error")
+        else:
+            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
 
 
 @rpr.route('/tsl/sign')
@@ -962,36 +1060,59 @@ def tsp_db_lang():
     TSPInformationURI= request.form.get('TSP Information URI')
     lang = request.form.get('Lang')
 
-    name = {"lang": lang, "name": name}
-    trade_name = {"lang":lang, "trade_name":trade_name}
-    postal_address = {"lang": lang, "StreetAddress": StreetAddress, "Locality": Locality,"StateOrProvince": StateOrProvince,"PostalCode": PostalCode,"CountryName": CountryName}
-    EletronicAddress = {"lang":lang, "EletronicAddress":EletronicAddress}
-    TSPInformationURI = {"lang":lang, "TSPInformationURI":TSPInformationURI}
-
     db_data, tsl_id = func.get_data_tsp(user['id'], session["session_id"])
 
-    current_data_name = json.loads(db_data['name'])
-    current_data_name.append(name)
-    current_data_name = json.dumps(current_data_name)
+    current_data_name = None
+    current_data_trade_name = None
+    current_data_postal_address = None
+    current_data_EletronicAddress = None
+    current_data_TSPInformationURI = None
 
-    current_data_trade_name = json.loads(db_data['trade_name'])
-    current_data_trade_name.append(trade_name)
-    current_data_trade_name = json.dumps(current_data_trade_name)
+    if name:
+        name_data = {"lang": lang, "name": name}
+        current_data_name = json.loads(db_data.get('name', '[]'))
+        current_data_name.append(name_data)
+        current_data_name = json.dumps(current_data_name)
 
-    current_data_postal_address = json.loads(db_data['postal_address'])
-    current_data_postal_address.append(postal_address)
-    current_data_postal_address = json.dumps(current_data_postal_address)
+    if trade_name:
+        trade_name_data = {"lang": lang, "trade_name": trade_name}
+        current_data_trade_name = json.loads(db_data.get('trade_name', '[]'))
+        current_data_trade_name.append(trade_name_data)
+        current_data_trade_name = json.dumps(current_data_trade_name)
 
-    current_data_EletronicAddress = json.loads(db_data['EletronicAddress'])
-    current_data_EletronicAddress.append(EletronicAddress)
-    current_data_EletronicAddress = json.dumps(current_data_EletronicAddress)
+    if all([StreetAddress, Locality, StateOrProvince, PostalCode, CountryName]):
+        postal_address_data = {
+            "lang": lang,
+            "StreetAddress": StreetAddress,
+            "Locality": Locality,
+            "StateOrProvince": StateOrProvince,
+            "PostalCode": PostalCode,
+            "CountryName": CountryName
+        }
+        current_data_postal_address = json.loads(db_data.get('postal_address', '[]'))
+        current_data_postal_address.append(postal_address_data)
+        current_data_postal_address = json.dumps(current_data_postal_address)
 
-    current_data_TSPInformationURI = json.loads(db_data['TSPInformationURI'])
-    current_data_TSPInformationURI.append(TSPInformationURI)
-    current_data_TSPInformationURI = json.dumps(current_data_TSPInformationURI)
+    if EletronicAddress:
+        electronic_address_data = {"lang": lang, "EletronicAddress": EletronicAddress}
+        current_data_EletronicAddress = json.loads(db_data.get('EletronicAddress', '[]'))
+        current_data_EletronicAddress.append(electronic_address_data)
+        current_data_EletronicAddress = json.dumps(current_data_EletronicAddress)
 
-    check = func.tsp_db_lang(session[temp_user_id]["id"], tsl_id, current_data_name, current_data_trade_name, current_data_postal_address,
-                             current_data_EletronicAddress, current_data_TSPInformationURI, session["session_id"])
+    if TSPInformationURI:
+        tsp_info_data = {"lang": lang, "TSPInformationURI": TSPInformationURI}
+        current_data_TSPInformationURI = json.loads(db_data.get('TSPInformationURI', '[]'))
+        current_data_TSPInformationURI.append(tsp_info_data)
+        current_data_TSPInformationURI = json.dumps(current_data_TSPInformationURI)
+
+    check = func.tsp_db_lang(session[temp_user_id]["id"], 
+                             tsl_id, 
+                             current_data_name, 
+                             current_data_trade_name, 
+                             current_data_postal_address,
+                             current_data_EletronicAddress, 
+                             current_data_TSPInformationURI, 
+                             session["session_id"])
 
     if check is None:
         return "err"
@@ -1100,21 +1221,30 @@ def service_db():
     uri = request.form.get('Uri')
     lang = request.form.get('Lang')
 
-    ServiceName = {"lang": lang, "name": service_name}
-    SchemeServiceDefinitionURI = {"lang": lang, "SchemeServiceDefinitionURI": uri}
-
     db_data, tsp_id = func.get_data_service(user['id'], session["session_id"])
     
-    current_data_ServiceName = json.loads(db_data['ServiceName'])
-    current_data_ServiceName.append(ServiceName)
-    current_data_ServiceName = json.dumps(current_data_ServiceName)
-    
-    current_data_SchemeServiceDefinitionURI = json.loads(db_data['SchemeServiceDefinitionURI'])
-    current_data_SchemeServiceDefinitionURI.append(SchemeServiceDefinitionURI)
-    current_data_SchemeServiceDefinitionURI = json.dumps(current_data_SchemeServiceDefinitionURI)
+    current_data_ServiceName = None
+    current_data_SchemeServiceDefinitionURI = None
 
-    check = func.service_db_lang(session[temp_user_id]["id"], tsp_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, 
-                                 session["session_id"])
+    if service_name:
+        service_name_data = {"lang": lang, "name": service_name}
+        current_data_ServiceName = json.loads(db_data.get('ServiceName', '[]'))
+        current_data_ServiceName.append(service_name_data)
+        current_data_ServiceName = json.dumps(current_data_ServiceName)
+
+    if uri:
+        scheme_service_data = {"lang": lang, "SchemeServiceDefinitionURI": uri}
+        current_data_SchemeServiceDefinitionURI = json.loads(db_data.get('SchemeServiceDefinitionURI', '[]'))
+        current_data_SchemeServiceDefinitionURI.append(scheme_service_data)
+        current_data_SchemeServiceDefinitionURI = json.dumps(current_data_SchemeServiceDefinitionURI)
+
+    check = func.service_db_lang(
+        session[temp_user_id]["id"],
+        tsp_id,
+        current_data_ServiceName,
+        current_data_SchemeServiceDefinitionURI,
+        session["session_id"]
+    )
 
     if check is None:
         return ("err")

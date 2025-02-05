@@ -22,6 +22,7 @@ This models.py file contains functions related to queries to add data to DB (use
 import pymysql
 from app_config.config import ConfService
 from db import get_db_connection as conn
+import json
 
 
 def check_user(hash_pid, log_id):
@@ -740,12 +741,61 @@ def update_data_op(current_data_operator_name, current_data_postal_address, curr
         connection = conn()
         if connection:
             cursor = connection.cursor()
+            updates = []
+            values = []
+            if current_data_operator_name:
+                updates.append("operator_name = %s")
+                values.append(current_data_operator_name)
+            
+            if current_data_postal_address:
+                updates.append("postal_address = %s")
+                values.append(current_data_postal_address)
+            
+            if current_data_electronicAddress:
+                updates.append("EletronicAddress = %s")
+                values.append(current_data_electronicAddress)
+            
+            if updates:
+                query = f"""
+                    UPDATE scheme_operators
+                    SET {', '.join(updates)}
+                    WHERE operator_id = %s
+                """
+                values.append(id)
+                
+                cursor.execute(query, values)
+                connection.commit()
+            
+            # extra = {'code': log_id} 
+            # logger.info(f"User successfully added. New user ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"User successfully updated. User updated ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        # extra = {'code': log_id} 
+        # logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def edit_op(grouped, user_id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            operator_name = json.dumps(grouped['operator_name'])
+            electronic_address = json.dumps(grouped['EletronicAddress'])
+            postal_address = json.dumps(grouped['postal_address'])
+
             insert_query = """
                                 UPDATE scheme_operators 
-                                SET operator_name = %s, postal_address = %s, EletronicAddress = %s
+                                SET operator_name = %s, EletronicAddress = %s, postal_address = %s
                                 WHERE operator_id = %s
                             """
-            cursor.execute(insert_query, (current_data_operator_name, current_data_postal_address, current_data_electronicAddress, id,))
+            cursor.execute(insert_query, (operator_name, electronic_address, postal_address, user_id))
             
             connection.commit()
             
@@ -771,15 +821,39 @@ def update_data_tsp(tsl_id, current_data_name, current_data_trade_name, current_
         connection = conn()
         if connection:
             cursor = connection.cursor()
-            insert_query = """
-                                UPDATE trust_service_providers 
-                                SET name = %s, trade_name = %s, postal_address = %s, EletronicAddress = %s, TSPInformationURI = %s
-                                WHERE tsl_id = %s
-                            """
-            cursor.execute(insert_query, (current_data_name, current_data_trade_name, current_data_postal_address,
-                             current_data_EletronicAddress, current_data_TSPInformationURI, tsl_id,))
+            updates = []
+            values = []
+
+            if current_data_name:
+                updates.append("name = %s")
+                values.append(current_data_name)
             
-            connection.commit()
+            if current_data_trade_name:
+                updates.append("trade_name = %s")
+                values.append(current_data_trade_name)
+            
+            if current_data_postal_address:
+                updates.append("postal_address = %s")
+                values.append(current_data_postal_address)
+            
+            if current_data_EletronicAddress:
+                updates.append("EletronicAddress = %s")
+                values.append(current_data_EletronicAddress)
+            
+            if current_data_TSPInformationURI:
+                updates.append("TSPInformationURI = %s")
+                values.append(current_data_TSPInformationURI)
+
+            if updates:  # Apenas executa se houver dados para atualizar
+                insert_query = f"""
+                    UPDATE trust_service_providers
+                    SET {', '.join(updates)}
+                    WHERE tsl_id = %s
+                """
+                values.append(tsl_id)
+
+                cursor.execute(insert_query, values)
+                connection.commit()
             
             # extra = {'code': log_id} 
             # logger.info(f"User successfully added. New user ID: {cursor.lastrowid}", extra=extra)
@@ -802,12 +876,125 @@ def update_data_service(tsp_id, current_data_ServiceName, current_data_SchemeSer
         connection = conn()
         if connection:
             cursor = connection.cursor()
+            updates = []
+            values = []
+
+            if current_data_ServiceName:
+                updates.append("ServiceName = %s")
+                values.append(current_data_ServiceName)
+
+            if current_data_SchemeServiceDefinitionURI:
+                updates.append("SchemeServiceDefinitionURI = %s")
+                values.append(current_data_SchemeServiceDefinitionURI)
+
+            if updates:  # Apenas executa se houver dados para atualizar
+                insert_query = f"""
+                    UPDATE trust_services
+                    SET {', '.join(updates)}
+                    WHERE tsp_id = %s
+                """
+                values.append(tsp_id)
+
+                cursor.execute(insert_query, values)
+                connection.commit()
+            
+            # extra = {'code': log_id} 
+            # logger.info(f"User successfully added. New user ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"User successfully updated. User updated ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        # extra = {'code': log_id} 
+        # logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def get_data_op_edit(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT operator_name, EletronicAddress, postal_address
+                FROM scheme_operators
+                WHERE operator_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                user_info = dict(zip(column_names, result))
+                
+                return user_info
+            else:
+                print(f"No USER found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching USER info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def get_data_edit_tsl(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT schemeTerritory, status, Additional_Information
+                FROM trusted_lists
+                WHERE tsl_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                user_info = dict(zip(column_names, result))
+                
+                return user_info
+            else:
+                print(f"No USER found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching USER info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def edit_tsl(grouped, user_id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            operator_name = json.dumps(grouped['operator_name'])
+            electronic_address = json.dumps(grouped['EletronicAddress'])
+            postal_address = json.dumps(grouped['postal_address'])
+
             insert_query = """
-                                UPDATE trust_services 
-                                SET ServiceName = %s, SchemeServiceDefinitionURI = %s
-                                WHERE tsp_id = %s
+                                UPDATE scheme_operators 
+                                SET operator_name = %s, EletronicAddress = %s, postal_address = %s
+                                WHERE operator_id = %s
                             """
-            cursor.execute(insert_query, (current_data_ServiceName, current_data_SchemeServiceDefinitionURI, tsp_id,))
+            cursor.execute(insert_query, (operator_name, electronic_address, postal_address, user_id))
             
             connection.commit()
             
@@ -825,4 +1012,3 @@ def update_data_service(tsp_id, current_data_ServiceName, current_data_SchemeSer
         if connection:
             cursor.close()
             connection.close()
-

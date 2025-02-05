@@ -101,12 +101,13 @@
                         <h2>Hello {{ user }}</h2>
                         <a href="{{ url_for('RPR.xml') }}" class="menu-option">XML</a>
                         <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">New Info lang</a>
+                        <a href="{{ url_for('RPR.op_edit') }}" class="menu-option">Edit Info</a>
     
                         <h2>Trusted Lists Management (TSL)</h2>
                         <a href="{{ url_for('RPR.view_tsl') }}" class="menu-option">View Current TSL</a>
 
                         <a href="{{ url_for('RPR.create_tsl') }}" class="menu-option">Create New TSL</a>
-                        <a href="{{ url_for('RPR.update_tsl') }}" class="menu-option">Update Existing TSL</a>
+                        <a href="{{ url_for('RPR.tsl_edit') }}" class="menu-option">Update Existing TSL</a>
                         <a href="#sign-tsl" class="menu-option">Digitally Sign the TSL</a>
 
                         <h2>Updates and Auditing</h2>

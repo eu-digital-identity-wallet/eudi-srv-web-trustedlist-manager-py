@@ -161,6 +161,19 @@ def get_data_op(id, log_id):
 
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
+
+def get_data_op_edit(id, log_id):
+    try:
+        check = db.get_data_op_edit(id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
     
 def update_db_info(current_data_operator_name, current_data_postal_address, current_data_electronicAddress, id, log_id):
     try:
@@ -346,6 +359,19 @@ def service_db_lang(id, tsp_id, current_data_ServiceName, current_data_SchemeSer
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
     
+def edit_op_db_info(grouped, user_id, log_id):
+    try:
+        check = db.edit_op(grouped, user_id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
 def get_tsl_info(id, log_id):
     try:
 
@@ -424,6 +450,35 @@ def get_service_info(id, log_id):
             return None
         else:
             return service
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+
+
+def get_data_tsl_edit(id, log_id):
+    try:
+        tsl_id = db.get_user_tsl(id, log_id)
+        check = db.get_data_edit_tsl(tsl_id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+def edit_tsl_db_info(grouped, user_id, log_id):
+    try:
+        tsl_id = db.get_user_tsl(user_id, log_id)
+        check = db.edit_tsl(grouped, tsl_id, log_id)
+        return check
         
     except Exception as e:
         
