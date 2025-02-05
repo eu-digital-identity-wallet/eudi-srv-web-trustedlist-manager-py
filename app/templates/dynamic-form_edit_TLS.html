@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="Title" content="PID Form" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" />
+    <meta name="Keywords" content="EUDI Wallet, PID, Enrolment, Form" />
+    <meta name="Description" content="PID Form for EUDI Wallet" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/vnd.microsoft.icon" />
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.gif') }}" type="image/gif" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" />
+    <link href="{{ url_for('static', filename='bootstrap-3.4.1-dist/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='css/stylesheets/custom/custom_en_9.7.1.20.1679559965505.css') }}" media="all" rel="stylesheet" type="text/css" />
+   
+    <link href="{{ url_for('static', filename='fontawesome-free-5.15.4-web/css/fontawesome.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='test_update.css') }}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" id="jqueryId" src="{{ url_for('static', filename='scripts/jquery/jquery-3.6.3.min.js') }}" charset="UTF-8"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/promiz/promiz-1.0.6.js') }}" charset="UTF-8"></script>
+    <!--
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/sha3/sha3_en_9.7.1.20.1679559965505.js" integrity="sha256-CtgtQUShEl8dHOb+FeLo3tfArvxek4PGiS6UGczk5OY= sha384-DUt2v30t+xTbxAyvcy9BpswNEUrWJT8Fl1P1Fc+ScGgcUzrwtm2idVOj35m6NisW sha512-HrljBBDmVHa8MfWcgNifCVutUrKi/3eutVkadMdDUAP3dcraj6n1u2mx5J+UkkRFwYnEoCpFabG46Jxp8EdDnQ==" charset="UTF-8"></script>
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/static-validator/static-validator_en_9.7.1.20.1679559965505.js" integrity="sha256-hBVKKp1NO+Jxso6WVWYJzYcEyGudrlIJwUpEDp1Zf5E= sha384-my8RgF2Pk8SwCkcpI3HRVX8PX5QyMv+tlmLwVhekljHUBgLVcNe8PxqjYnn9lhUw sha512-VvLFAJWMDPOVXf6HAWnhROxaXLFB0LZWzeglGtlliYHLLEQzrV3N9ixrCfPg3LOrfxtyifR4xdI9+QL2QxRoKw==" charset="UTF-8"></script>
+-->
+
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap-3.4.1-dist/js/bootstrap.min.js') }}" charset="UTF-8" defer="true"></script>
+
+    <!--
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/screen/screen_en_9.7.1.20.1679559965505.js" integrity="sha256-Bt/KIz2P8ILyeohGr85rPLuC6V7lURI5hYwMKIDc2zw= sha384-Mm+L2nENQ0OpPq7RNoEtQVUpvJPZF+lp01OK3yDSCZBHNQFEMT+buBppzOCO2FVk sha512-OdapdrhB9SEwj64seVqqRD2sJWGAC02OvoKuc8nev/DYqy10gviD21XH+wsZcwKI5yVUpcUa215v7PBkJUJ40g==" charset="UTF-8" defer="true"></script>
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/contrast/contrast_en_9.7.1.20.1679559965505.js" integrity="sha256-s379ROUOzGyyK1H8neCEIRKo3wQnabmtXqp1Moh0Vo8= sha384-O7XOTZyM/toKPrGBJBI379zpo4nUxnJT3eUq1dgPwDkuzeJ3N8alAprhuAD3UKhT sha512-nsaRCL+FvdZ0S0dy8btbepr17GnX//XjBpJfr/UYDKpwS2tRUaYs4u8vh8RikLSgKudgRt39EeBuKvkWaCoGPA==" charset="UTF-8" defer="true"></script>
+    -->
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/html5shiv/html5shiv-3.7.3.js') }}" charset="UTF-8"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/respond/respond-1.4.2.js') }}" charset="UTF-8"></script>
+    <meta name="referrer" content="no-referrer">
+    <!--
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/framekiller/framekiller_en_9.7.1.20.1679559965505.js" integrity="sha256-4eAcfcjcYggBc15lar0Ti3diGjQ2qnhfNeAQo2n7f+g= sha384-OOLLE3ikdVyR66gGCHsB/hGYstmmpUtONQOe/U8tP/PRXocqpI43ariFDGzKFcIG sha512-/7sPyYaEFDxkPyGQzkLKHSi/RSXBAbR5BjZLgUtkaRx8Qk4SROLIH96d+7bbkpU61osJDdB9gyjtilpPIFnF6w==" charset="UTF-8"></script>
+    -->
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/loc/loc_en_9.7.1.20.1679559965505.js') }}" charset="UTF-8"></script>
+    <!--
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/locval/locval_en_9.7.1.20.1679559965505.js" integrity="sha256-fGdBvjTPjOPZBmgDo8xMKgZUwmXXCzYZ+BbHErfhc/Q= sha384-Y9eAdYjT/TZ0VPUxw3Ex/TVSZZzPsV1mRoKD0BTkrQn0L615z24j26O2CZdT1Xl+ sha512-T9HoOOy1OkJ0l1GWqvT2RAR9frKd4zImDm1uyHxjmB/nxNBhmdjEhR9MckiWiNv2/UrFrMZJwSMB4Po/ExbFOw==" charset="UTF-8"></script>
+-->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <title>Edit Trusted List Information</title>
+</head>
+
+<body id="responsive-main-nav">
+    <!--
+    <div id="skip"><a href="#content" accesskey="M">Skip to Main Content</a></div>
+    -->
+
+    <div class="main container-fluid">
+
+
+        <header role="banner" class="main-header">
+            <div class="container">
+                <div class="row">
+                    <img src="{{url_for('static', filename='ic-logo.svg')}}">
+                </div>
+            </div>
+        </header>
+
+        <div role="main" class="container">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <!--
+                    <p class="relying-party"><strong>etranslation</strong> requires you to authenticate</p>
+                    -->
+                    <h1>Edit your Trusted List Information</h1>
+                    <div id="content" class="content-wrap text-wrap content-center col-md-6 col-sm-7" >
+
+                        <!-- <status>EID_COUNTRY_SELECTION</status> -->
+                        <h2>Please edit/update your Trusted List Information</h2>
+                        <!--bean-ext:form action="" styleClass="mt"-->
+                        <form id="regForm" method="post" action="{{redirect_url}}" accept-charset="UTF-8" enctype="multipart/form-data" autocapitalize="off" spellcheck="false">
+                            <!-- <div class="nodisplay"><input type="hidden" name="TxId" value="ECAS_TX-7404446-Rej9lkLFeXORXm9rG7q4Xqo1xGRJ86gt3hoJcfMG3XyxQrAyn8mu9PbXRCZoKKUbCzLlIzG5jKgHy4vlfgkG5M-rS0vSrmBGYCAxyMeVAWeYi-PVgrhNnzagSfzJvUraGtvIPzqv8cbsV46ZMUiinVIlcDkNWEKzr5uBS6CMnabjUfRGxDHabrZictNyNLy0AsLWy" /></div><input type="hidden" name="loginRequestId" value="ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" id="loginRequestId" /> -->
+                            <h3>Trusted List Form</h3>
+                            {% for name, value in data_edit.items() %}
+                                {% if name == "PostalAddress" %}
+                                    <div class="row g-3">
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">{{name}}</button>
+                                        <div class="content">
+                                            {% for data in value %}
+                                                <label for="Lang">Lang</label>
+                                                <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;" name="PostalAddress_lang.{{loop.index0}}"  required>
+                                                    {% for lang1 in Langs %}
+                                                        <option value="{{ lang1 }}" {% if data['lang'] == lang1 %} selected {% endif %}>{{ lang1 }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                
+                                                <label for="StreetAddress">StreetAddress</label>
+                                                <input type="text" class="form-control" placeholder="StreetAddress"  name="PostalAddress_StreetAddress.{{loop.index0}}" value="{{ data['StreetAddress'] }}" required >
+                                                
+                                                <label for="Locality">Locality</label>
+                                                <input type="text" class="form-control" placeholder="Locality" name="PostalAddress_Locality.{{loop.index0}}" value="{{ data['Locality'] }}"required >
+                                                
+                                                <label for="StateOrProvince">StateOrProvince</label>
+                                                <input type="text" class="form-control" placeholder="StateOrProvince" name="PostalAddress_StateOrProvince.{{loop.index0}}" value="{{ data['StateOrProvince'] }}"required >
+                                                
+                                                <label for="PostalCode">PostalCode</label>
+                                                <input type="text" class="form-control" placeholder="PostalCode" name="PostalAddress_PostalCode.{{loop.index0}}" value="{{ data['PostalCode']}}"required >
+                                                
+                                                <label for="CountryName">CountryName</label>
+                                                <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="PostalAddress_CountryName.{{loop.index0}}"  required>
+                                                    {% for country in Countries %}
+                                                        <option value="{{ lang }}" {% if data['CountryName'] == country %} selected {% endif %}>{{ country }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% elif name=="SchemeTerritory" %}
+                                    <div class="row g-3">
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">SchemeTerritory</button>
+                                        <div class="content">
+                                            <label for="SchemeCountry">SchemeCountry</label>
+                                            <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="SchemeCountry"  required>
+                                                {% for country in Countries %}
+                                                    <option value="{{ country}}" {% if value == country %} selected {% endif %}>{{ country }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                {% elif name=="DistributionPoints" %}
+                                    <div class="row g-3">
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">DistributionPoints</button>
+                                        <div class="content">
+                                            {% for data in value %}
+                                                <div class="content_child">
+                                                    <label for="URI">URI</label>
+                                                    <input type="text" class="form-control" placeholder="URI"  name="DistributionPoints.{{loop.index0}}" value="{{data}}" required >
+                                                </div>
+                                            {% endfor %} 
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="row g-3">
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">{{name}}</button>
+                                        <div class="content">
+                                            {% for data in value %}
+                                                {% set outer_loop = loop %}
+                                                <div class="content_child">
+                                                {% for key, key_data in data.items() %}
+                                                    {% if key == "lang" %}
+                                                        <label for="Lang">Lang</label>
+                                                        <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="{{key}}_{{name}}.{{outer_loop.index0}}"  required>
+                                                            {% for lang in Langs %}
+                                                                <option value="{{ lang }}" {% if key_data == lang %} selected {% endif %}>{{ lang }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    {% else %}
+                                                        <label for="{{ key }}">{{ key }}</label>
+                                                        <input type="text" class="form-control" placeholder="{{key}}" aria-label="{{key}}" name="{{key}}_{{name}}.{{outer_loop.index0}}" value="{{key_data}}" required>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}    
+                            <div class="clearfix"></div>
+                            <span class="more-submit">
+                                <input type="submit"  name="proceed" accesskey="S" value="Submit" class="btn btn-primary" title="Submit" /><a href="/" class="btn btn-back">Cancel</a>
+                            </span>
+                        </form>
+                        <!--<script type="text/javascript" src="{{ url_for('static', filename='scripts/dynamic-validator/selectCountryForm_9.7.1.20.1679559965505_en.js') }}" charset="UTF-8" defer="true"></script>-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer container-fluid" role="contentinfo">
+        <div class="container">
+            <div class="row">
+                <!-- <div class="clearfix col-sm-8">
+
+                    <ul class="eu-login-link">
+                        <li><a href="https://webgate.ec.europa.eu/cas/about.html?loginRequestId=ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" class="service" title="About EU Login">About EU Login</a></li>
+                        <li><a href="https://webgate.ec.europa.eu/cas/cookies.html?loginRequestId=ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" class="service" title="Cookies">Cookies</a></li>
+                        <li><a href="https://webgate.ec.europa.eu/cas/privacyStatement.html?loginRequestId=ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" accesskey="5" class="service" title="Privacy Statement">Privacy Statement</a></li>
+                        <li><a href="https://webgate.ec.europa.eu/cas/contact.html?loginRequestId=ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" accesskey="2" class="service" title="Contact">Contact</a></li>
+                        <li><a href="https://webgate.ec.europa.eu/cas/help.html?loginRequestId=ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" class="service" title="Help">Help</a></li>
+                    </ul>
+
+                    <ul class="external-link">
+
+                        <li><a href="http://europa.eu" target="_blank" class="link-external" title="European Union" rel="noopener noreferrer">European Union</a><span class="sr-only">(opens in a new tab)</span></li>
+                        <li><a href="http://europa.eu/about-eu/institutions-bodies/index_en.htm" target="_blank" class="link-external" title="EU institutions" rel="noopener noreferrer">EU institutions</a><span class="sr-only">(opens in a new tab)</span></li>
+                    </ul><span class="server-information" aria-label="EU Login server version"><span class="text-danger">9.7.1-dn1p</span><span aria-hidden="true"> | </span>8<span> </span>ms</span>
+                </div> -->
+                <!--
+                <div class="ec-logo col-sm-4" aria-label="Powered by European Commission"><span class="powered-by" aria-hidden="true">Powered by</span><a href="http://ec.europa.eu" target="_blank" rel="noopener noreferrer"><img src="https://webgate.ec.europa.eu/cas/images/ec-logo-en.png" alt="Go to European Commission website" /></a></div>
+                -->
+            </div>
+        </div>
+    </footer>
+    <!-- Version 9.7.1.20 - 23/03/2023 - 09:26 -->
+</body>
+<script>
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+    });
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+
+        // here we are gonna loop through the elements
+        for(item of coll){
+        // and remove .active class on the button
+        item.classList.remove("active");
+
+        // here we are checking the next element and making it don't display
+        item.nextElementSibling.style.display = "none";
+        }
+        
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+        content.style.display = "none";
+        } else {
+        content.style.display = "block";
+        }
+    });
+    }
+
+</script>
+
+</html>

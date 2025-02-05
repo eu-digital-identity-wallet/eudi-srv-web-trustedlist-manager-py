@@ -46,7 +46,7 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
 
     schemeInfo = test.TSLSchemeInformationType()
 
-    schemeInfo.TSLVersionIdentifier=dictFromDB_trusted_lists["Version"]
+    schemeInfo.TSLVersionIdentifier=confxml.TLSVersionIdentifier
     schemeInfo.TSLSequenceNumber=dictFromDB_trusted_lists["SequenceNumber"] + 1
     TSLType=test.NonEmptyURIType()
     TSLType.set_valueOf_(dictFromDB_trusted_lists["TSLType"])
