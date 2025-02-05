@@ -419,6 +419,7 @@ def getpidoid4vp():
             attributesForm={}
 
             form_items={
+                "Lang": "lang",
                 "Role" : "select",
                 "Operator Name": "string",
                 "Operator Address": "string",
@@ -426,9 +427,10 @@ def getpidoid4vp():
                 "State or Province": "string",
                 "Postal Code": "string",
                 "Electronic Address": "string",
-                "Lang": "string"
+                "Country": "string"
             }
             descriptions = {
+                "Lang": "string",
                 "Role" : "select",
                 "Operator Name": "string",
                 "Operator Address": "string",
@@ -436,7 +438,7 @@ def getpidoid4vp():
                 "State or Province": "string",
                 "Postal Code": "string",
                 "Electronic Address": "string",
-                "Lang": "string"
+                "Country": "string"
             }
 
             attributesForm.update(form_items)
@@ -446,7 +448,6 @@ def getpidoid4vp():
             check = func.check_role_user(aux, session["session_id"])
             session[temp_user_id]["role"] = check
             if(cfgserv.two_operators == True):
-                print("teste3")
                 if(check == "tsl_op"):
                     return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
                 elif(check == "tsp_op"):
@@ -472,21 +473,15 @@ def user_auth():
     stateProvince = request.form.get('State or Province')
     postalCode = request.form.get('Postal Code')
     electronicAddress = request.form.get('Electronic Address')
+    Country = request.form.get('Country')
     lang = request.form.get('Lang')
 
-    op={
-        "lang": lang,
-        "operator_name":    opName,
-        "StreetAddress"	:   address,
-        "Locality"	:   locality,
-        "StateOrProvince"	: stateProvince,
-        "PostalCode"	: postalCode,
-        "CountryName"	: user["issuing_country"],
-        "EletronicAddress": electronicAddress,
-        "country": user['issuing_country']
-    }
-    op_json = json.dumps(op)
-    check = func.user_db_info(role, op_json, user['id'], session["session_id"])
+    operator_name = '[{"lang":"' + lang + '", "operator_name":"'+ opName + '"}]'
+    electronicAddress = '[{"lang":"' + lang + '", "electronicAddress":"'+ electronicAddress + '"}]'
+
+    PostalAddress = '[{"lang":"' + lang + '", "address":"'+ address + '", "locality":"'+ locality + '", "StateOrProvince":"'+ stateProvince + '", "postalCode":"'+ postalCode + '", "CountryName":"'+ Country + '"}]'
+
+    check = func.user_db_info(role, operator_name, PostalAddress, electronicAddress, user['id'], session["session_id"])
 
     if check is None:
         return ("erro")
@@ -535,27 +530,29 @@ def op_lang():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Operator Name": "string",
         "Operator Address": "string",
         "Locality": "string",
         "State or Province": "string",
         "Postal Code": "string",
         "Electronic Address": "string",
-        "Lang": "string"
+        "Country": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Operator Name": "string",
         "Operator Address": "string",
         "Locality": "string",
         "State or Province": "string",
         "Postal Code": "string",
         "Electronic Address": "string",
-        "Lang": "string"
+        "Country": "string"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("dynamic-form.html", role = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "op_data_lang_db")
+    return render_template("form.html", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "op_data_lang_db")
 
 
 @rpr.route('/op_data_lang_db', methods=["GET", "POST"])
@@ -570,27 +567,29 @@ def op_lang_db():
     stateProvince = request.form.get('State or Province')
     postalCode = request.form.get('Postal Code')
     electronicAddress = request.form.get('Electronic Address')
+    Country = request.form.get('Country')
     lang = request.form.get('Lang')
 
-    op={
-        "lang":lang,
-        "operator_name": opName,
-        "StreetAddress": address,
-        "Locality": locality,
-        "StateOrProvince": stateProvince,
-        "PostalCode": postalCode,
-        "CountryName": user["issuing_country"],
-        "EletronicAddress": electronicAddress,
-        "country": user['issuing_country']
-    }
+    operator_name = {"lang": lang, "operator_name": opName}
+    electronicAddress = {"lang": lang, "electronicAddress": electronicAddress}
+    postal_address = {"lang": lang, "StreetAddress": address, "Locality": locality,"StateOrProvince": stateProvince,"PostalCode": postalCode,"CountryName": Country}
 
     db_data = func.get_data_op(user['id'], session["session_id"])
     
-    op_json = json.dumps(op)
+    current_data_operator_name = json.loads(db_data['operator_name'])
+    current_data_operator_name.append(operator_name)
+    current_data_operator_name = json.dumps(current_data_operator_name)
     
-    combined = db_data['data']+ op_json
+    current_data_electronicAddress = json.loads(db_data['EletronicAddress'])
+    current_data_electronicAddress.append(electronicAddress)
+    current_data_electronicAddress = json.dumps(current_data_electronicAddress)
     
-    check = func.update_db_info(combined, user['id'], session["session_id"])
+    current_data_postal_address = json.loads(db_data['postal_address'])
+    current_data_postal_address.append(postal_address)
+    current_data_postal_address = json.dumps(current_data_postal_address)
+    
+    check = func.update_db_info(current_data_operator_name, current_data_postal_address, current_data_electronicAddress, 
+                                user['id'], session["session_id"])
 
     if check is None:
         return ("erro")
@@ -608,10 +607,6 @@ def op_lang_db():
                 return ("error")
         else:
             return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
-        
-
-
-
 
 # TSL
 @rpr.route('/tsl/xml')
@@ -621,43 +616,6 @@ def xml():
     user = session[temp_user_id]
 
     user_info = func.get_user_info(user["id"], session["session_id"])
-
-    json_objects = user_info['data'].replace('}{', '}\n{').splitlines()
-
-    dict_list = [json.loads(json_obj) for json_obj in json_objects]
-
-    operator_info = []
-    PostalAddress_info = []
-    for entry in dict_list:
-        PostalAddress = {
-            "lang": entry["lang"],
-            "StreetAddress": entry["StreetAddress"],
-            "Locality": entry["Locality"],
-            "StateOrProvince": entry["StateOrProvince"],
-            "PostalCode": entry["PostalCode"],
-            "CountryName": entry["CountryName"]
-        }
-        PostalAddress_info.append(PostalAddress)
-
-        dictFromDB_scheme_operator = {
-            "lang": entry["lang"],
-            "operator_name": entry["operator_name"],
-            "StreetAddress": entry["StreetAddress"],
-            "Locality": entry["Locality"],
-            "StateOrProvince": entry["StateOrProvince"],
-            "PostalCode": entry["PostalCode"],
-            "CountryName": entry["CountryName"],
-            "EletronicAddress": entry["EletronicAddress"],
-            "country": entry["country"]
-        }
-        operator_info.append(dictFromDB_scheme_operator)
-
-
-    for item in PostalAddress_info:
-        print(json.dumps(item, indent=4))
-        
-    for item in operator_info:
-        print(json.dumps(item, indent=4))
 
     tsl_info = func.tsl_info(user_info["tsl_id"], session["session_id"])
     
@@ -683,64 +641,14 @@ def xml():
 
     tsp_data = func.get_tsp_info(user_info["tsl_id"], session["session_id"])
 
-    json_objects = tsp_data['data'].replace('}{', '}\n{').splitlines()
-
-    dict_list = [json.loads(json_obj) for json_obj in json_objects]
-
-    tsp_info = []
-    for entry in dict_list:
-        dictFromDB_trust_service_providers = {
-            "lang": entry["lang"],
-            "name": entry["name"],
-            "trade_name": entry["trade_name"],
-            "StreetAddress": entry["StreetAddress"],
-            "Locality": entry["Locality"],
-            "StateOrProvince": entry["StateOrProvince"],
-            "PostalCode": entry["PostalCode"],
-            "CountryName": entry["CountryName"],
-            "EletronicAddress": entry["EletronicAddress"],
-            "TSPInformationURI": entry["TSPInformationURI"],
-            "country": entry["name"]
-        }
-        tsp_info.append(dictFromDB_trust_service_providers)
-
-    for item in tsp_info:
-        print(json.dumps(item, indent=4))
-
     service_data = func.get_service_info(tsp_data["tsp_id"], session["session_id"])
 
     qualifiers = cfgserv.qualifiers.get(service_data["qualifier"])
 
-    json_objects = service_data['data'].replace('}{', '}\n{').splitlines()
 
-    dict_list = [json.loads(json_obj) for json_obj in json_objects]
-
-    service_info = []
-    for entry in dict_list:
-        dictFromDB_trust_services={
-            "lang": entry["lang"],
-            "service_type": service_data['service_type'],
-            "service_name": entry["ServiceName"],
-            "digital_identity" :    service_data["digital_identity"],
-            "status" :  service_data["status"],
-            "status_start_date":    service_data["status_start_date"],
-            "SchemeServiceDefinitionURI":   entry["SchemeServiceDefinitionURI"],
-            #"general":"JSON",
-            # "qualifier" varchar(255) DEFAULT NULL,
-            # "qualificationElement" varchar(255) DEFAULT NULL,
-            # "criteriaList" varchar(255) DEFAULT NULL,
-            # "takenOverBy" varchar(255) DEFAULT NULL,
-        }
-        service_info.append(dictFromDB_trust_services)
-
-    for item in service_info:
-        print(item)
-
-    print(qualifiers)
-
-    file = xml_gen(PostalAddress_info, operator_info, dictFromDB_trusted_lists, tsp_info, service_info, qualifiers)
+    file = xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualifiers)
     
-    return render_template("download_tsl.html", dictFromDB_trusted_lists = dictFromDB_trusted_lists, dictFromDB_trust_services = service_info, file_data = file, temp_user_id = temp_user_id)
+    return render_template("download_tsl.html", dictFromDB_trusted_lists = dictFromDB_trusted_lists, file_data = file, temp_user_id = temp_user_id)
     
 @rpr.route('/download', methods=["GET", "POST"])
 def download_tsl():
@@ -783,38 +691,33 @@ def view_tsl():
 def create_tsl():
     
     temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
     
     attributesForm={}
 
     form_items={
         "Version": "int",
         "TSL Type" : "string",
-        "Scheme Name in your country language": "string", 
-        "Scheme Name in English": "string", 
-        "Uri in your country language": "string",
-        "Uri in English": "string",
-        "Scheme Type Community Rules in your country language": "string",
-        "Scheme Type Community Rules in English": "string",
-        "Policy Or Legal Notice in your country language": "string",
-        "Policy Or Legal Notice in English": "string",
-        "Pointers to other TSL, if you have more than one, place the several pointers separated by commas (,)": "string",
-        "Distribution Points, if you have more than one, place the several Distribution Points separated by commas (,)": "string",
+        "Scheme Name": "string", 
+        "Uri": "string",
+        "Scheme Territory": "string",
+        "Scheme Type Community Rules": "rules",
+        "Policy Or Legal Notice": "string",
+        "Pointers to other TSL": "string",
+        "Distribution Points": "string",
         "Issue_date": "full-date",
         "Next Update": "full-date",
         "Status": "string",
-        "Additiona lInformation": "string"
+        "Additional Information": "string"
     }
     descriptions = {
         "Version": "int",
         "TSL Type" : "string",
-        "Scheme Name in your country language": "string", 
-        "Scheme Name in English": "string", 
-        "Uri in your country language": "string",
-        "Uri in English": "string",
-        "Scheme Type Community Rules in your country language": "string",
-        "Scheme Type Community Rules in English": "string",
-        "Policy Or Legal Notice in your country language": "string",
-        "Policy Or Legal Notice in English": "string",
+        "Scheme Name": "string", 
+        "Uri": "string",
+        "Scheme Territory": "string",
+        "Scheme Type Community Rules": "string",
+        "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
         "Distribution Points": "string",
         "Issue_date": "full-date",
@@ -824,8 +727,13 @@ def create_tsl():
     }
 
     attributesForm.update(form_items)
-    
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db") 
+    rules = cfgserv.SchemeTypeCommunityRules
+
+    # for items in rules:
+    #     if 'Scheme Territory' in items:
+    #         rules[items] = rules[items] + user['issuing_country']
+            
+    return render_template("form.html", rules = rules, lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
 
 @rpr.route('/tsl/create/db', methods=["GET", "POST"])
 def create_tsl_db():
@@ -836,29 +744,30 @@ def create_tsl_db():
     Version = request.form.get('Version')
     Sequence_number = 1
     TSLType = request.form.get('TSL Type')
-    SchemeName_lang = request.form.get('Scheme Name in your country language')
-    SchemeName_en = request.form.get('Scheme Name in English')
-    Uri_lang = request.form.get('Uri in your country language')
-    Uri_en = request.form.get('Uri in English')
-    SchemeTypeCommunityRules_lang = request.form.get('Scheme Type Community Rules in your country language')
-    SchemeTypeCommunityRules_en = request.form.get('Scheme Type Community Rules in English')
-    PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice in your country language')
-    PolicyOrLegalNotice_en = request.form.get('Policy Or Legal Notice in English')
+    SchemeName_lang = request.form.get('Scheme Name')
+    Uri_lang = request.form.get('Uri')
+    
+    options = request.form.getlist('rules')
+    SchemeTypeCommunityRules_lang = ", ".join(options)
+
+    schemeTerritory = request.form.get('Scheme Territory')
+    PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice')
     PointerstootherTSL = request.form.get('Pointers to other TSL')
     DistributionPoints = request.form.get('Distribution Points')
     Issue_date = request.form.get('Issue_date')
     NextUpdate = request.form.get('Next Update')
     Status = request.form.get('Status')
     AdditionalInformation = request.form.get('Additional Information')
+   
 
     check = func.check_country(user['issuing_country'], session["session_id"])
-    check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
-                             SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
-                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, check, session["session_id"])
+    check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+                             PolicyOrLegalNotice_lang, PointerstootherTSL, 
+                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, check, session["session_id"])
     
     
     if check is None:
-        return (check)
+        return ("err")
     else:
         check = func.update_user_tsl(user['id'], check, session["session_id"])
         if check is None:
@@ -868,6 +777,8 @@ def create_tsl_db():
                 return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
             else:
                 return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+            
+            
 
 @rpr.route('/tsl/update')
 def update_tsl():
@@ -936,35 +847,33 @@ def create_tsp():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Name": "string",
         "Trade Name": "string",
         "StreetAddress" : "string",
         "Locality": "string",
         "State Or Province": "string",
         "Postal Code": "string",
-        "Country Name": "string",
         "Eletronic Address": "string",
         "TSP Information URI": "string",
-        "country": "string",
-        "Lang": "string"
+        "Country Name": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Name": "string",
         "Trade Name": "string",
         "StreetAddress" : "string",
         "Locality": "string",
         "State Or Province": "string",
         "Postal Code": "string",
-        "Country Name": "string",
         "Eletronic Address": "string",
         "TSP Information URI": "string",
-        "country": "string",
-        "Lang": "string"
+        "Country Name": "string"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/create/db")
+    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/create/db")
 
 
 @rpr.route('/tsp/create/db', methods=["GET", "POST"])
@@ -979,29 +888,18 @@ def create_tsp_db():
     Locality= request.form.get('Locality')
     StateOrProvince= request.form.get('State Or Province')
     PostalCode= request.form.get('Postal Code')
-    CountryName= request.form.get('Country Name')
     EletronicAddress= request.form.get('Eletronic Address')
     TSPInformationURI= request.form.get('TSP Information URI')
-    country= request.form.get('country')
+    country= request.form.get('Country Name')
     lang = request.form.get('Lang')
 
-    tsp = {
-        "lang" :    lang,
-        "name" :    name,
-        "trade_name" :  trade_name,
-        "StreetAddress"	:   StreetAddress,
-        "Locality"	:   Locality,
-        "StateOrProvince"	:   StateOrProvince,
-        "PostalCode"	:   PostalCode,
-        "CountryName"	:   CountryName,
-        "EletronicAddress": EletronicAddress,
-        "TSPInformationURI":    TSPInformationURI,
-        "country":  country
-    }
-    
-    tsp_json = json.dumps(tsp)
-
-    check = func.tsp_db_info(session[temp_user_id]["id"], tsp_json, session["session_id"])
+    name = '[{"lang":"' + lang + '", "name":"'+ name + '"}]'
+    trade_name = '[{"lang":"' + lang + '", "trade_name":"'+ trade_name + '"}]'
+    EletronicAddress = '[{"lang":"' + lang + '", "EletronicAddress":"'+ EletronicAddress + '"}]'
+    TSPInformationURI = '[{"lang":"' + lang + '", "TSPInformationURI":"'+ TSPInformationURI + '"}]'
+    PostalAddress = '[{"lang":"' + lang + '", "StreetAddress":"'+ StreetAddress + '", "Locality":"'+ Locality + '", "StateOrProvince":"'+ StateOrProvince + '", "PostalCode":"'+ PostalCode + '", "CountryName":"'+ country + '"}]'
+ 
+    check = func.tsp_db_info(session[temp_user_id]["id"], name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI, session["session_id"])
 
     if check is None:
         return "err"
@@ -1019,6 +917,7 @@ def tsp_lang():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Name": "string",
         "Trade Name": "string",
         "StreetAddress" : "string",
@@ -1027,11 +926,10 @@ def tsp_lang():
         "Postal Code": "string",
         "Country Name": "string",
         "Eletronic Address": "string",
-        "TSP Information URI": "string",
-        "country": "string",
-        "Lang": "string"
+        "TSP Information URI": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Name": "string",
         "Trade Name": "string",
         "StreetAddress" : "string",
@@ -1040,14 +938,12 @@ def tsp_lang():
         "Postal Code": "string",
         "Country Name": "string",
         "Eletronic Address": "string",
-        "TSP Information URI": "string",
-        "country": "string",
-        "Lang": "string"
+        "TSP Information URI": "string"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/tsp_db_data_lang")
+    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/tsp_db_data_lang")
 
 
 @rpr.route('/tsp/tsp_db_data_lang', methods=["GET", "POST"])
@@ -1064,29 +960,38 @@ def tsp_db_lang():
     CountryName= request.form.get('Country Name')
     EletronicAddress= request.form.get('Eletronic Address')
     TSPInformationURI= request.form.get('TSP Information URI')
-    country= request.form.get('country')
     lang = request.form.get('Lang')
 
-    tsp = {
-        "lang" :    lang,
-        "name" :    name,
-        "trade_name" :  trade_name,
-        "StreetAddress"	:   StreetAddress,
-        "Locality"	:   Locality,
-        "StateOrProvince"	:   StateOrProvince,
-        "PostalCode"	:   PostalCode,
-        "CountryName"	:   CountryName,
-        "EletronicAddress": EletronicAddress,
-        "TSPInformationURI":    TSPInformationURI,
-        "country":  country
-    }
-    
+    name = {"lang": lang, "name": name}
+    trade_name = {"lang":lang, "trade_name":trade_name}
+    postal_address = {"lang": lang, "StreetAddress": StreetAddress, "Locality": Locality,"StateOrProvince": StateOrProvince,"PostalCode": PostalCode,"CountryName": CountryName}
+    EletronicAddress = {"lang":lang, "EletronicAddress":EletronicAddress}
+    TSPInformationURI = {"lang":lang, "TSPInformationURI":TSPInformationURI}
+
     db_data, tsl_id = func.get_data_tsp(user['id'], session["session_id"])
-    
-    tsp_json = json.dumps(tsp)
-    combined = db_data+ tsp_json
-    
-    check = func.tsp_db_lang(session[temp_user_id]["id"], tsl_id, combined, session["session_id"])
+
+    current_data_name = json.loads(db_data['name'])
+    current_data_name.append(name)
+    current_data_name = json.dumps(current_data_name)
+
+    current_data_trade_name = json.loads(db_data['trade_name'])
+    current_data_trade_name.append(trade_name)
+    current_data_trade_name = json.dumps(current_data_trade_name)
+
+    current_data_postal_address = json.loads(db_data['postal_address'])
+    current_data_postal_address.append(postal_address)
+    current_data_postal_address = json.dumps(current_data_postal_address)
+
+    current_data_EletronicAddress = json.loads(db_data['EletronicAddress'])
+    current_data_EletronicAddress.append(EletronicAddress)
+    current_data_EletronicAddress = json.dumps(current_data_EletronicAddress)
+
+    current_data_TSPInformationURI = json.loads(db_data['TSPInformationURI'])
+    current_data_TSPInformationURI.append(TSPInformationURI)
+    current_data_TSPInformationURI = json.dumps(current_data_TSPInformationURI)
+
+    check = func.tsp_db_lang(session[temp_user_id]["id"], tsl_id, current_data_name, current_data_trade_name, current_data_postal_address,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, session["session_id"])
 
     if check is None:
         return "err"
@@ -1095,8 +1000,7 @@ def tsp_db_lang():
             return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
         else:
             return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
-        
-       
+
 # Service
 @rpr.route('/service/create')
 def create_service():
@@ -1106,30 +1010,31 @@ def create_service():
     attributesForm={}
 
     form_items={
-        "Service Type": "string",
-        "Service Name": "string",
+        "Lang": "lang",
+        "Service Type": "select_type",
+        "Service Name": "select_name",
         "Qualifier": "select",
         "Digital Identity" : "string",
         "Status": "string",
         "Status Start Date": "full-date",
-        "Uri": "string",
-        "Lang": "string"
+        "Uri": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Service Type": "Type of service provided",
         "Service Name": "Provide the service name",
         "Qualifier": "Select applicable qualifiers",
         "Digital Identity": "Specify the digital identity",
         "Status": "Service status",
         "Status Start Date": "Start date of the current status",
-        "Uri": "Service URI",
-        "Lang": "string"
+        "Uri": "Service URI"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
-                           data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/create/db")
+    return render_template("form_service.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+                           data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/create/db", qualified = cfgserv.qualified,
+                           non_qualified = cfgserv.non_qualified, national = cfgserv.national, serv_cat = cfgserv.service_category)
 
 
 @rpr.route('/service/create/db', methods=["GET", "POST"])
@@ -1137,9 +1042,9 @@ def service_tsp_db():
     
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
-
-    service_type = request.form.get('Service Type')
-    service_name = request.form.get('Service Name')
+    
+    service_type = request.form.get('category')
+    service_name = request.form.get('option')
     qualifier = request.form.get('Qualifier')
     digital_identity = request.form.get('Digital Identity')
     status = request.form.get('Status')
@@ -1147,15 +1052,10 @@ def service_tsp_db():
     uri = request.form.get('Uri')
     lang = request.form.get('Lang')
 
-    service = {
-        "lang":    lang, 
-        "ServiceName" :    service_name,
-        "SchemeServiceDefinitionURI" :  uri
-    }
+    ServiceName = '[{"lang":"' + lang + '", "name":"'+ service_name + '"}]'
+    SchemeServiceDefinitionURI = '[{"lang":"' + lang + '", "SchemeServiceDefinitionURI":"'+ uri + '"}]'
 
-    service_json = json.dumps(service)
-
-    check = func.service_db_info(session[temp_user_id]["id"], service_json, digital_identity, service_type, status, status_start_date, qualifier, session["session_id"])
+    check = func.service_db_info(session[temp_user_id]["id"], ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, session["session_id"])
 
     if check is None:
         return (check)
@@ -1174,19 +1074,19 @@ def service_lang():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Service Name": "string",
-        "Uri": "string",
-        "Lang": "string"
+        "Uri": "string"
     }
     descriptions = {
+        "Lang": "string",
         "Service Name": "Provide the service name",
-        "Uri": "Service URI",
-        "Lang": "string"
+        "Uri": "Service URI"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
                            data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/service_lang_db")
 
 
@@ -1200,19 +1100,21 @@ def service_db():
     uri = request.form.get('Uri')
     lang = request.form.get('Lang')
 
-    service = {
-        "lang":    lang, 
-        "ServiceName" :    service_name,
-        "SchemeServiceDefinitionURI" :  uri
-    }
+    ServiceName = {"lang": lang, "name": service_name}
+    SchemeServiceDefinitionURI = {"lang": lang, "SchemeServiceDefinitionURI": uri}
 
     db_data, tsp_id = func.get_data_service(user['id'], session["session_id"])
     
-    service_json = json.dumps(service)
+    current_data_ServiceName = json.loads(db_data['ServiceName'])
+    current_data_ServiceName.append(ServiceName)
+    current_data_ServiceName = json.dumps(current_data_ServiceName)
+    
+    current_data_SchemeServiceDefinitionURI = json.loads(db_data['SchemeServiceDefinitionURI'])
+    current_data_SchemeServiceDefinitionURI.append(SchemeServiceDefinitionURI)
+    current_data_SchemeServiceDefinitionURI = json.dumps(current_data_SchemeServiceDefinitionURI)
 
-    combined = db_data['data'] + service_json
-
-    check = func.service_db_lang(session[temp_user_id]["id"], tsp_id, combined, session["session_id"])
+    check = func.service_db_lang(session[temp_user_id]["id"], tsp_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, 
+                                 session["session_id"])
 
     if check is None:
         return ("err")

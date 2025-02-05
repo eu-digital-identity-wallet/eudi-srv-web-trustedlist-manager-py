@@ -129,7 +129,7 @@ def user_db(user, user_name, country_id, log_id):
         aux = db.check_user(hash_pid, log_id)
 
         if(aux == None):
-            user_id = db.insert_user(hash_pid, user_name, country_id, log_id) 
+            user_id = db.insert_user(hash_pid, user_name, issuing_country, country_id, log_id) 
         
             if not user_id:
                 # extra = {'code': log_id} 
@@ -162,9 +162,9 @@ def get_data_op(id, log_id):
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
     
-def update_db_info(combined, id, log_id):
+def update_db_info(current_data_operator_name, current_data_postal_address, current_data_electronicAddress, id, log_id):
     try:
-        check = db.update_data_op(combined, id, log_id)
+        check = db.update_data_op(current_data_operator_name, current_data_postal_address, current_data_electronicAddress, id, log_id)
         return check
         
     except Exception as e:
@@ -176,9 +176,9 @@ def update_db_info(combined, id, log_id):
         return "Error processing the form.", 500
     
 
-def user_db_info(role, op_json, id, log_id):
+def user_db_info(role, operator_name, PostalAddress, electronicAddress, id, log_id):
     try:
-        check = db.insert_user_info(role, op_json, id, log_id) 
+        check = db.insert_user_info(role, operator_name, PostalAddress, electronicAddress, id, log_id) 
 
         return check
     
@@ -204,13 +204,13 @@ def check_country(user_country, log_id):
             print(f"Error processing the form: {e}")
             return "Error processing the form.", 500
     
-def tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
-                SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
-                DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, country, log_id):
+def tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+             PolicyOrLegalNotice_lang, PointerstootherTSL, 
+                DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id):
     try:
-        check = db.insert_tsl_info(Version, Sequence_number, TSLType, SchemeName_lang, SchemeName_en, Uri_lang,Uri_en, SchemeTypeCommunityRules_lang,
-                             SchemeTypeCommunityRules_en, PolicyOrLegalNotice_lang, PolicyOrLegalNotice_en, PointerstootherTSL, 
-                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, country, log_id) 
+        check = db.insert_tsl_info(Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+                             PolicyOrLegalNotice_lang, PointerstootherTSL, 
+                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id) 
 
         return check
     
@@ -252,10 +252,10 @@ def check_role_user(id, log_id):
         return "Error processing the form.", 500
 
  
-def tsp_db_info(id, tsp_json,  log_id):
+def tsp_db_info(id, name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI,  log_id):
     try:
         check = db.get_user_tsl(id, log_id)
-        check = db.insert_tsp_info(check, tsp_json, log_id) 
+        check = db.insert_tsp_info(check, name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI, log_id) 
 
         return check
     
@@ -283,9 +283,11 @@ def get_data_tsp(id,  log_id):
         return "Error processing the form.", 500
     
 
-def tsp_db_lang(id, tsl_id, combined,  log_id):
+def tsp_db_lang(id, tsl_id, current_data_name, current_data_trade_name, current_data_postal_address,
+                             current_data_EletronicAddress, current_data_TSPInformationURI,  log_id):
     try:
-        check = db.update_data_tsp(tsl_id, combined, log_id) 
+        check = db.update_data_tsp(tsl_id, current_data_name, current_data_trade_name, current_data_postal_address,
+                             current_data_EletronicAddress, current_data_TSPInformationURI, log_id) 
 
         return check
     
@@ -298,11 +300,11 @@ def tsp_db_lang(id, tsl_id, combined,  log_id):
         return "Error processing the form.", 500
     
 
-def service_db_info(id, service_json, digital_identity, service_type, status, status_start_date, qualifier, log_id):
+def service_db_info(id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, log_id):
     try:
         check = db.get_user_tsl(id, log_id)
         check = db.get_tsp_tsl(check, log_id)
-        check = db.insert_service_info(check, service_json, digital_identity, service_type, status, status_start_date, qualifier, log_id) 
+        check = db.insert_service_info(check, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, log_id) 
 
         return check
     
@@ -330,9 +332,9 @@ def get_data_service(id, log_id):
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
 
-def service_db_lang(id, tsp_id, combined, log_id):
+def service_db_lang(id, tsp_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, log_id):
     try:
-        check = db.update_data_service(tsp_id, combined, log_id) 
+        check = db.update_data_service(tsp_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, log_id) 
 
         return check
     

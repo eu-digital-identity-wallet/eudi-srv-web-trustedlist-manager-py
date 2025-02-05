@@ -56,7 +56,59 @@ class ConfService:
       "QCQSCDStatusAsInCert": "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCQSCDStatusAsInCert"
     }
 
+
     url_verifier="verifier-backend.eudiw.dev"
+
+    lang = {
+      "Portugues": "pt", 
+      "English": "en"
+    }
+
+    SchemeTypeCommunityRules ={
+      "Eu Common": "https://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUcommon/", 
+      "Scheme Territory": "http://uri.etsi.org/TrstSvc/TrustedList/schemerules/"
+    }
+
+    #Service Identifiers
+    service_category = {
+      "Qualified": "qualified", 
+      "Non Qualified": "non_qualified", 
+      "National": "national"
+    }
+
+    qualified=["http://uri.etsi.org/TrstSvc/Svctype/CA/QC","http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP/QC",
+               "http://uri.etsi.org/TrstSvc/Svctype/Certstatus/CRL/QC","http://uri.etsi.org/TrstSvc/Svctype/TSA/QTST",
+               "http://uri.etsi.org/TrstSvc/Svctype/EDS/Q","http://uri.etsi.org/TrstSvc/Svctype/EDS/REM/Q",
+               "http://uri.etsi.org/TrstSvc/Svctype/PSES/Q", "http://uri.etsi.org/TrstSvc/Svctype/QESValidation/Q",
+               "http://uri.etsi.org/TrstSvc/Svctype/RemoteQSigCDManagement/Q", "http://uri.etsi.org/TrstSvc/Svctype/RemoteQSealCDManagement/Q",
+               "http://uri.etsi.org/TrstSvc/Svctype/EAA/Q","http://uri.etsi.org/TrstSvc/Svctype/ElectronicArchiving/Q",
+               "http://uri.etsi.org/TrstSvc/Svctype/Ledgers/Q"]
+
+    non_qualified=["http://uri.etsi.org/TrstSvc/Svctype/CA/PKC","http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP",
+                   "http://uri.etsi.org/TrstSvc/Svctype/Certstatus/CRL","http://uri.etsi.org/TrstSvc/Svctype/TSA",
+                   "http://uri.etsi.org/TrstSvc/Svctype/TSA/TSS-QC","http://uri.etsi.org/TrstSvc/Svctype/TSA/TSS-AdESQCandQES",
+                   "http://uri.etsi.org/TrstSvc/Svctype/EDS", "http://uri.etsi.org/TrstSvc/Svctype/EDS/REM",
+                   "http://uri.etsi.org/TrstSvc/Svctype/PSES", "http://uri.etsi.org/TrstSvc/Svctype/AdESValidation",
+                   "http://uri.etsi.org/TrstSvc/Svctype/AdESGeneration", "http://uri.etsi.org/TrstSvc/Svctype/RemoteSigCDManagement",
+                   "http://uri.etsi.org/TrstSvc/Svctype/RemoteSealCDManagement", "http://uri.etsi.org/TrstSvc/Svctype/EAA",
+                   "http://uri.etsi.org/TrstSvc/Svctype/ElectronicArchiving", "http://uri.etsi.org/TrstSvc/Svctype/Ledgers",
+                   "http://uri.etsi.org/TrstSvc/Svctype/PKCValidation", "http://uri.etsi.org/TrstSvc/Svctype/PKCPreservation",
+                   "http://uri.etsi.org/TrstSvc/Svctype/EAAValidation ", "http://uri.etsi.org/TrstSvc/Svctype/TSTValidation ",
+                   "http://uri.etsi.org/TrstSvc/Svctype/EDSValidation" , "http://uri.etsi.org/TrstSvc/Svctype/EAA/Pub-EAA",
+                   "http://uri.etsi.org/TrstSvc/Svctype/Ledgers", "http://uri.etsi.org/TrstSvc/Svctype/PKCValidation",
+                   "http://uri.etsi.org/TrstSvc/Svctype/PKCPreservation", "http://uri.etsi.org/TrstSvc/Svctype/EAAValidation" ,
+                   "http://uri.etsi.org/TrstSvc/Svctype/TSTValidation" , "http://uri.etsi.org/TrstSvc/Svctype/EDSValidation ",
+                   "http://uri.etsi.org/TrstSvc/Svctype/EAA/Pub-EAA","http://uri.etsi.org/TrstSvc/Svctype/CA/PKC/CertsforOtherTypesOfTS",
+                   "http://uri.etsi.org/TrstSvc/Svctype/PKCValidation/CertsforOtherTypesOfTS"]
+
+    national=["http://uri.etsi.org/TrstSvc/Svctype/RA","http://uri.etsi.org/TrstSvc/Svctype/RA/nothavingPKIid","http://uri.etsi.org/TrstSvc/Svctype/ACA",
+              "http://uri.etsi.org/TrstSvc/Svctype/SignaturePolicyAuthority", "http://uri.etsi.org/TrstSvc/Svctype/Archiv",
+              "http://uri.etsi.org/TrstSvc/Svctype/Archiv/nothavingPKIid","http://uri.etsi.org/TrstSvc/Svctype/IdV",
+              "http://uri.etsi.org/TrstSvc/Svctype/IdV/nothavingPKIid","http://uri.etsi.org/TrstSvc/Svctype/KEscrow",
+              "http://uri.etsi.org/TrstSvc/Svctype/KEscrow/nothavingPKIid","http://uri.etsi.org/TrstSvc/Svctype/PPwd",
+              "http://uri.etsi.org/TrstSvc/Svctype/PPwd/nothavingPKIid","http://uri.etsi.org/TrstSvc/Svctype/TLIssuer",
+              "http://uri.etsi.org/TrstSvc/Svctype/NationalRootCA-QC","http://uri.etsi.org/TrstSvc/Svctype/unspecified"]
+
 
     # log_dir = "/tmp/log"
     # #log_dir = "../../log"
