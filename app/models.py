@@ -462,6 +462,45 @@ def get_tsp_tsl(id, log_id):
             connection.close()
 
 
+def get_service_tsp(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT service_id
+                FROM trust_services
+                WHERE tsp_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                user_id = result[0]
+                
+                #extra = {'code': log_id} 
+                #logger.info(f"TSP found: {cursor.lastrowid}.", extra=extra)
+                return user_id
+            else:
+                #extra = {'code': log_id} 
+                #logger.info(f"No TSP found with the TSL.", extra=extra)
+                print(f"No TSP found with the TSL.")
+                return None
+
+    except pymysql.MySQLError as e:
+        
+        #extra = {'code': log_id} 
+        #logger.error(f"Error fetching TSP: {e}", extra=extra)
+        print(f"Error fetching TSP: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
 def get_data_tsp(id, log_id):
     try:
         connection = conn()
@@ -954,7 +993,7 @@ def get_data_edit_tsl(id, log_id):
             cursor = connection.cursor()
 
             select_query = """
-                SELECT schemeTerritory, status, Additional_Information
+                SELECT schemeTerritory
                 FROM trusted_lists
                 WHERE tsl_id = %s
             """
@@ -985,16 +1024,149 @@ def edit_tsl(grouped, user_id, log_id):
         connection = conn()
         if connection:
             cursor = connection.cursor()
-            operator_name = json.dumps(grouped['operator_name'])
-            electronic_address = json.dumps(grouped['EletronicAddress'])
+            insert_query = """
+                                UPDATE trusted_lists 
+                                SET schemeTerritory = %s
+                                WHERE tsl_id = %s
+                            """
+            cursor.execute(insert_query, (grouped['SchemeCountry'], user_id))
+            
+            connection.commit()
+            
+            # extra = {'code': log_id} 
+            # logger.info(f"User successfully added. New user ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"User successfully updated. User updated ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        # extra = {'code': log_id} 
+        # logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def get_data_tsp_edit(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT name, postal_address, trade_name, EletronicAddress, TSPInformationURI
+                FROM trust_service_providers
+                WHERE tsp_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                user_info = dict(zip(column_names, result))
+                
+                return user_info
+            else:
+                print(f"No USER found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching USER info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def edit_tsp(grouped, id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            name = json.dumps(grouped['name'])
             postal_address = json.dumps(grouped['postal_address'])
+            trade_name = json.dumps(grouped['trade_name'])
+            electronic_address = json.dumps(grouped['EletronicAddress'])
+            TSPInformationURI = json.dumps(grouped['TSPInformationURI'])
 
             insert_query = """
-                                UPDATE scheme_operators 
-                                SET operator_name = %s, EletronicAddress = %s, postal_address = %s
-                                WHERE operator_id = %s
+                                UPDATE trust_service_providers 
+                                SET name = %s, postal_address = %s, trade_name = %s, EletronicAddress = %s, TSPInformationURI = %s
+                                WHERE tsp_id = %s
                             """
-            cursor.execute(insert_query, (operator_name, electronic_address, postal_address, user_id))
+            cursor.execute(insert_query, (name, postal_address, trade_name, electronic_address, TSPInformationURI, id))
+            
+            connection.commit()
+            
+            # extra = {'code': log_id} 
+            # logger.info(f"User successfully added. New user ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"User successfully updated. User updated ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        # extra = {'code': log_id} 
+        # logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def get_data_service_edit(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT ServiceName, SchemeServiceDefinitionURI
+                FROM trust_services
+                WHERE service_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                user_info = dict(zip(column_names, result))
+                
+                return user_info
+            else:
+                print(f"No USER found with the ID.")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching USER info: {e}")
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
+def edit_service(grouped, id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            ServiceName = json.dumps(grouped['ServiceName'])
+            SchemeServiceDefinitionURI = json.dumps(grouped['SchemeServiceDefinitionURI'])
+
+            insert_query = """
+                                UPDATE trust_services 
+                                SET ServiceName = %s, SchemeServiceDefinitionURI = %s
+                                WHERE tsp_id = %s
+                            """
+            cursor.execute(insert_query, (ServiceName, SchemeServiceDefinitionURI, id))
             
             connection.commit()
             

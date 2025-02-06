@@ -283,7 +283,8 @@ def tsp_db_info(id, name, trade_name, PostalAddress, EletronicAddress, TSPInform
 def get_data_tsp(id,  log_id):
     try:
         tsl_id = db.get_user_tsl(id, log_id)
-        check = db.get_data_tsp(tsl_id, log_id) 
+        tsp_id = db.get_tsp_tsl(tsl_id, log_id)
+        check = db.get_data_tsp(tsp_id, log_id) 
 
         return check, tsl_id
     
@@ -333,7 +334,8 @@ def get_data_service(id, log_id):
     try:
         check = db.get_user_tsl(id, log_id)
         tsp_id = db.get_tsp_tsl(check, log_id)
-        check = db.get_data_service(tsp_id, log_id) 
+        service_id = db.get_service_tsp(tsp_id, log_id)
+        check = db.get_data_service(service_id, log_id) 
 
         return check, tsp_id
     
@@ -487,3 +489,71 @@ def edit_tsl_db_info(grouped, user_id, log_id):
 
         print(f"Error processing the form: {e}")
         return "Error processing the form.", 500
+    
+def get_data_tsp_edit(id, log_id):
+    try:
+        tsl_id = db.get_user_tsl(id, log_id)
+        tsp_id = db.get_tsp_tsl(tsl_id, log_id)
+        check = db.get_data_tsp_edit(tsp_id, log_id) 
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+
+
+def edit_tsp_db_info(grouped, id, log_id):
+    try:
+        tsl_id = db.get_user_tsl(id, log_id)
+        tsp_id = db.get_tsp_tsl(tsl_id, log_id)
+        check = db.edit_tsp(grouped, tsp_id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+
+
+def get_data_service_edit(id, log_id):
+    try:
+        tsl_id = db.get_user_tsl(id, log_id)
+        tsp_id = db.get_tsp_tsl(tsl_id, log_id)
+        service_id = db.get_service_tsp(tsp_id, log_id)
+        check = db.get_data_service_edit(service_id, log_id) 
+        
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+    
+
+def edit_service_db_info(grouped, id, log_id):
+    try:
+        tsl_id = db.get_user_tsl(id, log_id)
+        tsp_id = db.get_tsp_tsl(tsl_id, log_id)
+        service_id = db.get_service_tsp(tsp_id, log_id)
+        check = db.edit_service(grouped, service_id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        # extra = {'code': log_id} 
+        # logger.error(f"Error processing the form: {e}", extra=extra)
+
+        print(f"Error processing the form: {e}")
+        return "Error processing the form.", 500
+
+

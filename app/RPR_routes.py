@@ -908,7 +908,7 @@ def tsl_edit_db():
                 
         else:
             grouped[key] = value
-    print(grouped)
+
     check = func.edit_tsl_db_info(
         grouped, 
         user['id'], 
@@ -991,10 +991,10 @@ def create_tsp_db():
     country= request.form.get('Country Name')
     lang = request.form.get('Lang')
 
-    name = '[{"lang":"' + lang + '", "name":"'+ name + '"}]'
-    trade_name = '[{"lang":"' + lang + '", "trade_name":"'+ trade_name + '"}]'
-    EletronicAddress = '[{"lang":"' + lang + '", "EletronicAddress":"'+ EletronicAddress + '"}]'
-    TSPInformationURI = '[{"lang":"' + lang + '", "TSPInformationURI":"'+ TSPInformationURI + '"}]'
+    name = '[{"lang":"' + lang + '", "text":"'+ name + '"}]'
+    trade_name = '[{"lang":"' + lang + '", "text":"'+ trade_name + '"}]'
+    EletronicAddress = '[{"lang":"' + lang + '", "URI":"'+ EletronicAddress + '"}]'
+    TSPInformationURI = '[{"lang":"' + lang + '", "URI":"'+ TSPInformationURI + '"}]'
     PostalAddress = '[{"lang":"' + lang + '", "StreetAddress":"'+ StreetAddress + '", "Locality":"'+ Locality + '", "StateOrProvince":"'+ StateOrProvince + '", "PostalCode":"'+ PostalCode + '", "CountryName":"'+ country + '"}]'
  
     check = func.tsp_db_info(session[temp_user_id]["id"], name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI, session["session_id"])
@@ -1060,7 +1060,7 @@ def tsp_db_lang():
     TSPInformationURI= request.form.get('TSP Information URI')
     lang = request.form.get('Lang')
 
-    db_data, tsl_id = func.get_data_tsp(user['id'], session["session_id"])
+    db_data, tsp_id = func.get_data_tsp(user['id'], session["session_id"])
 
     current_data_name = None
     current_data_trade_name = None
@@ -1069,13 +1069,13 @@ def tsp_db_lang():
     current_data_TSPInformationURI = None
 
     if name:
-        name_data = {"lang": lang, "name": name}
+        name_data = {"lang": lang, "text": name}
         current_data_name = json.loads(db_data.get('name', '[]'))
         current_data_name.append(name_data)
         current_data_name = json.dumps(current_data_name)
 
     if trade_name:
-        trade_name_data = {"lang": lang, "trade_name": trade_name}
+        trade_name_data = {"lang": lang, "text": trade_name}
         current_data_trade_name = json.loads(db_data.get('trade_name', '[]'))
         current_data_trade_name.append(trade_name_data)
         current_data_trade_name = json.dumps(current_data_trade_name)
@@ -1094,19 +1094,19 @@ def tsp_db_lang():
         current_data_postal_address = json.dumps(current_data_postal_address)
 
     if EletronicAddress:
-        electronic_address_data = {"lang": lang, "EletronicAddress": EletronicAddress}
+        electronic_address_data = {"lang": lang, "URI": EletronicAddress}
         current_data_EletronicAddress = json.loads(db_data.get('EletronicAddress', '[]'))
         current_data_EletronicAddress.append(electronic_address_data)
         current_data_EletronicAddress = json.dumps(current_data_EletronicAddress)
 
     if TSPInformationURI:
-        tsp_info_data = {"lang": lang, "TSPInformationURI": TSPInformationURI}
+        tsp_info_data = {"lang": lang, "URI": TSPInformationURI}
         current_data_TSPInformationURI = json.loads(db_data.get('TSPInformationURI', '[]'))
         current_data_TSPInformationURI.append(tsp_info_data)
         current_data_TSPInformationURI = json.dumps(current_data_TSPInformationURI)
 
     check = func.tsp_db_lang(session[temp_user_id]["id"], 
-                             tsl_id, 
+                             tsp_id, 
                              current_data_name, 
                              current_data_trade_name, 
                              current_data_postal_address,
@@ -1119,6 +1119,75 @@ def tsp_db_lang():
     else:
         if(cfgserv.two_operators):
             return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        else:
+            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+
+
+@rpr.route('/tsp/tsp_edit')
+def tsp_edit():
+        
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    db_data = func.get_data_tsp_edit(user['id'], session["session_id"])
+
+    for key in db_data: 
+        db_data[key] = json.loads(db_data[key])
+    
+    return render_template("dynamic-form_edit_TLS.html", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "/tsp/tsp_edit_db")
+
+@rpr.route('/tsp/tsp_edit_db', methods=["GET", "POST"])
+def tsp_edit_db():
+
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    form = dict(request.form)
+    form.pop("proceed")
+    grouped = defaultdict(list)
+
+    for key, value in form.items():
+        match = re.match(r"(lang|text|URI)_(.*?).(\d+)", key)
+        match2=re.match(r"(postal_address)_(.*?).(\d+)",key)
+        if match:
+            attr, prefix, index = match.groups()
+            index = int(index)
+            while len(grouped[prefix]) <= index:
+                grouped[prefix].append({})
+            grouped[prefix][index][attr] = value
+        elif match2:
+            attr, prefix, index = match2.groups()
+            index = int(index)
+            while len(grouped[attr]) <= index:
+                grouped[attr].append({})
+            grouped[attr][index][prefix] = value
+
+        elif "DistributionPoints" in key:
+                key_dict=key.split(".")
+                grouped[key_dict[0]].append(value)
+                
+        else:
+            grouped[key] = value
+    
+    check = func.edit_tsp_db_info(
+        grouped, 
+        user['id'], 
+        session["session_id"]
+    )
+
+    if check is None:
+        return ("erro")
+    else:
+        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        session[temp_user_id]["role"] = check
+        
+        if(cfgserv.two_operators):
+            if(check == "tsl_op"):
+                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+            elif(check == "tsp_op"):
+                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+            else:
+                return ("error")
         else:
             return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
 
@@ -1173,8 +1242,8 @@ def service_tsp_db():
     uri = request.form.get('Uri')
     lang = request.form.get('Lang')
 
-    ServiceName = '[{"lang":"' + lang + '", "name":"'+ service_name + '"}]'
-    SchemeServiceDefinitionURI = '[{"lang":"' + lang + '", "SchemeServiceDefinitionURI":"'+ uri + '"}]'
+    ServiceName = '[{"lang":"' + lang + '", "text":"'+ service_name + '"}]'
+    SchemeServiceDefinitionURI = '[{"lang":"' + lang + '", "URI":"'+ uri + '"}]'
 
     check = func.service_db_info(session[temp_user_id]["id"], ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, session["session_id"])
 
@@ -1221,26 +1290,26 @@ def service_db():
     uri = request.form.get('Uri')
     lang = request.form.get('Lang')
 
-    db_data, tsp_id = func.get_data_service(user['id'], session["session_id"])
+    db_data, service_id = func.get_data_service(user['id'], session["session_id"])
     
     current_data_ServiceName = None
     current_data_SchemeServiceDefinitionURI = None
 
     if service_name:
-        service_name_data = {"lang": lang, "name": service_name}
+        service_name_data = {"lang": lang, "text": service_name}
         current_data_ServiceName = json.loads(db_data.get('ServiceName', '[]'))
         current_data_ServiceName.append(service_name_data)
         current_data_ServiceName = json.dumps(current_data_ServiceName)
 
     if uri:
-        scheme_service_data = {"lang": lang, "SchemeServiceDefinitionURI": uri}
+        scheme_service_data = {"lang": lang, "URI": uri}
         current_data_SchemeServiceDefinitionURI = json.loads(db_data.get('SchemeServiceDefinitionURI', '[]'))
         current_data_SchemeServiceDefinitionURI.append(scheme_service_data)
         current_data_SchemeServiceDefinitionURI = json.dumps(current_data_SchemeServiceDefinitionURI)
 
     check = func.service_db_lang(
         session[temp_user_id]["id"],
-        tsp_id,
+        service_id,
         current_data_ServiceName,
         current_data_SchemeServiceDefinitionURI,
         session["session_id"]
@@ -1254,6 +1323,74 @@ def service_db():
         else:
             return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
        
+
+@rpr.route('/service/service_edit')
+def service_edit():
+        
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    db_data = func.get_data_service_edit(user['id'], session["session_id"])
+
+    for key in db_data: 
+        db_data[key] = json.loads(db_data[key])
+    
+    return render_template("dynamic-form_edit_TLS.html", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "/service/service_edit_db")
+
+@rpr.route('/service/service_edit_db', methods=["GET", "POST"])
+def service_edit_db():
+
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    form = dict(request.form)
+    form.pop("proceed")
+    grouped = defaultdict(list)
+
+    for key, value in form.items():
+        match = re.match(r"(lang|text|URI)_(.*?).(\d+)", key)
+        match2=re.match(r"(postal_address)_(.*?).(\d+)",key)
+        if match:
+            attr, prefix, index = match.groups()
+            index = int(index)
+            while len(grouped[prefix]) <= index:
+                grouped[prefix].append({})
+            grouped[prefix][index][attr] = value
+        elif match2:
+            attr, prefix, index = match2.groups()
+            index = int(index)
+            while len(grouped[attr]) <= index:
+                grouped[attr].append({})
+            grouped[attr][index][prefix] = value
+
+        elif "DistributionPoints" in key:
+                key_dict=key.split(".")
+                grouped[key_dict[0]].append(value)
+                
+        else:
+            grouped[key] = value
+    print(grouped)
+    check = func.edit_service_db_info(
+        grouped, 
+        user['id'], 
+        session["session_id"]
+    )
+
+    if check is None:
+        return ("erro")
+    else:
+        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        session[temp_user_id]["role"] = check
+        
+        if(cfgserv.two_operators):
+            if(check == "tsl_op"):
+                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+            elif(check == "tsp_op"):
+                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+            else:
+                return ("error")
+        else:
+            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
 
 
 
