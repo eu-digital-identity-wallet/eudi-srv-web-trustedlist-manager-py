@@ -479,7 +479,7 @@ def user_auth():
     operator_name = '[{"lang":"' + lang + '", "text":"'+ opName + '"}]'
     electronicAddress = '[{"lang":"' + lang + '", "URI":"'+ electronicAddress + '"}]'
 
-    PostalAddress = '[{"lang":"' + lang + '", "address":"'+ address + '", "locality":"'+ locality + '", "StateOrProvince":"'+ stateProvince + '", "postalCode":"'+ postalCode + '", "CountryName":"'+ Country + '"}]'
+    PostalAddress = '[{"lang":"' + lang + '", "StreetAddress":"'+ address + '", "Locality":"'+ locality + '", "StateOrProvince":"'+ stateProvince + '", "PostalCode":"'+ postalCode + '", "CountryName":"'+ Country + '"}]'
 
     check = func.user_db_info(role, operator_name, PostalAddress, electronicAddress, user['id'], session["session_id"])
 
