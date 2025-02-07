@@ -94,6 +94,19 @@
                                                         {% endfor %}
                                                     </select>
                                                 </div>
+                                            </div>  
+                                        {% elif value == 'lang' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <select class="js-example-basic-single"id="Lang" name="Lang" style="width: 100%; box-sizing: border-box;">
+                                                        <option value="">--Select--</option>
+                                                        {% for name, value in lang.items() %}
+                                                            <option value="{{ value }}">{{ name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
                                             </div>    
                                         {% elif value == 'string' %}
                                             <div class="row g-3">

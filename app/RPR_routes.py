@@ -442,7 +442,8 @@ def getpidoid4vp():
 
             attributesForm.update(form_items)
             
-            return render_template("dynamic-form.html", role = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "user_auth")
+            return render_template("dynamic-form.html", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions, attributes = attributesForm,
+                                   temp_user_id = temp_user_id, redirect_url = cfgserv.service_url + "user_auth")
         else:
             check = func.check_role_user(aux, session["session_id"])
             session[temp_user_id]["role"] = check
@@ -551,7 +552,8 @@ def op_lang():
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions,attributes=attributesForm,temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "op_data_lang_db")
+    return render_template("form.html", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions, attributes = attributesForm, 
+                           temp_user_id = temp_user_id, redirect_url = cfgserv.service_url + "op_data_lang_db")
 
 
 @rpr.route('/op_data_lang_db', methods=["GET", "POST"])
