@@ -59,7 +59,7 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     #for cycle
     op_name = parse_json_field(user_info["operator_name"])
     for item in op_name:
-        schemeOName.add_Name(test.MultiLangNormStringType(item['lang'], item["operator_name"]))
+        schemeOName.add_Name(test.MultiLangNormStringType(item['lang'], item["text"]))
 
     schemeInfo.SchemeOperatorName=schemeOName
 
@@ -71,7 +71,7 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     #for cycle
     EletronicAddress = parse_json_field(user_info["EletronicAddress"])
     for item in EletronicAddress:
-        eletronic.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["electronicAddress"]))
+        eletronic.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["URI"]))
     #----------------------------------------------------#
     schemeOAddress.set_ElectronicAddress(eletronic)
 
@@ -183,12 +183,12 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
         TrustServiceProvider= test.TSPType()
         TSPInformation=test.TSPInformationType()
         TSPName=test.InternationalNamesType()
-        TSPName.add_Name(test.MultiLangNormStringType(item['lang'], item["name"]))
+        TSPName.add_Name(test.MultiLangNormStringType(item['lang'], item["text"]))
 
     trade_name = parse_json_field(tsp_data["trade_name"])
     for item in trade_name:
         TSPTradeName= test.InternationalNamesType()
-        TSPTradeName.add_Name(test.MultiLangNormStringType(item['lang'], item["trade_name"]))
+        TSPTradeName.add_Name(test.MultiLangNormStringType(item['lang'], item["text"]))
 
     address = parse_json_field(tsp_data["postal_address"])
     for item in address:
@@ -206,7 +206,7 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     ele_address = parse_json_field(tsp_data["EletronicAddress"])
     for item in ele_address:
         TSPEletronicAddress=test.ElectronicAddressType()
-        TSPEletronicAddress.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["EletronicAddress"]))
+        TSPEletronicAddress.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["URI"]))
 
         TSPAddress.set_ElectronicAddress(TSPEletronicAddress)
         TSPAddress.set_PostalAddresses(TSPPostalAddress)
@@ -214,7 +214,7 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     uri = parse_json_field(tsp_data["TSPInformationURI"])
     for item in uri:
         TSPInformationURI= test.NonEmptyMultiLangURIListType()
-        TSPInformationURI.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["TSPInformationURI"]))
+        TSPInformationURI.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["URI"]))
 
         TSPInformation.set_TSPName(TSPName)
         TSPInformation.set_TSPTradeName(TSPTradeName)
@@ -233,7 +233,7 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     serv_name = parse_json_field(service_data["ServiceName"])
     for item in serv_name:
         ServiceName=test.InternationalNamesType()
-        ServiceName.add_Name(test.MultiLangNormStringType(item["lang"], item["name"]))
+        ServiceName.add_Name(test.MultiLangNormStringType(item["lang"], item["text"]))
         ServiceInformation.set_ServiceName(ServiceName)
 
     ServiceDigitalIdentity=test.ServiceDigitalIdentityListType()
@@ -246,7 +246,7 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     uri = parse_json_field(service_data["SchemeServiceDefinitionURI"])
     for item in uri:
         SchemeServiceDefinitionURI=test.NonEmptyMultiLangURIListType()
-        SchemeServiceDefinitionURI.add_URI(test.NonEmptyMultiLangURIType(item["lang"],item["SchemeServiceDefinitionURI"]))
+        SchemeServiceDefinitionURI.add_URI(test.NonEmptyMultiLangURIType(item["lang"],item["URI"]))
         ServiceInformation.set_SchemeServiceDefinitionURI(SchemeServiceDefinitionURI)
 
     #Extensions

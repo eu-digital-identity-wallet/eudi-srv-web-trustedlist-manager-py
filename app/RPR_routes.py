@@ -61,7 +61,6 @@ from cryptography.hazmat.backends import default_backend
 from xml_gen.xml_config import ConfXML as confxml
 from xml_gen.xmlGen import xml_gen
 
-import datetime
 from dateutil.relativedelta import relativedelta
 
 rpr = Blueprint("RPR", __name__, url_prefix="/")
@@ -174,7 +173,7 @@ def authentication():
         + response_same_device["request_uri"]
     )
 
-    oid4vp_requests.update({session["session_id"]:{"response": response_same_device, "expires":datetime.datetime.now() + timedelta(minutes=cfgserv.deffered_expiry)}})
+    oid4vp_requests.update({session["session_id"]:{"response": response_same_device, "expires":datetime.now() + timedelta(minutes=cfgserv.deffered_expiry)}})
 
 
     # Generate QR code
@@ -793,8 +792,6 @@ def create_tsl():
         "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
         "Distribution Points": "string",
-        "Issue_date": "full-date",
-        "Next Update": "full-date",
         "Status": "string",
         "Additional Information": "string"
     }
@@ -808,8 +805,6 @@ def create_tsl():
         "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
         "Distribution Points": "string",
-        "Issue_date": "full-date",
-        "Next Update": "full-date",
         "Status": "string",
         "Additional Information": "string"
     }
@@ -837,13 +832,13 @@ def create_tsl_db():
     
     options = request.form.getlist('rules')
     SchemeTypeCommunityRules_lang = ", ".join(options)
-
+ 
     schemeTerritory = request.form.get('Scheme Territory')
     PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice')
     PointerstootherTSL = request.form.get('Pointers to other TSL')
     DistributionPoints = request.form.get('Distribution Points')
-    Issue_date = request.form.get('Issue_date')
-    NextUpdate = request.form.get('Next Update')
+    Issue_date = datetime.now()
+    NextUpdate = Issue_date + timedelta(days=6*30)
     Status = request.form.get('Status')
     AdditionalInformation = request.form.get('Additional Information')
    
@@ -1369,7 +1364,7 @@ def service_edit_db():
                 
         else:
             grouped[key] = value
-    print(grouped)
+            
     check = func.edit_service_db_info(
         grouped, 
         user['id'], 
