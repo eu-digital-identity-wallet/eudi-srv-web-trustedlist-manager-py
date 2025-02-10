@@ -44,7 +44,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <title>Form for your TSL Registration</title>
+    <title>Form for your {{title}} Registration</title>
 </head>
 
 <body id="responsive-main-nav">
@@ -70,7 +70,7 @@
                     <!--
                     <p class="relying-party"><strong>etranslation</strong> requires you to authenticate</p>
                     -->
-                    <h1>Enter the data for TSL the Registration</h1>
+                    <h1>Enter the data for the  {{title}} Registration</h1>
                     <div id="content" class="content-wrap content-center col-md-6 col-sm-7">
 
                         <div class="genericErrors" id="genericErrorsDesc">
@@ -82,7 +82,7 @@
                         <form id="selectCountryForm" method="post" action="{{redirect_url}}" onsubmit="return validateImage()" accept-charset="UTF-8" enctype="multipart/form-data" autocapitalize="off" spellcheck="false">
                             <!-- <div class="nodisplay"><input type="hidden" name="TxId" value="ECAS_TX-7404446-Rej9lkLFeXORXm9rG7q4Xqo1xGRJ86gt3hoJcfMG3XyxQrAyn8mu9PbXRCZoKKUbCzLlIzG5jKgHy4vlfgkG5M-rS0vSrmBGYCAxyMeVAWeYi-PVgrhNnzagSfzJvUraGtvIPzqv8cbsV46ZMUiinVIlcDkNWEKzr5uBS6CMnabjUfRGxDHabrZictNyNLy0AsLWy" /></div><input type="hidden" name="loginRequestId" value="ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" id="loginRequestId" /> -->
                             <h3>Test Provider Form</h3>
-                            <p>This data is only used for User Registration for testing purposes.</p>
+                            <p>This data is only used for {{title}}  Registration for testing purposes.</p>
                             <div id="eidasCountries">
                                 {% for name, value in attributes.items() %}
                                         {% if value == 'select' %}
@@ -128,22 +128,14 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single"id="Lang" name="Lang" style="width: 100%; box-sizing: border-box;">
+                                                    <select class="js-example-basic-single" id="Lang" name="Lang" style="width: 100%; box-sizing: border-box;">
                                                         <option value="">--Select--</option>
-                                                        {% for name, value in lang.items() %}
-                                                            <option value="{{ value }}">{{ name }}</option>
+                                                        {% for value in lang %}
+                                                            <option value="{{ value }}">{{ value }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
                                             </div>                                
-                                        {% elif value == 'int' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <input type="number" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required>
-                                                </div>
-                                            </div> 
                                         {% elif value == 'int' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">
@@ -173,6 +165,18 @@
                                                 <div class="col-md-12">
                                                     {{name}}
                                                     <input type="date" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required >
+                                                </div>
+                                            </div>
+                                        {% elif value == 'country' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="{{name}}"  required>
+                                                        {% for country in countries %}
+                                                            <option value="{{ country }}" >{{ country }}</option>
+                                                        {% endfor %}
+                                                    </select>
                                                 </div>
                                             </div>
                                         {% endif %} 

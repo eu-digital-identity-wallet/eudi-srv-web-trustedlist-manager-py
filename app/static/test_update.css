@@ -6,6 +6,12 @@
     background-color: #f1f1f1;
   }
 
+  .content_child:nth-child(even) {
+    background-color: #cccccc;
+    padding-left: 2%;
+    padding-right: 2%;
+  }
+
   /* .content_child:nth-child(odd){
 
     background-color: #9a9a9a;

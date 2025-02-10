@@ -22,7 +22,7 @@ This rpr_routes.py file is the blueprint of the Web RelyingParty Registration se
 import base64
 import binascii
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import io
 import json
 import os
@@ -442,7 +442,7 @@ def getpidoid4vp():
 
             attributesForm.update(form_items)
             
-            return render_template("dynamic-form.html", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions, attributes = attributesForm,
+            return render_template("dynamic-form.html",countries=cfgserv.eu_countries,  title="Scheme Operator", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions, attributes = attributesForm,
                                    temp_user_id = temp_user_id, redirect_url = cfgserv.service_url + "user_auth")
         else:
             check = func.check_role_user(aux, session["session_id"])
@@ -552,7 +552,7 @@ def op_lang():
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions, attributes = attributesForm, 
+    return render_template("form.html", countries=cfgserv.eu_countries, title="Scheme Operator", lang = cfgserv.eu_languages, role = cfgserv.roles, desc = descriptions, attributes = attributesForm, 
                            temp_user_id = temp_user_id, redirect_url = cfgserv.service_url + "op_data_lang_db")
 
 
@@ -785,11 +785,10 @@ def create_tsl():
     attributesForm={}
 
     form_items={
-        "Version": "int",
         "TSL Type" : "string",
         "Scheme Name": "string", 
         "Uri": "string",
-        "Scheme Territory": "string",
+        "Scheme Territory": "country",
         "Scheme Type Community Rules": "rules",
         "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
@@ -798,11 +797,10 @@ def create_tsl():
         "Additional Information": "string"
     }
     descriptions = {
-        "Version": "int",
         "TSL Type" : "string",
         "Scheme Name": "string", 
         "Uri": "string",
-        "Scheme Territory": "string",
+        "Scheme Territory": "country",
         "Scheme Type Community Rules": "string",
         "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
@@ -818,7 +816,7 @@ def create_tsl():
     #     if 'Scheme Territory' in items:
     #         rules[items] = rules[items] + user['issuing_country']
             
-    return render_template("form.html", rules = rules, lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
+    return render_template("form.html", countries=cfgserv.eu_countries, title="Trusted List", rules = rules, lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
 
 @rpr.route('/tsl/create/db', methods=["GET", "POST"])
 def create_tsl_db():
@@ -826,7 +824,7 @@ def create_tsl_db():
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
 
-    Version = request.form.get('Version')
+    Version = confxml.TLSVersionIdentifier
     Sequence_number = 1
     TSLType = request.form.get('TSL Type')
     SchemeName_lang = request.form.get('Scheme Name')
@@ -839,8 +837,10 @@ def create_tsl_db():
     PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice')
     PointerstootherTSL = request.form.get('Pointers to other TSL')
     DistributionPoints = request.form.get('Distribution Points')
-    Issue_date = datetime.now()
-    NextUpdate = Issue_date + timedelta(days=6*30)
+    date=datetime.now(timezone.utc)
+    next_update=datetime.now(timezone.utc)+ timedelta(days=6*30)
+    Issue_date = date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    NextUpdate = next_update.strftime("%Y-%m-%dT%H:%M:%SZ")
     Status = request.form.get('Status')
     AdditionalInformation = request.form.get('Additional Information')
    
@@ -968,7 +968,7 @@ def create_tsp():
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/create/db")
+    return render_template("form.html", countries=cfgserv.eu_countries, title="Trusted Service Provider", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/create/db")
 
 
 @rpr.route('/tsp/create/db', methods=["GET", "POST"])
@@ -1038,7 +1038,7 @@ def tsp_lang():
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/tsp_db_data_lang")
+    return render_template("form.html", countries=cfgserv.eu_countries, title="Trusted Service Provider", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/tsp_db_data_lang")
 
 
 @rpr.route('/tsp/tsp_db_data_lang', methods=["GET", "POST"])
@@ -1219,7 +1219,7 @@ def create_service():
 
     attributesForm.update(form_items)
     
-    return render_template("form_service.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+    return render_template("form_service.html", title="Service", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
                            data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/create/db", qualified = cfgserv.qualified,
                            non_qualified = cfgserv.non_qualified, national = cfgserv.national, serv_cat = cfgserv.service_category)
 
@@ -1273,7 +1273,7 @@ def service_lang():
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", lang = cfgserv.lang, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+    return render_template("form.html", countries=cfgserv.eu_countries, title="Service", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
                            data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/service_lang_db")
 
 
