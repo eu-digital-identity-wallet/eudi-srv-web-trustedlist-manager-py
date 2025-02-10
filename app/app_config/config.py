@@ -46,7 +46,7 @@ class ConfService:
     log_dir = "app\logs"
     
     #cert_UT = "app/xml_gen/cert_UT.pem"
-    cert_UT = "/etc/eudiw/pid-issuer/cert/PIDIssuerCAUT01.pem"
+    cert_UT = "/etc/eudiw/pid-issuer/cert/PID-DS-0001_UT_cert.der"
 
     #priv_key_UT = "app/xml_gen/privkey_UT.pem"
     priv_key_UT = "/etc/eudiw/pid-issuer/privkey/PID-DS-0001_UT.pem"
