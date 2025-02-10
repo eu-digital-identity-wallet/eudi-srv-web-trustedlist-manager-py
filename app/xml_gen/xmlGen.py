@@ -154,11 +154,11 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     Pointers.AdditionalInformation=AdditionalInfo
     schemeInfo.PointersToOtherTSL=Pointers
     
-    schemeInfo.ListIssueDateTime=dictFromDB_trusted_lists["issue_date"]
+    schemeInfo.ListIssueDateTime=dictFromDB_trusted_lists["issue_date"].strftime("%Y-%m-%dT%H:%M:%SZ")
     
     #Next Update
     NUpdate=test.NextUpdateType()
-    NUpdate.dateTime=dictFromDB_trusted_lists["next_update"]
+    NUpdate.dateTime=dictFromDB_trusted_lists["next_update"].strftime("%Y-%m-%dT%H:%M:%SZ")
     schemeInfo.NextUpdate= NUpdate
 
     #DistribuitionPoints
