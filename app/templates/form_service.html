@@ -103,23 +103,26 @@
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
                                                     <select class="js-example-basic-single" id="category" name="category" onchange="updateOptions()" style="width: 100%; box-sizing: border-box;">
-                                                        <option value="">--Select--</option>
-                                                        {% for name, value in serv_cat.items() %}
-                                                            <option value="{{ value }}">{{ name }}</option>
-                                                        {% endfor %}
+                                                        <optgroup label="National">
+                                                            {% for item in national %}
+                                                                <option value="{{ item }}">{{ item }}</option>
+                                                            {% endfor %}
+                                                        </optgroup>
+                                                    
+                                                        <optgroup label="Non-Qualified">
+                                                            {% for item in non_qualified %}
+                                                                <option value="{{ item }}">{{ item }}</option>
+                                                            {% endfor %}
+                                                        </optgroup>
+                                                    
+                                                        <optgroup label="Qualified">
+                                                            {% for item in qualified %}
+                                                                <option value="{{ item }}">{{ item }}</option>
+                                                            {% endfor %}
+                                                        </optgroup>
                                                     </select>
                                                 </div>
-                                            </div>
-                                        {% elif value == 'select_name' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single"id="options" name="option" style="width: 100%; box-sizing: border-box;">
-                                                        <option value="">--Choose an option--</option>
-                                                    </select>
-                                                </div>
-                                            </div>  
+                                            </div> 
                                         {% elif value == 'lang' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">

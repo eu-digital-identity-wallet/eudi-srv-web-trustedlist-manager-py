@@ -1199,7 +1199,7 @@ def create_service():
     form_items={
         "Lang": "lang",
         "Service Type": "select_type",
-        "Service Name": "select_name",
+        "Service Name": "string",
         "Qualifier": "select",
         "Digital Identity" : "string",
         "Status": "string",
@@ -1231,7 +1231,7 @@ def service_tsp_db():
     user = session[temp_user_id]
     
     service_type = request.form.get('category')
-    service_name = request.form.get('option')
+    service_name = request.form.get('Service Name')
     qualifier = request.form.get('Qualifier')
     digital_identity = request.form.get('Digital Identity')
     status = request.form.get('Status')
