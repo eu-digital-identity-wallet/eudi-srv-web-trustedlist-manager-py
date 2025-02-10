@@ -32,6 +32,8 @@ from signxml import XMLSigner, algorithms
 import json
 
 from app_config.config import ConfService as cfgserv
+from cryptography.hazmat.primitives import serialization
+from cryptography import x509
 
 def parse_json_field(field):
     try:
@@ -333,7 +335,9 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     #     cert = file.read()
     #     Cert=x509.load_pem_x509_certificate(cert)
 
-    cert=open(cfgserv.cert_UT, "rb").read()
+    der_data=open(cfgserv.cert_UT, "rb").read()
+    cert = x509.load_der_x509_certificate(der_data)
+    cert = cert.public_bytes(encoding=serialization.Encoding.PEM)
 
     # with open ("privkey_UT.pem", "rb") as key_file: 
     #     key = serialization.load_pem_private_key(key_file.read(),password=None,backend=default_backend())
