@@ -44,6 +44,12 @@ class ConfService:
 
     #log_dir = "app/logs"
     log_dir = "app\logs"
+    
+    #cert_UT = "app/xml_gen/cert_UT.pem"
+    cert_UT = "/etc/eudiw/pid-issuer/cert/PIDIssuerCAUT01.pem"
+
+    #priv_key_UT = "app/xml_gen/privkey_UT.pem"
+    priv_key_UT = "/etc/eudiw/pid-issuer/privkey/PID-DS-0001_UT.pem"
 
     roles = {
       "tsl_op":"TSL Operator",

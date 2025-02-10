@@ -31,6 +31,8 @@ from xml_gen.xml_config import ConfXML as confxml
 from signxml import XMLSigner, algorithms
 import json
 
+from app_config.config import ConfService as cfgserv
+
 def parse_json_field(field):
     try:
         return json.loads(field) if isinstance(field, str) else field
@@ -331,12 +333,12 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     #     cert = file.read()
     #     Cert=x509.load_pem_x509_certificate(cert)
 
-    cert=open("app/xml_gen/cert_UT.pem", "rb").read()
+    cert=open(cfgserv.cert_UT, "rb").read()
 
     # with open ("privkey_UT.pem", "rb") as key_file: 
     #     key = serialization.load_pem_private_key(key_file.read(),password=None,backend=default_backend())
         
-    key=open("app/xml_gen/privkey_UT.pem", "rb").read()
+    key=open(cfgserv.priv_key_UT, "rb").read()
     xml.register_namespace("","http://uri.etsi.org/02231/v2#")
     
     rootTemp=xml.fromstring(xml_string)
