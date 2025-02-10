@@ -445,7 +445,7 @@ except ModulenotfoundExp_ as exp:
                     input_data, '%Y-%m-%dT%H:%M:%S.%f')
             else:
                 dt = datetime_.datetime.strptime(
-                    input_data, '%Y-%m-%dT%H:%M:%S')
+                    input_data, '%Y-%m-%dT%H:%M:%SZ')
             dt = dt.replace(tzinfo=tz)
             return dt
         def gds_validate_date(self, input_data, node=None, input_name=''):
@@ -2694,7 +2694,7 @@ class TSLSchemeInformationType(GeneratedsSuper):
         self.PointersToOtherTSL = PointersToOtherTSL
         self.PointersToOtherTSL_nsprefix_ = "tsl"
         if isinstance(ListIssueDateTime, BaseStrType_):
-            initvalue_ = datetime_.datetime.strptime(ListIssueDateTime, '%Y-%m-%dT%H:%M:%S')
+            initvalue_ = datetime_.datetime.strptime(ListIssueDateTime, '%Y-%m-%dT%H:%M:%SZ')
         else:
             initvalue_ = ListIssueDateTime
         self.ListIssueDateTime = initvalue_
@@ -3146,7 +3146,7 @@ class NextUpdateType(GeneratedsSuper):
         self.parent_object_ = kwargs_.get('parent_object_')
         self.ns_prefix_ = None
         if isinstance(dateTime, BaseStrType_):
-            initvalue_ = datetime_.datetime.strptime(dateTime, '%Y-%m-%dT%H:%M:%S')
+            initvalue_ = datetime_.datetime.strptime(dateTime, '%Y-%m-%dT%H:%M:%SZ')
         else:
             initvalue_ = dateTime
         self.dateTime = initvalue_
@@ -4178,7 +4178,7 @@ class TSPServiceInformationType(GeneratedsSuper):
         self.ServiceStatus = ServiceStatus
         self.ServiceStatus_nsprefix_ = "tsl"
         if isinstance(StatusStartingTime, BaseStrType_):
-            initvalue_ = datetime_.datetime.strptime(StatusStartingTime, '%Y-%m-%dT%H:%M:%S')
+            initvalue_ = datetime_.datetime.strptime(StatusStartingTime, '%Y-%m-%dT%H:%M:%SZ')
         else:
             initvalue_ = StatusStartingTime
         self.StatusStartingTime = initvalue_
@@ -4877,7 +4877,7 @@ class ServiceHistoryInstanceType(GeneratedsSuper):
         self.ServiceStatus = ServiceStatus
         self.ServiceStatus_nsprefix_ = "tsl"
         if isinstance(StatusStartingTime, BaseStrType_):
-            initvalue_ = datetime_.datetime.strptime(StatusStartingTime, '%Y-%m-%dT%H:%M:%S')
+            initvalue_ = datetime_.datetime.strptime(StatusStartingTime, '%Y-%m-%dT%H:%M:%SZ')
         else:
             initvalue_ = StatusStartingTime
         self.StatusStartingTime = initvalue_
