@@ -837,7 +837,7 @@ def create_tsl_db():
     PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice')
     PointerstootherTSL = request.form.get('Pointers to other TSL')
     DistributionPoints = request.form.get('Distribution Points')
-    Issue_date = datetime.now()
+    Issue_date = datetime.now(timezone.utc)
     NextUpdate = Issue_date + timedelta(days=6*30)
     Status = request.form.get('Status')
     AdditionalInformation = request.form.get('Additional Information')
