@@ -241,7 +241,7 @@ def xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualif)
     ServiceInformation.set_ServiceDigitalIdentity(ServiceDigitalIdentities)
 
     ServiceInformation.set_ServiceStatus(test.NonEmptyURIType(service_data["status"]))
-    ServiceInformation.set_StatusStartingTime(datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    ServiceInformation.set_StatusStartingTime(datetime.datetime.now())
 
     uri = parse_json_field(service_data["SchemeServiceDefinitionURI"])
     for item in uri:
