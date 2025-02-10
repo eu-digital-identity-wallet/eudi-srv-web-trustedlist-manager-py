@@ -34,8 +34,8 @@ class ConfService:
 
     secret_key = "secret_key"
 
-    service_url = "http://127.0.0.1:5000/"
-    #service_url = "https://trustedlist.serviceproviders.eudiw.dev/"
+    #service_url = "http://127.0.0.1:5000/"
+    service_url = "https://trustedlist.serviceproviders.eudiw.dev/"
 
     trusted_CAs_path = "app\certs"
     #trusted_CAs_path = "/etc/eudiw/pid-issuer/cert/"
