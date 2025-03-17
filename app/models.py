@@ -1626,6 +1626,7 @@ def get_tsls_ids(log_id):
             select_query = """
                 SELECT tsl_id
                 FROM trusted_lists
+                WHERE lotl IS NOT NULL
             """
             
             cursor.execute(select_query)
@@ -1705,6 +1706,7 @@ def get_lotl_tsl(log_id):
             select_query = """
                 SELECT *
                 FROM trusted_lists
+                WHERE lotl IS NOT NULL
             """
             
             cursor.execute(select_query)
