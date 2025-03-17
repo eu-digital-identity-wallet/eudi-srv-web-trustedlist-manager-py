@@ -221,8 +221,8 @@ def insert_tsl_info(user_id, Version, Sequence_number, TSLType, SchemeName_lang,
                             INSERT INTO trusted_lists 
                             (Version, SequenceNumber, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang, schemeTerritory,
                             PolicyOrLegalNotice_lang, pointers_to_other_tsl, 
-                            DistributionPoints, issue_date, next_update, status, Additional_Information, country_id, operator_id) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            DistributionPoints, issue_date, next_update, status, Additional_Information, country_id, operator_id, lotl) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0)
                             """
             
             cursor.execute(insert_query, (Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang, 
