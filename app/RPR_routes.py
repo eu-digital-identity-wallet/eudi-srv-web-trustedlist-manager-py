@@ -1689,7 +1689,7 @@ def list_lotl():
                 }
                 data.update(data_temp)
     
-    return render_template("AdminList.html", data=data, title="List Of Trusted Lists", menu= cfgserv.service_url + "menu_lotl", header_table=header_table, url=cfgserv.service_url +"lotl", temp_user_id = temp_user_id)
+    return render_template("AdminList.html", data=data, title="List Of Trusted Lists", menu= cfgserv.service_url + "menu_lotl", header_table=header_table, url=cfgserv.service_url +"lotl", temp_user_id = temp_user_id, servi = cfgserv.service_url + "lotl/xml")
 
 
 
