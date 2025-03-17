@@ -216,11 +216,11 @@ def check_country(user_country, log_id):
     
 def tsl_db_info(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
              PolicyOrLegalNotice_lang, PointerstootherTSL, 
-                DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id):
+                DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, lotl, country, log_id):
     try:
         check = db.insert_tsl_info(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
                              PolicyOrLegalNotice_lang, PointerstootherTSL, 
-                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id) 
+                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, lotl, country, log_id) 
 
         return check
     
