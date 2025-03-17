@@ -246,6 +246,45 @@ def insert_tsl_info(user_id, Version, Sequence_number, TSLType, SchemeName_lang,
             cursor.close()
             connection.close()
 
+
+def insert_tsl_info_lotl(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+                    PolicyOrLegalNotice_lang, PointerstootherTSL, 
+                    DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            insert_query = """
+                            INSERT INTO trusted_lists 
+                            (Version, SequenceNumber, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang, schemeTerritory,
+                            PolicyOrLegalNotice_lang, pointers_to_other_tsl, 
+                            DistributionPoints, issue_date, next_update, status, Additional_Information, country_id, operator_id) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            """
+            
+            cursor.execute(insert_query, (Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang, 
+                    schemeTerritory, PolicyOrLegalNotice_lang, PointerstootherTSL, 
+                    DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, country, user_id,))
+            
+            connection.commit()
+            
+            extra = {'code': log_id} 
+            logger.info(f"TSL successfully added. New TSL ID: {cursor.lastrowid}", extra=extra)
+
+            print(f"TSL successfully added. New TSL ID: {cursor.lastrowid}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        extra = {'code': log_id} 
+        logger.error(f"Error inserting TSL: {e}", extra=extra)
+        print(f"Error inserting TSL: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
 def check_role_user(id, log_id):
     try:
         connection = conn()

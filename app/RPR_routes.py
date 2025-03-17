@@ -1862,11 +1862,11 @@ def create_lotl_db():
     AdditionalInformation = request.form.get('Additional Information')
 
     SchemeTypeCommunityRules_lang = ", ".join(options)
-    lotl = {}
+    
     check = func.check_country(user['issuing_country'], session["session_id"])
-    check = func.tsl_db_info(user['id'], Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+    check = func.tsl_db_info_lotl(user['id'], Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
                              PolicyOrLegalNotice_lang, PointerstootherTSL, DistributionPoints, Issue_date, NextUpdate, Status, 
-                             AdditionalInformation, schemeTerritory, lotl, check, session["session_id"])
+                             AdditionalInformation, schemeTerritory, check, session["session_id"])
     
     
     if check is None:

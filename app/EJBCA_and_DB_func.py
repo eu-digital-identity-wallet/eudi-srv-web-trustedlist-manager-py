@@ -231,6 +231,22 @@ def tsl_db_info(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri
         print(f"Error processing the form, tsl_db_info: {e}")
         return "Error processing the form.", 500
     
+def tsl_db_info_lotl(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+             PolicyOrLegalNotice_lang, PointerstootherTSL, 
+                DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id):
+    try:
+        check = db.insert_tsl_info_lotl(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+                             PolicyOrLegalNotice_lang, PointerstootherTSL, 
+                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id) 
+
+        return check
+    
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, tsl_db_info_lotl: {e}", extra=extra)
+        print(f"Error processing the form, tsl_db_info_lotl: {e}")
+        return "Error processing the form.", 500
 def check_role_user(id, log_id):
     try:
         check = db.check_role_user(id, log_id)
