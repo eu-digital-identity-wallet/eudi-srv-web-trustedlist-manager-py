@@ -1198,7 +1198,7 @@ def create_tsp_db():
     TSPInformationURI = '[{"lang":"' + lang + '", "URI":"'+ TSPInformationURI + '"}]'
     PostalAddress = '[{"lang":"' + lang + '", "StreetAddress":"'+ StreetAddress + '", "Locality":"'+ Locality + '", "StateOrProvince":"'+ StateOrProvince + '", "PostalCode":"'+ PostalCode + '", "CountryName":"'+ country + '"}]'
     
-    check = func.tsp_db_info(session[temp_user_id]["id"], name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI, session["session_id"])
+    check = func.tsp_db_info(user['id'], name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI, session["session_id"])
 
     if check is None:
         return "err"
@@ -1305,7 +1305,7 @@ def tsp_db_lang():
         current_data_TSPInformationURI.append(tsp_info_data)
         current_data_TSPInformationURI = json.dumps(current_data_TSPInformationURI)
 
-    check = func.tsp_db_lang(session[temp_user_id]["id"], 
+    check = func.tsp_db_lang(user['id'], 
                              tsp_id, 
                              current_data_name, 
                              current_data_trade_name, 
@@ -1493,7 +1493,7 @@ def service_tsp_db():
     ServiceName = '[{"lang":"' + lang + '", "text":"'+ service_name + '"}]'
     SchemeServiceDefinitionURI = '[{"lang":"' + lang + '", "URI":"'+ uri + '"}]'
 
-    check = func.service_db_info(session[temp_user_id]["id"], ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, session["session_id"])
+    check = func.service_db_info(user['id'], ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, session["session_id"])
 
     if check is None:
         return (check)
