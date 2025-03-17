@@ -99,50 +99,27 @@
 
                         </div>
                         <h2>Hello {{ user }}</h2>
-                        <a href="{{ url_for('RPR.xml') }}" class="menu-option">XML</a>
+    
+                        <h2>Operator Settings</h2>
                         <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">New Info lang</a>
                         <a href="{{ url_for('RPR.op_edit') }}" class="menu-option">Edit Info</a>
-    
+
                         <h2>Trusted Lists Management (TSL)</h2>
-                        <a href="{{ url_for('RPR.view_tsl') }}" class="menu-option">View Current TSL</a>
+                        <a href="{{ url_for('RPR.list_tsl') }}" class="menu-option"></span> List TSL</a>
 
-                        <a href="{{ url_for('RPR.create_tsl') }}" class="menu-option">Create New TSL</a>
-                        <a href="{{ url_for('RPR.tsl_edit') }}" class="menu-option">Update Existing TSL</a>
-                        <a href="#sign-tsl" class="menu-option">Digitally Sign the TSL(*)</a>
-
-                        <h2>Updates and Auditing</h2>
-                        <a href="#update-history" class="menu-option">Update History(*)</a>
-                        <a href="#register-update" class="menu-option">Register New Update(*)</a>
+                        <h2>Updates and Auditing TSL</h2>
+                        <a href="#update-history" class="menu-option">View History(*)</a>
                         <a href="#export-audit" class="menu-option">Export Audit Log(*)</a>
-
-                        <h2>Operator Settings</h2>
-                        <a href="#profile" class="menu-option">Operator Profile(*)</a>
-                        <a href="#security" class="menu-option">Security Settings(*)</a>
-                        <a href="#permissions-management" class="menu-option">Permissions Management(*)</a>
-
                         
                         <h2>Trust Service Providers Management (TSP)</h2>
-                        <a href="#list-tsp" class="menu-option">List TSPs(*)</a>
-                        <a href="{{ url_for('RPR.create_tsp') }}" class="menu-option">Add New TSP</a>
-                        <a href="{{ url_for('RPR.tsp_lang') }}" class="menu-option">New Info lang</a>
-                        <a href="{{ url_for('RPR.tsp_edit') }}" class="menu-option">Edit TSP</a>
+                        <a href="{{ url_for('RPR.list_tsp') }}" class="menu-option"></span> List TSPs</a>
 
                         <h2>Trust Services Management</h2>
-                        <a href="#list-services" class="menu-option">List Trust Services(*)</a>
-                        <a href="{{ url_for('RPR.create_service') }}" class="menu-option">Add New Service</a>
-                        <a href="{{ url_for('RPR.service_lang') }}" class="menu-option">New Info lang</a>
-                        <a href="{{ url_for('RPR.service_edit') }}" class="menu-option">Edit Service</a>
-                        <a href="#service-status-history" class="menu-option">Service Status History(*)</a>
+                        <a href="{{ url_for('RPR.list_service') }}" class="menu-option"></span> List Trust Services</a>
 
-                        <h2>Updates and Auditing</h2>
-                        <a href="#update-history" class="menu-option">Update History(*)</a>
-                        <a href="#register-update" class="menu-option">Register New Update(*)</a>
+                        <h2>Updates and Auditing Service</h2>
+                        <a href="#update-history" class="menu-option">View History(*)</a>
                         <a href="#export-audit" class="menu-option">Export Audit Log(*)</a>
-
-                        <h2>Operator Settings</h2>
-                        <a href="#profile" class="menu-option">Operator Profile(*)</a>
-                        <a href="#security" class="menu-option">Security Settings(*)</a>
-                        <a href="#permissions-management" class="menu-option">Permissions Management(*)</a>
 
                         <a href="{{ url_for('RPR.logout') }}" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
                         <p>(*) Coming Soon</p>

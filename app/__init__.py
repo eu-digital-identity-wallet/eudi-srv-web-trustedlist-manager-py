@@ -16,6 +16,8 @@
 #
 ###############################################################################
 import json
+import logging
+from logging.handlers import TimedRotatingFileHandler
 import os
 import sys
 
@@ -40,34 +42,34 @@ from app_config.config import ConfService as cfgserv
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 
-# def setup_logger():
-#     log_dir = cfgserv.log_dir
-#     if not os.path.exists(log_dir):
-#         os.makedirs(log_dir)
+def setup_logger():
+    log_dir = cfgserv.log_dir
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
 
-#     log_file_info = "app_logs.log"
-#     log_path = os.path.join(log_dir, log_file_info)
+    log_file_info = "app_logs.log"
+    log_path = os.path.join(log_dir, log_file_info)
 
-#     logger = logging.getLogger("app_logger")
-#     logger.setLevel(logging.INFO)  
+    logger = logging.getLogger("app_logger")
+    logger.setLevel(logging.INFO)  
 
-#     log_handler = TimedRotatingFileHandler(
-#         filename=log_path,
-#         when="midnight",  
-#         interval=1, 
-#         backupCount=7,  
-#     )
+    log_handler = TimedRotatingFileHandler(
+        filename=log_path,
+        when="midnight",  
+        interval=1, 
+        backupCount=7,  
+    )
 
-#     log_format = "%(asctime)s %(name)s %(levelname)s , Code: %(code)s, Message: %(message)s"
-#     formatter = logging.Formatter(log_format)
-#     log_handler.setFormatter(formatter)
+    log_format = "%(asctime)s %(name)s %(levelname)s , Code: %(code)s, Message: %(message)s"
+    formatter = logging.Formatter(log_format)
+    log_handler.setFormatter(formatter)
 
-#     logger.addHandler(log_handler)
+    logger.addHandler(log_handler)
 
-#     return logger
+    return logger
 
 
-# logger = setup_logger()
+logger = setup_logger()
 
 
 def setup_trusted_CAs():

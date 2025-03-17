@@ -102,7 +102,7 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" id="category" name="category" onchange="updateOptions()" style="width: 100%; box-sizing: border-box;">
+                                                    <select class="js-example-basic-single" id="category" name="category" style="width: 100%; box-sizing: border-box;" required>
                                                         <optgroup label="National">
                                                             {% for item in national %}
                                                                 <option value="{{ item }}">{{ item }}</option>
@@ -128,7 +128,7 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" id="Lang" name="Lang" style="width: 100%; box-sizing: border-box;">
+                                                    <select class="js-example-basic-single" id="Lang" name="Lang" style="width: 100%; box-sizing: border-box;" required>
                                                         <option value="">--Select--</option>
                                                         {% for value in lang %}
                                                             <option value="{{ value }}">{{ value }}</option>
@@ -179,6 +179,18 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                        {% elif value == 'status' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <select class="js-example-basic-single" id="{{value}}" name="{{name}}" style="width: 100%; box-sizing: border-box;" required>
+                                                        {% for value in status["Others"] %}
+                                                            <option value="{{ value }}">{{ value }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>  
                                         {% endif %} 
                                     {% endfor %}
                                     <div class="col-md-12" id="hidden_elems">
@@ -192,7 +204,7 @@
 
 
                             <span class="more-submit">
-                                <input type="submit"  name="proceed" accesskey="S" value="Submit" class="btn btn-primary" title="Submit" /><a href="/" class="btn btn-back">Cancel</a>
+                                <input type="submit"  name="proceed" accesskey="S" value="Submit" class="btn btn-primary" title="Submit" /><a onclick="history.back()" class="btn btn-back">Cancel</a>
                             </span>
                         </form>
                         <!--<script type="text/javascript" src="{{ url_for('static', filename='scripts/dynamic-validator/selectCountryForm_9.7.1.20.1679559965505_en.js') }}" charset="UTF-8" defer="true"></script>-->
@@ -233,27 +245,37 @@
 <script>
     $(document).ready(function() {
         $('.js-example-basic-single').select2();
+
+        
+        $("#category").on("change", function() {  
+            var value = $(this).find(":selected");
+            var optgroup = value.closest("optgroup");
+            var category = optgroup.attr("label");
+            var secondSelect = document.getElementById("status");
+            var status = {{ status | tojson |safe}};
+
+            if (category == "Non-Qualified" || category == "National"){
+                category = "Others"
+            }
+
+            secondSelect.innerHTML = "";
+
+            if (status[category]) {
+                status[category].forEach(item => {
+                    const option = document.createElement("option");
+                    option.value = item;
+                    option.textContent = item;
+                    secondSelect.appendChild(option);
+                });
+            }
+        });
     });
     const data = {
         qualified: {{ qualified | tojson | safe }},
         non_qualified: {{ non_qualified | tojson | safe }},
         national: {{ national | tojson | safe }}
     };
-    function updateOptions() {  
-        const category = document.getElementById("category").value;
-        const secondSelect = document.getElementById("options");
 
-        secondSelect.innerHTML = "";
-
-        if (data[category]) {
-            data[category].forEach(item => {
-                const option = document.createElement("option");
-                option.value = item;
-                option.textContent = item;
-                secondSelect.appendChild(option);
-            });
-        }
-    }
 
     var room = 1;
 

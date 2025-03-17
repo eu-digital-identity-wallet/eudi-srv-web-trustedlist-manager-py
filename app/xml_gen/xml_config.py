@@ -25,11 +25,21 @@ class ConfXML:
 
     TLSVersionIdentifier=6
     TSLType={
-        "EU":"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric",
+        "EU":"http://trustedlist.eudiw.dev/TrstSvc/TrustedList/TSLType/EUgeneric",
+        "EUDIW":"http://trustedlist.eudiw.dev/TrstSvc/TrustedList/TSLType/EUlistofthelists"
     }
 
     StatusDeterminationApproach={
-        "EU":"http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/EUappropriate"
+        "EU":"http://trustedlist.eudiw.devTrstSvc/TrustedList/StatusDetn/EUappropriate",
+        "EUDIW":"http://trustedlist.eudiw.dev/TrstSvc/TrustedList/StatusDetn/EUlistofthelists"
+    }
+
+    SchemeTypeCommunityRules={
+        "EUDIW":"http://trustedlist.eudiw.dev/TrstSvc/TrustedList/schemerules/EUlistofthelists"
+    }
+
+    DistributionPoints={
+        "EUDIW":"https://trustedlist.eudiw.dev/tools/lotl/eu-lotl.xml"
     }
 
     HistoricalInformationPeriod=65535

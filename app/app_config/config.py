@@ -41,11 +41,8 @@ class ConfService:
     trusted_CAs_path = "/etc/eudiw/pid-issuer/cert/"
 
     deffered_expiry = 100
-
-    #log_dir = "app/logs"
-    log_dir = "app\logs"
     
-    #cert_UT = "app/xml_gen/cert_UT.pem"
+    #cert_UT = "app/xml_gen/cert_UT.der"
     cert_UT = "/etc/eudiw/pid-issuer/cert/PID-DS-0001_UT_cert.der"
 
     #priv_key_UT = "app/xml_gen/privkey_UT.pem"
@@ -53,7 +50,8 @@ class ConfService:
 
     roles = {
       "tsl_op":"TSL Operator",
-      "tsp_op":"TSP Operator"
+      "tsp_op":"TSP Operator",
+      "lotl_op": "LoTL Operator"
     }
 
     qualifiers = {
@@ -71,9 +69,16 @@ class ConfService:
     }
 
     SchemeTypeCommunityRules ={
-      "Eu Common": "https://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUcommon/", 
+      "Eu Common": "https://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUcommon", 
       "Scheme Territory": "http://uri.etsi.org/TrstSvc/TrustedList/schemerules/"
     }
+
+    TSLType = ["http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric","http://uri.etsi.org/TrstSvc/TrustedList/TSLType/CClist"]
+
+    statusDetermination=["http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/EUappropriate", "http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/CCdetermination"]
+
+    ServiceStatus= { "Qualified":["http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/granted", "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/withdrawn"],
+                     "Others":["http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/recognisedatnationallevel","http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/deprecatedatnationallevel"]}
 
     #Service Identifiers
     service_category = {
@@ -116,24 +121,24 @@ class ConfService:
               "http://uri.etsi.org/TrstSvc/Svctype/NationalRootCA-QC","http://uri.etsi.org/TrstSvc/Svctype/unspecified"]
 
 
-    # log_dir = "/tmp/log"
-    # #log_dir = "../../log"
-    # log_file_info = "logs.log"
+    #log_dir = "app/log"
+    log_dir = "/tmp/log"
+    log_file_info = "logs.log"
 
-    # backup_count = 7
+    backup_count = 7
 
-    # log_handler_info = TimedRotatingFileHandler(
-    #     filename=f"{log_dir}/{log_file_info}",
-    #     when="midnight",  # Rotation midnight
-    #     interval=1,  # new file each day
-    #     backupCount=backup_count,
-    # )
+    log_handler_info = TimedRotatingFileHandler(
+        filename=f"{log_dir}/{log_file_info}",
+        when="midnight",  # Rotation midnight
+        interval=1,  # new file each day
+        backupCount=backup_count,
+    )
 
-    # log_handler_info.setFormatter("%(asctime)s %(name)s %(levelname)s %(message)s")
+    log_handler_info.setFormatter("%(asctime)s %(name)s %(levelname)s %(message)s")
 
-    # logger_info = logging.getLogger("info")
-    # logger_info.addHandler(log_handler_info)
-    # logger_info.setLevel(logging.INFO)
+    logger_info = logging.getLogger("info")
+    logger_info.addHandler(log_handler_info)
+    logger_info.setLevel(logging.INFO)
 
     eu_languages = [
     "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr",
@@ -142,4 +147,4 @@ class ConfService:
     eu_countries = [
     "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
     "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-    "PL", "PT", "RO", "SK", "SI", "ES", "SE"]
+    "PL", "PT", "RO", "SK", "SI", "ES", "SE","UT"]

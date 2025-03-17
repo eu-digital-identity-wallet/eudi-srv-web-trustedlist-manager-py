@@ -42,16 +42,15 @@
     <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/locval/locval_en_9.7.1.20.1679559965505.js" integrity="sha256-fGdBvjTPjOPZBmgDo8xMKgZUwmXXCzYZ+BbHErfhc/Q= sha384-Y9eAdYjT/TZ0VPUxw3Ex/TVSZZzPsV1mRoKD0BTkrQn0L615z24j26O2CZdT1Xl+ sha512-T9HoOOy1OkJ0l1GWqvT2RAR9frKd4zImDm1uyHxjmB/nxNBhmdjEhR9MckiWiNv2/UrFrMZJwSMB4Po/ExbFOw==" charset="UTF-8"></script>
 -->
 
-    <title>Certificate List</title>
+    <title>{{title}} List</title>
+    
 </head>
 
 <body id="responsive-main-nav">
     <!--
     <div id="skip"><a href="#content" accesskey="M">Skip to Main Content</a></div>
     -->
-
     <div class="main container-fluid">
-
         <header role="banner" class="main-header">
             <div class="container">
                 <div class="row">
@@ -65,56 +64,122 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">Revoke certificate</h4>
+                  <h4 class="modal-title">Delete {{title}}</h4>
                 </div>
                 <div class="modal-body">
-                  <p>Revoke this certificate?</p>
+                  <p>Are you sure do you want to delete this {{title}}?</p>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button type="button" id="revoke_id" data-dismiss="modal" class="btn btn-danger">Revoke</button>
+                  <button type="button" id="revoke_id" data-dismiss="modal" class="btn btn-danger">Delete</button>
                 </div>
               </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
-          </div><!-- /.modal -->
+        </div><!-- /.modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="ModalList">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{% if title == "Trusted Lists"%}Add existing Trust Service Providers {% elif title == "Trust Service Providers" %} Add existing services {% endif %}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-striped" id="Add_list" >
+                            <thead>
+                                <tr class="d-flex">
+                                    <th  class="col-sm-2">Name</th> 
+                                    <th  class="col-sm-2">Add</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modalList-body"> 
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="commit_id" data-dismiss="modal" class="btn btn-danger">Confirm</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
 
         <div role="main" class="container">
             <div class="row">
                 <div >
-                    <h1>Certificate List</h1>
+                    <h1>{{title}}</h1>
                     <div id="content" class="content-wrap  ">
                         
                         <div id="collapse1" class="panel panel-default">
 
-                            <div class="panel-heading"><a type="button" href="/Logout" class="btn btn-danger">Logout</a></div>
-                            <h3 class="panel-title">Your certificates</h3>
+                            <div class="panel-heading">
+                                <a type="button" href="{{ menu }}" class="btn btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Back</a>
+                                {% if title == "Trusted Lists (lotl)" and data == {} %}
+                                    <a type="button" href="{{url}}/create" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Create a new {{title}}</a>
+                                {% endif %}
+                                {% if title != "Trusted Lists (lotl)" %}
+                                    <a type="button" href="{{url}}/create" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Create a new {{title}}</a>
+                                {% endif %}
+                                </div>
+                            <h3 class="panel-title">Your {{title}}</h3>
+                            
                             <div class="panel-body" id="panel_msg">
+                                <strong>{{message}}</strong>
+                                {% with messages = get_flashed_messages(with_categories=true) %}
+                                    {% if messages %}
+                                        <div id="flash-alert-container" class="alert-container">
+                                            <script>
+                                                var messages = {{ messages|tojson }};
+                                                window.addEventListener('DOMContentLoaded', (event) => {
+                                                    var alertContainer = document.getElementById('flash-alert-container');
+                                                    
+                                                    alertContainer.innerHTML = '';
+                                                    
+                                                    messages.forEach(function([category, message]) {
+                                                        var alertDiv = document.createElement('div');
+                                                        alertDiv.className = `alert alert-${category} mt-2`;
+                                                        alertDiv.textContent = message;
+                                                        
+                                                        alertContainer.appendChild(alertDiv);
+                                                    });
+                                                    
+                                                    alertContainer.style.display = 'block';
+                                                    
+                                                });
+                                            </script>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
                             </div>
                             <div class="table-responsive">
-                                <table class="table " >
+                                <table class="table table-striped" >
                                     <thead>
                                         <tr class="d-flex">
-                                            <th  class="col-sm-2">Serial Number</th>
-                                            <th  class="col-sm-2">Certificate Issuer</th>
-                                            <th  class="col-sm-2">Certificate Distinguished Name</th>
-                                            <th  class="col-sm-1">Certificate Starting Date</th>
-                                            <th  class="col-sm-1">Certificate Expiry Date</th>
-                                            <th  class="col-sm-1">Status</th>
-                                            <th  class="col-sm-1">Common Name</th>
+                                            {% for attribute in header_table %}
+                                                <th  class="col-sm-1">{{attribute}}</th>
+                                            {% endfor %}
                                             <th  class="col-sm-2">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for id, certificate in certificates.items() %}
-                                            <tr>
+                                        {% for id, certificate in data.items() %}
+                                            <tr id="{{id}}">
                                                 {% for name, value in certificate.items() %}
-                                                    {% if name != "accessCertificate_id" %}
-                                                        <td id="{{name}}{{id}}">{{value}}</td>
-                                                    {% endif %}
+                                                    <td id="{{name}}">{{value}}</td>
                                                 {% endfor %}
-                                                {% if certificate["status"] == "active" %}
-                                                <td><button type="button" class="btn btn-danger btn-xs" id="{{id}}" data-toggle="modal" data-target="#myModal" data-id="{{id}}"><span class="glyphicon glyphicon-remove-circle"></span></button></td>
-                                                {% endif %}
+                                                <td>
+                                                    {% if title == "Trust Service Providers" or title == "Services" %}
+                                                        <a class="btn btn-primary btn-xs" id="{{id}}" href="{{url}}/data_lang?id={{id}}" ><span class="glyphicon glyphicon-plus"></span></a>
+                                                    {% endif %}
+                                                    <a class="btn btn btn-info btn-xs" id="{{id}}" href="{{url}}/edit?id={{id}}"><span class="glyphicon glyphicon-pencil"></span></a>
+                                                    <!-- <a class="btn btn-danger btn-xs" id="{{id}}" data-toggle="modal" data-target="#myModal" data-id="{{id}}"><span class="glyphicon glyphicon-remove-circle"></span></a> -->
+                                                    {% if title == "Trust Service Providers" or title == "Trusted Lists" %}
+                                                        <a class="btn btn-default" id="{{id}}" data-toggle="modal" data-target="#ModalList" data-id="{{id}}"><span class="glyphicon glyphicon-cog"></span></a>
+                                                    {% endif %}
+                                                    {% if title == "Trusted Lists" %}
+                                                        <a class="btn btn btn-info btn-xs" id="{{id}}" href="{{url}}/xml?id={{id}}"><span class="glyphicon glyphicon-file"></span></a>
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -126,7 +191,23 @@
 
                 </div>
             </div>
-            <p><span class="glyphicon glyphicon-remove-circle"></span> = Revoke Certificate</p>
+            {% if title == "Trust Service Providers" or title == "Services" %}
+                <p><span class="glyphicon glyphicon-plus"></span> = Add new language Info</p>
+            {% endif %}
+
+            {% if title == "Trust Service Providers" or title == "Services" or title == "Trusted Lists" %}
+                <p><span class="glyphicon glyphicon-pencil"></span> = Edit {{title}}</p>
+            {% endif %}
+
+            <!-- <p><span class="glyphicon glyphicon-remove-circle"></span> = Delete {{title}}</p> -->
+            {% if title == "Trust Service Providers"%}
+                <p><span class="glyphicon glyphicon-cog"></span> = Add Services</p>
+            {% endif %}
+
+            {% if title == "Trusted Lists" %}
+                <p><span class="glyphicon glyphicon-cog"></span> = Add Trust Service Providers</p>
+                <p><span class="glyphicon glyphicon-file"></span> = Generate XML</p>
+            {% endif %}
         </div>
     </div>
 
@@ -159,7 +240,17 @@
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
+
 <script>
+    
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const flashAlert = document.getElementById('flash-alert');
+        if (flashAlert) {
+            setTimeout(function() {
+                flashAlert.style.display = 'none';
+            }, 5000);
+        }
+    });
 
     $('#myModal').on('show.bs.modal', function(e) {
 
@@ -170,17 +261,67 @@
 
     });
 
-function Ajax_request(id) {
+    $('#ModalList').on('show.bs.modal', function(e) {
+
+        var ID = $(e.relatedTarget).data('id');
+        var table = document.getElementById("Add_list");
+
+        var modalbody=document.getElementById('modalList-body');
+        modalbody.innerHTML="";
+        
+        var  list= {{ list | tojson |safe}};
+
+        list.forEach(function (object){
+
+            var row = document.createElement("tr");
+
+            var td_name=document.createElement("td");
+            td_name.textContent= object.name
+
+            var td_select=document.createElement("td");
+            
+            if (object.associated_id == ID){ 
+                td_select.innerHTML='<input type="checkbox" name="select' + object.id + '" value='+ object.id +' checked />';
+            } else {
+                td_select.innerHTML='<input type="checkbox" name="select' + object.id + '" value='+ object.id +' />';
+            }
+
+            row.append(td_name);
+            row.append(td_select);
+            modalbody.appendChild(row);
+            
+        });
+
+        var commitButton = document.getElementById("commit_id");
+        commitButton.onclick= function() { var selectedCheckboxes = Array.from(table.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(checkbox => checkbox.value); Ajax_request_update(selectedCheckboxes,ID) };
+
+    });
+
+function Ajax_request_update(checks,id) {
+
+    var title= {{title | tojson}};
+
+    var list= {{list | tojson}}
+
+    if ( title == "Trust Service Providers"){
+       var  url='{{url}}/update_services'
+
+    }else if (title == "Trusted Lists" ){
+        var url='{{url}}/update_tsps'
+    }
+
+    var check = JSON.stringify(checks)
     $.ajax({
-        url: '{{redirect_url}}Revoke',
+        url: url,
         method: 'GET',
-        data:{"id": id , "user_id":'{{user_id}}', "log_id": '{{log_id}}'},
+        data:{"id": id , "checks" : check , "user_id":'{{temp_user_id}}', "log_id": '{{log_id}}'},
         success: function(response) {
             
-            document.getElementById("status"+id).innerHTML="revoke"
             document.getElementById("panel_msg").style.color="green"
-            document.getElementById("panel_msg").innerHTML="Certificate successfully revoked."
-            document.getElementById(id).remove()
+            document.getElementById("panel_msg").innerHTML="Successfully Added."
+            
+            location.reload();
             
         },
         error: function(xhr, status, error) {

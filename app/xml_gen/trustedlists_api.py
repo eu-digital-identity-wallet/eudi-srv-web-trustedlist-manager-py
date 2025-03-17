@@ -1,3 +1,21 @@
+# coding: latin-1
+###############################################################################
+# Copyright (c) 2023 European Commission
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+###############################################################################
+
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -9206,7 +9224,7 @@ class ObjectType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
-    def __init__(self, Id=None, MimeType=None, Encoding=None, anytypeobjs_=None, valueOf_=None, mixedclass_=None, content_=None, gds_collector_=None, **kwargs_):
+    def __init__(self, Id=None, _prefix=None, Encoding=None, anytypeobjs_=None, valueOf_=None, mixedclass_=None, content_=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
@@ -9214,8 +9232,8 @@ class ObjectType(GeneratedsSuper):
         self.ns_prefix_ = None
         self.Id = _cast(None, Id)
         self.Id_nsprefix_ = None
-        self.MimeType = _cast(None, MimeType)
-        self.MimeType_nsprefix_ = None
+        self._prefix = _cast(None, _prefix)
+        self._prefix_nsprefix_ = None
         self.Encoding = _cast(None, Encoding)
         self.Encoding_nsprefix_ = None
         self.anytypeobjs_ = anytypeobjs_
@@ -9250,10 +9268,10 @@ class ObjectType(GeneratedsSuper):
         return self.Id
     def set_Id(self, Id):
         self.Id = Id
-    def get_MimeType(self):
-        return self.MimeType
-    def set_MimeType(self, MimeType):
-        self.MimeType = MimeType
+    def get__prefix(self):
+        return self._prefix
+    def set__prefix(self, _prefix):
+        self._prefix = _prefix
     def get_Encoding(self):
         return self.Encoding
     def set_Encoding(self, Encoding):
@@ -9293,9 +9311,9 @@ class ObjectType(GeneratedsSuper):
         if self.Id is not None and 'Id' not in already_processed:
             already_processed.add('Id')
             outfile.write(' Id=%s' % (quote_attrib(self.Id), ))
-        if self.MimeType is not None and 'MimeType' not in already_processed:
-            already_processed.add('MimeType')
-            outfile.write(' MimeType=%s' % (quote_attrib(self.MimeType), ))
+        if self._prefix is not None and '_prefix' not in already_processed:
+            already_processed.add('_prefix')
+            outfile.write(' _prefix=%s' % (quote_attrib(self._prefix), ))
         if self.Encoding is not None and 'Encoding' not in already_processed:
             already_processed.add('Encoding')
             outfile.write(' Encoding=%s' % (quote_attrib(self.Encoding), ))
@@ -9332,10 +9350,10 @@ class ObjectType(GeneratedsSuper):
         if value is not None and 'Id' not in already_processed:
             already_processed.add('Id')
             self.Id = value
-        value = find_attr_value_('MimeType', node)
-        if value is not None and 'MimeType' not in already_processed:
-            already_processed.add('MimeType')
-            self.MimeType = value
+        value = find_attr_value_('_prefix', node)
+        if value is not None and '_prefix' not in already_processed:
+            already_processed.add('_prefix')
+            self._prefix = value
         value = find_attr_value_('Encoding', node)
         if value is not None and 'Encoding' not in already_processed:
             already_processed.add('Encoding')

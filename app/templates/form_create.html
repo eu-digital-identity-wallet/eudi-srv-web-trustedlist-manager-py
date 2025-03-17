@@ -89,24 +89,24 @@
                             <p>This data is only used for {{title}}  Registration for testing purposes.</p>
                             <div id="eidasCountries">
                                 {% for name, value in attributes.items() %}
-                                        {% if value == 'select' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" name="{{ name }}">
-                                                        {% for code, description in data.items() %}
-                                                            <option value="{{ code }}">{{ code }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            </div>     
+                                    {% if value == 'select' %}
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <label for="{{ name }}">{{ name }}</label>
+                                            <small class="form-text text-muted">{{ desc[name] }}</small>
+                                            <select class="form-control" name="{{ name }}" required>
+                                                {% for code, description in data.items() %}
+                                                    <option value="{{ code }}">{{ description }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>     
                                         {% elif value == 'rules' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-multiple" id="rules" name="rules" multiple="multiple"style="width: 100%; box-sizing: border-box;"> 
+                                                    <select class="js-example-basic-multiple" id="rules" name="rules" multiple="multiple"style="width: 100%; box-sizing: border-box;" required> 
                                                         {% for name, value in rules.items() %}
                                                             <option value="{{ value }}">{{ name }} - {{ value }}</option>
                                                         {% endfor %}
@@ -131,7 +131,7 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" id="{{name}}" name="{{name}}" style="width: 100%; box-sizing: border-box;">
+                                                    <select class="js-example-basic-single" id="{{name}}" name="{{name}}" style="width: 100%; box-sizing: border-box;" required>
                                                         {% for value in TSLType %}
                                                             <option value="{{ value }}">{{ value }}</option>
                                                         {% endfor %}
@@ -143,7 +143,7 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" id="{{name}}" name="{{name}}" style="width: 100%; box-sizing: border-box;">
+                                                    <select class="js-example-basic-single" id="{{name}}" name="{{name}}" style="width: 100%; box-sizing: border-box;" required>
                                                         {% for value in status %}
                                                             <option value="{{ value }}">{{ value }}</option>
                                                         {% endfor %}
@@ -155,7 +155,7 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <input type="number" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}">
+                                                    <input type="number" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required>
                                                 </div>
                                             </div> 
                                         {% elif value == 'string' %}
@@ -163,7 +163,7 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" >
+                                                    <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required>
                                                 </div>
                                             </div>    
                                             {% elif value == 'binary' %}
@@ -171,14 +171,14 @@
                                                     <div class="col-md-12">
                                                         <label for="{{ name }}">{{ name }}</label>
                                                         <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                        <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" >
+                                                        <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required>
                                                     </div>
                                                 </div>
                                         {% elif value == 'full-date' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">
                                                     {{name}}
-                                                    <input type="date" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" >
+                                                    <input type="date" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required>
                                                 </div>
                                             </div>
                                         {% elif value == 'country' %}
@@ -186,14 +186,14 @@
                                                 <div class="col-md-12">
                                                     <label for="{{ name }}">{{ name }}</label>
                                                     <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="{{name}}">
-                                                        <option value="">--Select--</option>{% for country in countries %}
+                                                    <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="{{name}}" required>
+                                                        {% for country in countries %}
                                                             <option value="{{ country }}" >{{ country }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
                                             </div>
-                                        {% endif %} 
+                                        {% endif %}
                                     {% endfor %}
                                     <div class="col-md-12" id="hidden_elems">
                                         <div class="col" >
@@ -386,51 +386,6 @@
                 document.getElementById('myselectCountryForm').submit();
             }
         }
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        let fields = ["Street Address", "Locality", "State Or Province", "Postal Code", "Country Name"];
-
-        function checkFields() {
-            let anyFilled = fields.some(name => document.querySelector(`[name="${name}"]`).value.trim() !== "");
-            let allFilled = fields.every(name => document.querySelector(`[name="${name}"]`).value.trim() !== "");
-
-            fields.forEach(name => {
-                let field = document.querySelector(`[name="${name}"]`);
-                let errorMsg = document.getElementById(`${name}-error`);
-
-                if (anyFilled && !allFilled) {
-                    errorMsg.style.display = "block";
-                } else {
-                    errorMsg.style.display = "none"; 
-                }
-            });
-        }
-
-        
-        fields.forEach(name => {
-            let field = document.querySelector(`[name="${name}"]`);
-            if (field) {
-                let errorMsg = document.createElement("small");
-                errorMsg.id = `${name}-error`;
-                errorMsg.style.color = "red";
-                errorMsg.style.display = "none";
-                errorMsg.innerText = "If you fill in one of these fields, all of this ones must be filled in.";
-                field.parentNode.appendChild(errorMsg);
-
-                field.addEventListener("input", checkFields);
-            }
-        });
-
-        document.getElementById("selectCountryForm").addEventListener("submit", function (event) {
-            let anyFilled = fields.some(name => document.querySelector(`[name="${name}"]`).value.trim() !== "");
-            let allFilled = fields.every(name => document.querySelector(`[name="${name}"]`).value.trim() !== "");
-
-            if (anyFilled && !allFilled) {
-                event.preventDefault(); 
-                alert("To add the Address, all fields must be filled: Operator Address, Locality, State or Province, Postal Code, and Country.");
-            }
-        });
     });
 
 </script>

@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS `countries` (
 -- A despejar estrutura para tabela trusted_lists.scheme_operators
 CREATE TABLE IF NOT EXISTS `scheme_operators` (
   `operator_id` int(11) NOT NULL AUTO_INCREMENT,
-  `tsl_id` int(11) DEFAULT NULL,
   `country_id` int(11) DEFAULT NULL,
   `pid_hash` varchar(255) DEFAULT NULL,
   `operator_role` text DEFAULT NULL,
@@ -41,11 +40,9 @@ CREATE TABLE IF NOT EXISTS `scheme_operators` (
   `country` varchar(255) DEFAULT NULL,
   `postal_address` text DEFAULT NULL,
   PRIMARY KEY (`operator_id`),
-  KEY `tsl_id` (`tsl_id`),
   KEY `country_id` (`country_id`),
-  CONSTRAINT `scheme_operators_ibfk_1` FOREIGN KEY (`tsl_id`) REFERENCES `trusted_lists` (`tsl_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `scheme_operators_ibfk_2` FOREIGN KEY (`country_id`) REFERENCES `countries` (`country_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Exportação de dados não seleccionada.
 
@@ -56,8 +53,8 @@ CREATE TABLE IF NOT EXISTS `service_status_history` (
   `previous_status` varchar(20) DEFAULT NULL,
   `status_start_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`history_id`),
-  KEY `service_id` (`service_id`),
-  CONSTRAINT `service_status_history_ibfk_1` FOREIGN KEY (`service_id`) REFERENCES `trust_services` (`service_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `FK_service_status_history_trust_services` (`service_id`),
+  CONSTRAINT `FK_service_status_history_trust_services` FOREIGN KEY (`service_id`) REFERENCES `trust_services` (`service_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Exportação de dados não seleccionada.
@@ -78,14 +75,17 @@ CREATE TABLE IF NOT EXISTS `trusted_lists` (
   `DistributionPoints` varchar(255) DEFAULT NULL,
   `issue_date` datetime DEFAULT NULL,
   `next_update` datetime DEFAULT NULL,
-  `status` varchar(20) DEFAULT NULL,
+  `status` varchar(250) DEFAULT NULL,
   `signature` binary(255) DEFAULT NULL,
   `Additional_Information` varchar(255) DEFAULT NULL,
-  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`data`)),
+  `lotl` int(11) DEFAULT NULL,
+  `operator_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`tsl_id`),
   KEY `country_id` (`country_id`),
+  KEY `tl_op` (`operator_id`),
+  CONSTRAINT `tl_op` FOREIGN KEY (`operator_id`) REFERENCES `scheme_operators` (`operator_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `trusted_lists_ibfk_1` FOREIGN KEY (`country_id`) REFERENCES `countries` (`country_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Exportação de dados não seleccionada.
 
@@ -106,17 +106,20 @@ CREATE TABLE IF NOT EXISTS `trusted_list_updates` (
 -- A despejar estrutura para tabela trusted_lists.trust_services
 CREATE TABLE IF NOT EXISTS `trust_services` (
   `service_id` int(11) NOT NULL AUTO_INCREMENT,
-  `tsp_id` int(11) DEFAULT NULL,
   `service_type` varchar(50) DEFAULT NULL,
-  `digital_identity` binary(255) DEFAULT NULL,
-  `status` varchar(20) DEFAULT NULL,
+  `digital_identity` text DEFAULT NULL,
+  `status` varchar(250) DEFAULT NULL,
   `status_start_date` datetime DEFAULT NULL,
   `qualifier` text DEFAULT NULL,
   `ServiceName` text DEFAULT NULL,
   `SchemeServiceDefinitionURI` text DEFAULT NULL,
+  `operator_id` int(11) DEFAULT NULL,
+  `tsp_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`service_id`),
-  KEY `tsp_id` (`tsp_id`),
-  CONSTRAINT `trust_services_ibfk_1` FOREIGN KEY (`tsp_id`) REFERENCES `trust_service_providers` (`tsp_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `ts_op_fk` (`operator_id`),
+  KEY `tsp_fk` (`tsp_id`),
+  CONSTRAINT `ts_op_fk` FOREIGN KEY (`operator_id`) REFERENCES `scheme_operators` (`operator_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `tsp_fk` FOREIGN KEY (`tsp_id`) REFERENCES `trust_service_providers` (`tsp_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Exportação de dados não seleccionada.
@@ -130,9 +133,12 @@ CREATE TABLE IF NOT EXISTS `trust_service_providers` (
   `trade_name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `EletronicAddress` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `TSPInformationURI` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `operator_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`tsp_id`),
   KEY `trust_service_providers_ibfk_1` (`tsl_id`),
-  CONSTRAINT `trust_service_providers_ibfk_1` FOREIGN KEY (`tsl_id`) REFERENCES `trusted_lists` (`tsl_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `tsp_op_fk` (`operator_id`),
+  CONSTRAINT `trust_service_providers_ibfk_1` FOREIGN KEY (`tsl_id`) REFERENCES `trusted_lists` (`tsl_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `tsp_op_fk` FOREIGN KEY (`operator_id`) REFERENCES `scheme_operators` (`operator_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Exportação de dados não seleccionada.

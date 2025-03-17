@@ -16,7 +16,7 @@
 #
 ###############################################################################
 """
-This rpr_routes.py file is the blueprint of the Web RelyingParty Registration service.
+This rpr_routes.py file is the blueprint of the Web Trusted List Manager service.
 """
 
 import base64
@@ -59,20 +59,47 @@ from app_config.Crypto_Info import Crypto_Info as crypto
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.backends import default_backend
 from xml_gen.xml_config import ConfXML as confxml
-from xml_gen.xmlGen import xml_gen
-
+from xml_gen.xmlGen import xml_gen_xml, xml_gen_lotl_xml
+from xml_gen.xmlGen_List import xml_gen_xml_lotl
 from dateutil.relativedelta import relativedelta
+import ast
 
 rpr = Blueprint("RPR", __name__, url_prefix="/")
 
 rpr.template_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'template/')
-
 
 @rpr.route('/', methods=['GET','POST'])
 def initial_page():
 
     return render_template('initial_page.html', redirect_url= cfgserv.service_url, pid_auth = cfgserv.service_url + "authentication", certificateList=cfgserv.service_url + "authentication_List")
 
+@rpr.route('/menu', methods=['GET','POST'])
+def menu():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+                    
+    return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+    
+@rpr.route('/menu_tsp', methods=['GET','POST'])
+def menu_tsp():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+
+@rpr.route('/menu_tsl', methods=['GET','POST'])
+def menu_tsl():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+
+@rpr.route('/menu_lotl', methods=['GET','POST'])
+def menu_lotl():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    return render_template("operator_menu_lotl.html", user = user['given_name'], temp_user_id = temp_user_id)
 
 @rpr.route("/authentication", methods=["GET","POST"])
 def authentication():
@@ -421,42 +448,44 @@ def getpidoid4vp():
                 "Lang": "lang",
                 "Role" : "select",
                 "Operator Name": "string",
-                "Operator Address": "string",
-                "Locality": "string",
-                "State or Province": "string",
-                "Postal Code": "string",
                 "Electronic Address": "string",
-                "Country": "string"
+                "Street Address" : "string",
+                "Locality": "string",
+                "State Or Province": "string",
+                "Postal Code": "string",
+                "Country Name": "country"
             }
             descriptions = {
                 "Lang": "string",
                 "Role" : "select",
                 "Operator Name": "string",
-                "Operator Address": "string",
-                "Locality": "string",
-                "State or Province": "string",
-                "Postal Code": "string",
                 "Electronic Address": "string",
-                "Country": "string"
+                "Street Address" : "string",
+                "Locality": "string",
+                "State Or Province": "string",
+                "Postal Code": "string",
+                "Country Name": "country"
             }
 
             attributesForm.update(form_items)
             
-            return render_template("dynamic-form.html",countries=cfgserv.eu_countries,  title="Scheme Operator", lang = cfgserv.lang, role = cfgserv.roles, desc = descriptions, attributes = attributesForm,
-                                   temp_user_id = temp_user_id, redirect_url = cfgserv.service_url + "user_auth")
+            return render_template("form_create.html", countries=cfgserv.eu_countries, title="Trusted List", data = cfgserv.roles, status = cfgserv.statusDetermination,  TSLType= cfgserv.TSLType, lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id,  redirect_url = cfgserv.service_url + "user_auth")
         else:
             check = func.check_role_user(aux, session["session_id"])
-            session[temp_user_id]["role"] = check
             if(cfgserv.two_operators == True):
                 if(check == "tsl_op"):
-                    return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+                    return redirect(url_for('RPR.menu_tsl'))
                 elif(check == "tsp_op"):
-                    return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+                    return redirect(url_for('RPR.menu_tsp'))
+                elif(check == "lotl_op"):
+                    return redirect(url_for('RPR.menu_lotl'))
                 else:
                     return ("err")
             else:
-                return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
-
+                print
+                if(check == "lotl_op"):
+                    return redirect(url_for('RPR.menu_lotl'))
+                return redirect(url_for('RPR.menu'))
     else:
         return ("país invalido")
 
@@ -468,37 +497,38 @@ def user_auth():
 
     role = request.form.get('Role')
     opName = request.form.get('Operator Name')
-    address = request.form.get('Operator Address')
+    address = request.form.get('Street Address')
     locality = request.form.get('Locality')
-    stateProvince = request.form.get('State or Province')
+    stateProvince = request.form.get('State Or Province')
     postalCode = request.form.get('Postal Code')
     electronicAddress = request.form.get('Electronic Address')
-    Country = request.form.get('Country')
+    Country = request.form.get('Country Name')
     lang = request.form.get('Lang')
 
     operator_name = '[{"lang":"' + lang + '", "text":"'+ opName + '"}]'
     electronicAddress = '[{"lang":"' + lang + '", "URI":"'+ electronicAddress + '"}]'
-
+    
     PostalAddress = '[{"lang":"' + lang + '", "StreetAddress":"'+ address + '", "Locality":"'+ locality + '", "StateOrProvince":"'+ stateProvince + '", "PostalCode":"'+ postalCode + '", "CountryName":"'+ Country + '"}]'
-
+    
     check = func.user_db_info(role, operator_name, PostalAddress, electronicAddress, user['id'], session["session_id"])
 
     if check is None:
         return ("erro")
     else:
-
         check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
-        session[temp_user_id]["role"] = check
-        
-        if(cfgserv.two_operators):
+        if(cfgserv.two_operators == True):
             if(check == "tsl_op"):
-                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
+                return redirect(url_for('RPR.menu_tsl'))
             elif(check == "tsp_op"):
-                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+                return redirect(url_for('RPR.menu_tsp'))
+            elif(check == "lotl_op"):
+                return redirect(url_for('RPR.menu_lotl'))
             else:
-                return ("error")
+                return ("err")
         else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+            if(check == "lotl_op"):
+                return redirect(url_for('RPR.menu_lotl'))
+            return redirect(url_for('RPR.menu'))
         
 def certificate_List(temp_user_id):
 
@@ -533,21 +563,21 @@ def op_lang():
         "Lang": "lang",
         "Operator Name": "string",
         "Electronic Address": "string",
-        "Operator Address": "string",
+        "Street Address" : "string",
         "Locality": "string",
-        "State or Province": "string",
+        "State Or Province": "string",
         "Postal Code": "string",
-        "Country": "string"
+        "Country Name": "country"
     }
     descriptions = {
         "Lang": "string",
         "Operator Name": "string",
         "Electronic Address": "string",
-        "Operator Address": "string",
+        "Street Address" : "string",
         "Locality": "string",
-        "State or Province": "string",
+        "State Or Province": "string",
         "Postal Code": "string",
-        "Country": "string"
+        "Country Name": "country"
     }
 
     attributesForm.update(form_items)
@@ -563,12 +593,12 @@ def op_lang_db():
     user = session[temp_user_id]
 
     opName = request.form.get('Operator Name')
-    address = request.form.get('Operator Address')
+    address = request.form.get('Street Address')
     locality = request.form.get('Locality')
-    stateProvince = request.form.get('State or Province')
+    stateProvince = request.form.get('State Or Province')
     postalCode = request.form.get('Postal Code')
     electronicAddress = request.form.get('Electronic Address')
-    Country = request.form.get('Country')
+    Country = request.form.get('Country Name')
     lang = request.form.get('Lang')
 
     
@@ -614,19 +644,20 @@ def op_lang_db():
     if check is None:
         return ("erro")
     else:
-
-        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
-        session[temp_user_id]["role"] = check
-        
-        if(cfgserv.two_operators):
-            if(check == "tsl_op"):
-                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-            elif(check == "tsp_op"):
-                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        role = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        if(cfgserv.two_operators == True):
+            if(role == "tsl_op"):
+                return redirect(url_for('RPR.menu_tsl'))
+            elif(role == "tsp_op"):
+                return redirect(url_for('RPR.menu_tsp'))
+            elif(check == "lotl_op"):
+                return redirect(url_for('RPR.menu_lotl'))
             else:
-                return ("error")
+                return ("err")
         else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+            if(check == "lotl_op"):
+                return redirect(url_for('RPR.menu_lotl'))
+            return redirect(url_for('RPR.menu'))
 
 @rpr.route('/op_edit')
 def op_edit():
@@ -639,7 +670,7 @@ def op_edit():
     for key in db_data: 
         db_data[key] = json.loads(db_data[key])
     
-    return render_template("dynamic-form_edit_TLS.html", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "op_edit_db")
+    return render_template("dynamic-form_edit_TLS.html", title = "Scheme Operator", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "op_edit_db")
 
 @rpr.route('/op_edit_db', methods=["GET", "POST"])
 def op_edit_db():
@@ -683,30 +714,63 @@ def op_edit_db():
     if check is None:
         return ("erro")
     else:
-        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
-        session[temp_user_id]["role"] = check
-        
-        if(cfgserv.two_operators):
-            if(check == "tsl_op"):
-                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-            elif(check == "tsp_op"):
-                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
+        role = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        if(cfgserv.two_operators == True):
+            if(role == "tsl_op"):
+                return redirect(url_for('RPR.menu_tsl'))
+            elif(role == "tsp_op"):
+                return redirect(url_for('RPR.menu_tsp'))
+            elif(check == "lotl_op"):
+                return redirect(url_for('RPR.menu_lotl'))
             else:
-                return ("error")
+                return ("err")
         else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+            if(check == "lotl_op"):
+                return redirect(url_for('RPR.menu_lotl'))
+            return redirect(url_for('RPR.menu'))
 
 
 # TSL
-@rpr.route('/tsl/xml')
+@rpr.route('/tsl/XMLgen')
+def xml_gen():
+
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    tsl_dict = func.get_tsl_xml(user["id"], session["session_id"])
+    data = []
+
+    for item in tsl_dict:
+
+        new_item = {
+            "id": item["tsl_id"],
+            "name": item["SchemeName_lang"]
+        }
+        
+        data.append(new_item)
+
+    return render_template("form_genXML.html", data=data, temp_user_id = temp_user_id, redirect_url = "/tsl/xml")
+
+@rpr.route('/tsl/xml', methods=["GET", "POST"])
 def xml():
     
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
 
+    tsl_id = request.args.get("id")
+
+    check = func.check_tsl(tsl_id, session["session_id"])
+
+    if check == "tsp":
+        flash("This TSL doesn't have at least one TSP associated.", "danger")
+        return redirect('/tsl/list')
+    elif check == "service":
+        flash("This TSL doesn't have at least one Service associated to an TSP.", "warning")
+        return redirect('/tsl/list')
+    
     user_info = func.get_user_info(user["id"], session["session_id"])
 
-    tsl_info = func.tsl_info(user_info["tsl_id"], session["session_id"])
+    tsl_info = func.tsl_info(tsl_id, session["session_id"])
     
     dictFromDB_trusted_lists={
         "Version":  confxml.TLSVersionIdentifier,
@@ -728,16 +792,24 @@ def xml():
         "status":   tsl_info["status"]
     }
 
-    tsp_data = func.get_tsp_info(user_info["tsl_id"], session["session_id"])
+    tsp_data = func.get_tsp_info_xml(tsl_id, session["session_id"])
 
-    service_data = func.get_service_info(tsp_data["tsp_id"], session["session_id"])
+    service_data = []
 
-    qualifiers = cfgserv.qualifiers.get(service_data["qualifier"])
-
-
-    file = xml_gen(user_info, dictFromDB_trusted_lists, tsp_data, service_data, qualifiers)
+    for item in tsp_data:
+        tsp_id = item["tsp_id"]
+        
+        service_info = func.get_service_info_xml(tsp_id, session["session_id"])
     
-    return render_template("download_tsl.html", dictFromDB_trusted_lists = dictFromDB_trusted_lists, file_data = file, temp_user_id = temp_user_id)
+        service_data.append(service_info)
+
+    for service_list in service_data:
+        for service in service_list:
+            service['qualifier'] = cfgserv.qualifiers.get(service["qualifier"])
+
+    file, thumbprint, xml_hash_before_sign = xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data)
+
+    return render_template("download_tsl.html", xml_hash_before_sign = xml_hash_before_sign, thumbprint = thumbprint, dictFromDB_trusted_lists = dictFromDB_trusted_lists, file_data = file, temp_user_id = temp_user_id)
     
 @rpr.route('/download', methods=["GET", "POST"])
 def download_tsl():
@@ -776,6 +848,67 @@ def view_tsl():
     else:
         return render_template("view.html", temp_user_id = temp_user_id, tsl = tsl)
 
+@rpr.route('/tsl/list')
+def list_tsl():
+        
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    tsl_dict = func.get_tsl_info(user["id"], session["session_id"])
+    
+    header_table=[ "Version","Sequence Number","TSL Type","Scheme Name","Scheme Territory","Issue Date","Next Update"]
+    if(tsl_dict == "err"):
+        data={}
+    else:
+
+        data={}
+
+        for tsl in tsl_dict:
+            data_temp={
+                tsl["tsl_id"]:{
+                    "Version":tsl["Version"],
+                    "Sequence Number":tsl["SequenceNumber"],
+                    "TSL Type":tsl["TSLType"],
+                    "Scheme Name":tsl["SchemeName_lang"],
+                    "Scheme Territory":tsl["schemeTerritory"],
+                    "Issue Date":tsl["issue_date"],
+                    "Next Update":tsl["next_update"]
+                }
+            }
+            data.update(data_temp)
+    
+    tsp_dict = func.get_tsp_update(user["id"], session["session_id"])
+    
+    list = []
+    if(tsp_dict != "err"):
+
+        for item in tsp_dict:
+            name = json.loads(item["name"])
+            
+            name_txt = name[0]["text"] if name else "No Name"
+            
+            new_item = {
+                "id": item["tsp_id"],
+                "name": name_txt,
+                "associated_id": item["tsl_id"]
+            }
+            
+            list.append(new_item)
+    if(cfgserv.two_operators):
+        role = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        if(role == "tsl_op"):
+            menu= cfgserv.service_url + "menu_tsl"
+            return render_template("CertificateList.html", menu = menu, data=data, title="Trusted Lists", list= list, header_table=header_table, url=cfgserv.service_url +"tsl", temp_user_id = temp_user_id)
+        elif(role == "tsp_op"):
+            menu= cfgserv.service_url + "menu_tsp"
+            return render_template("CertificateList.html", menu = menu, data=data, title="Trusted Lists", list= list, header_table=header_table, url=cfgserv.service_url +"tsl", temp_user_id = temp_user_id)
+        else:
+            return ("error")
+    else:
+        menu= cfgserv.service_url + "menu"
+        return render_template("CertificateList.html", menu = menu, data=data, title="Trusted Lists", list= list, header_table=header_table, url=cfgserv.service_url +"tsl", temp_user_id = temp_user_id)
+
+    
 @rpr.route('/tsl/create')
 def create_tsl():
     
@@ -785,15 +918,15 @@ def create_tsl():
     attributesForm={}
 
     form_items={
-        "TSL Type" : "string",
+        "TSL Type" : "TSLType",
         "Scheme Name": "string", 
-        "Uri": "string",
+        "Scheme Information URI": "string",
         "Scheme Territory": "country",
         "Scheme Type Community Rules": "rules",
         "Policy Or Legal Notice": "string",
         "Pointers to other TSL": "string",
         "Distribution Points": "string",
-        "Status": "string",
+        "Status determination approach": "StatusDetermination",
         "Additional Information": "string"
     }
     descriptions = {
@@ -816,7 +949,7 @@ def create_tsl():
     #     if 'Scheme Territory' in items:
     #         rules[items] = rules[items] + user['issuing_country']
             
-    return render_template("form.html", countries=cfgserv.eu_countries, title="Trusted List", rules = rules, lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
+    return render_template("form_create.html", countries=cfgserv.eu_countries, title="Trusted List", rules = rules, status = cfgserv.statusDetermination,  TSLType= cfgserv.TSLType, lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/create/db")
 
 @rpr.route('/tsl/create/db', methods=["GET", "POST"])
 def create_tsl_db():
@@ -828,10 +961,9 @@ def create_tsl_db():
     Sequence_number = 1
     TSLType = request.form.get('TSL Type')
     SchemeName_lang = request.form.get('Scheme Name')
-    Uri_lang = request.form.get('Uri')
+    Uri_lang = request.form.get('Scheme Information URI')
     
     options = request.form.getlist('rules')
-    SchemeTypeCommunityRules_lang = ", ".join(options)
  
     schemeTerritory = request.form.get('Scheme Territory')
     PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice')
@@ -839,43 +971,51 @@ def create_tsl_db():
     DistributionPoints = request.form.get('Distribution Points')
     Issue_date = datetime.now()
     NextUpdate = Issue_date + timedelta(days=6*30)
-    Status = request.form.get('Status')
+    Status = request.form.get('Status determination approach')
     AdditionalInformation = request.form.get('Additional Information')
-   
+
+    if TSLType == "http://uri.etsi.org/TrstSvc/TrustedList/TSLType/CClist":
+        TSLType="http://uri.etsi.org/TrstSvc/TrustedList/TSLType/"+ schemeTerritory + "list"
+    
+    if  "http://uri.etsi.org/TrstSvc/TrustedList/schemerules/" in options:
+       i= options.index("http://uri.etsi.org/TrstSvc/TrustedList/schemerules/")
+       options[i]= "http://uri.etsi.org/TrstSvc/TrustedList/schemerules/" + schemeTerritory
+
+    SchemeTypeCommunityRules_lang = ", ".join(options)
 
     check = func.check_country(user['issuing_country'], session["session_id"])
-    check = func.tsl_db_info(Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+    check = func.tsl_db_info(user['id'], Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
                              PolicyOrLegalNotice_lang, PointerstootherTSL, 
                              DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, check, session["session_id"])
     
     
     if check is None:
         return ("err")
-    else:
-        check = func.update_user_tsl(user['id'], check, session["session_id"])
-        if check is None:
-            return (check)
-        else:
-            if(cfgserv.two_operators):
-                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-            else:
-                return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+    else:   
+        return redirect('/tsl/list')
 
-@rpr.route('/tsl/edit')
+@rpr.route('/tsl/edit', methods=["GET", "POST"])
 def tsl_edit():
-        
+    
+    if not request.args.get("id"):
+        return ""
+    
+    tsl_id = request.args.get("id")
+
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
 
-    db_data = func.get_data_tsl_edit(user['id'], session["session_id"])
+    db_data = func.get_data_tsl_edit(tsl_id, session["session_id"])
     
-    return render_template("dynamic-form_edit_TLS.html", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "tsl/edit_db")
+    return render_template("dynamic-form_edit_TLS.html", id = tsl_id, lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "tsl/edit_db")
 
 @rpr.route('/tsl/edit_db', methods=["GET", "POST"])
 def tsl_edit_db():
 
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+
+    tsl_id = request.form.get("id")
 
     form = dict(request.form)
     form.pop("proceed")
@@ -906,25 +1046,32 @@ def tsl_edit_db():
 
     check = func.edit_tsl_db_info(
         grouped, 
-        user['id'], 
+        tsl_id, 
         session["session_id"]
     )
 
     if check is None:
         return ("erro")
     else:
-        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
-        session[temp_user_id]["role"] = check
+        return redirect('/tsl/list')
         
-        if(cfgserv.two_operators):
-            if(check == "tsl_op"):
-                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-            elif(check == "tsp_op"):
-                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
-            else:
-                return ("error")
-        else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+@rpr.route('/tsl/update_tsps', methods=["GET", "POST"])
+def update_tsps():
+
+    tsl_id = request.args.get("id")
+    tsps = ast.literal_eval(request.args.get("checks"))
+    user_id =request.args.get("user_id")
+    log_id = request.args.get("log_id")
+
+    for elem in tsps:
+        tsp_id = int(elem)
+
+        check = func.update_tsp(tsp_id, tsl_id, session["session_id"])
+        
+        if check is None:
+            return ("erro")
+
+    return redirect('/tsl/list')
 
 
 @rpr.route('/tsl/sign')
@@ -932,6 +1079,64 @@ def sign_tsl():
     return "Assinar Digitalmente a TSL"
 
 # TSP
+@rpr.route('/tsp/list')
+def list_tsp():
+
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    tsp_dict = func.get_tsp_info(user["id"], session["session_id"])
+    header_table=[ "TSP Name", "Trade Name", "Postal Address", "EletronicAddress","TSP InformationURI"]
+
+    if(tsp_dict == "err"):
+        data = {}
+    else:
+        
+        data = {}
+        
+        for tsp in tsp_dict:
+            data_temp={
+                tsp["tsp_id"]:{
+                    "TSP Name": tsp["name"],
+                    "Trade Name": tsp["trade_name"],
+                    "Postal Address": tsp["postal_address"],
+                    "EletronicAddress": tsp["EletronicAddress"],
+                    "TSP InformationURI": tsp["TSPInformationURI"]
+                }
+            }
+            data.update(data_temp)
+
+    service_dict = func.get_service_update(user["id"], session["session_id"])
+    
+    list = []
+
+    if(service_dict != "err"):
+        for item in service_dict:
+            name = json.loads(item["ServiceName"])
+            name_txt = name[0]["text"] if name else "No Name"
+
+            new_item = {
+                "id": item["service_id"],
+                "name": name_txt,
+                "associated_id": item["tsp_id"]
+            }
+            
+            list.append(new_item)
+
+    if(cfgserv.two_operators):
+        role = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        if(role == "tsl_op"):
+            menu= cfgserv.service_url + "menu_tsl"
+            return render_template("CertificateList.html", menu = menu, data=data, title="Trus Service Providers", list= list, header_table=header_table, url=cfgserv.service_url +"tsp", temp_user_id = temp_user_id)
+        elif(role == "tsp_op"):
+            menu= cfgserv.service_url + "menu_tsp"
+            return render_template("CertificateList.html", menu = menu, data=data, title="Trust Service Providers", list= list, header_table=header_table, url=cfgserv.service_url +"tsp", temp_user_id = temp_user_id)
+        else:
+            return ("error")
+    else:
+        menu= cfgserv.service_url + "menu"
+        return render_template("CertificateList.html", menu = menu, data=data, title="Trust Service Providers", list= list, header_table=header_table, url=cfgserv.service_url +"tsp", temp_user_id = temp_user_id)
+
 @rpr.route('/tsp/create')
 def create_tsp():
     
@@ -943,30 +1148,31 @@ def create_tsp():
         "Lang": "lang",
         "Name": "string",
         "Trade Name": "string",
-        "StreetAddress" : "string",
+        "Eletronic Address": "string",
+        "TSP Information URI": "string",
+        "Street Address" : "string",
         "Locality": "string",
         "State Or Province": "string",
         "Postal Code": "string",
-        "Eletronic Address": "string",
-        "TSP Information URI": "string",
-        "Country Name": "string"
+        "Country Name": "country",
     }
+    
     descriptions = {
-        "Lang": "string",
+        "Lang": "lang",
         "Name": "string",
         "Trade Name": "string",
-        "StreetAddress" : "string",
+        "Eletronic Address": "string",
+        "TSP Information URI": "string",
+        "Street Address": "string",
         "Locality": "string",
         "State Or Province": "string",
         "Postal Code": "string",
-        "Eletronic Address": "string",
-        "TSP Information URI": "string",
-        "Country Name": "string"
+        "Country Name": "country",
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", countries=cfgserv.eu_countries, title="Trusted Service Provider", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/create/db")
+    return render_template("form_create.html", countries=cfgserv.eu_countries, title="Trusted Service Provider", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/create/db")
 
 
 @rpr.route('/tsp/create/db', methods=["GET", "POST"])
@@ -977,7 +1183,7 @@ def create_tsp_db():
 
     name = request.form.get('Name')
     trade_name = request.form.get('Trade Name')
-    StreetAddress = request.form.get('StreetAddress')
+    StreetAddress = request.form.get('Street Address')
     Locality= request.form.get('Locality')
     StateOrProvince= request.form.get('State Or Province')
     PostalCode= request.form.get('Postal Code')
@@ -991,52 +1197,49 @@ def create_tsp_db():
     EletronicAddress = '[{"lang":"' + lang + '", "URI":"'+ EletronicAddress + '"}]'
     TSPInformationURI = '[{"lang":"' + lang + '", "URI":"'+ TSPInformationURI + '"}]'
     PostalAddress = '[{"lang":"' + lang + '", "StreetAddress":"'+ StreetAddress + '", "Locality":"'+ Locality + '", "StateOrProvince":"'+ StateOrProvince + '", "PostalCode":"'+ PostalCode + '", "CountryName":"'+ country + '"}]'
- 
+    
     check = func.tsp_db_info(session[temp_user_id]["id"], name, trade_name, PostalAddress, EletronicAddress, TSPInformationURI, session["session_id"])
 
     if check is None:
         return "err"
     else:
-        if(cfgserv.two_operators):
-            return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
-        else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+        return redirect('/tsp/list')
         
 
-@rpr.route('/tsp/tsp_data_lang')
+@rpr.route('/tsp/data_lang')
 def tsp_lang():
     temp_user_id = session['temp_user_id']
     
     attributesForm={}
-
+    tsp_id = request.args.get("id")
     form_items={
         "Lang": "lang",
         "Name": "string",
         "Trade Name": "string",
-        "StreetAddress" : "string",
+        "Eletronic Address": "string",
+        "TSP Information URI": "string",
+        "Street Address" : "string",
         "Locality": "string",
         "State Or Province": "string",
         "Postal Code": "string",
-        "Country Name": "string",
-        "Eletronic Address": "string",
-        "TSP Information URI": "string"
+        "Country Name": "country"
     }
     descriptions = {
-        "Lang": "string",
+        "Lang": "lang",
         "Name": "string",
         "Trade Name": "string",
-        "StreetAddress" : "string",
+        "Eletronic Address": "string",
+        "TSP Information URI": "string",
+        "Street Address" : "string",
         "Locality": "string",
         "State Or Province": "string",
         "Postal Code": "string",
-        "Country Name": "string",
-        "Eletronic Address": "string",
-        "TSP Information URI": "string"
+        "Country Name": "country"
     }
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", countries=cfgserv.eu_countries, title="Trusted Service Provider", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/tsp_db_data_lang")
+    return render_template("form.html", id = tsp_id, countries=cfgserv.eu_countries, title="Trusted Service Provider", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsp/tsp_db_data_lang")
 
 
 @rpr.route('/tsp/tsp_db_data_lang', methods=["GET", "POST"])
@@ -1044,9 +1247,11 @@ def tsp_db_lang():
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
 
+    tsp_id = request.form.get("id")
+
     name = request.form.get('Name')
     trade_name = request.form.get('Trade Name')
-    StreetAddress = request.form.get('StreetAddress')
+    StreetAddress = request.form.get('Street Address')
     Locality= request.form.get('Locality')
     StateOrProvince= request.form.get('State Or Province')
     PostalCode= request.form.get('Postal Code')
@@ -1055,7 +1260,7 @@ def tsp_db_lang():
     TSPInformationURI= request.form.get('TSP Information URI')
     lang = request.form.get('Lang')
 
-    db_data, tsp_id = func.get_data_tsp(user['id'], session["session_id"])
+    db_data = func.get_data_tsp(tsp_id, session["session_id"])
 
     current_data_name = None
     current_data_trade_name = None
@@ -1111,31 +1316,31 @@ def tsp_db_lang():
 
     if check is None:
         return "err"
-    else:
-        if(cfgserv.two_operators):
-            return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
-        else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+    else:   
+        return redirect('/tsp/list')
 
 
-@rpr.route('/tsp/tsp_edit')
+@rpr.route('/tsp/edit')
 def tsp_edit():
         
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+    tsp_id = request.args.get("id")
 
-    db_data = func.get_data_tsp_edit(user['id'], session["session_id"])
+    db_data = func.get_data_tsp_edit(tsp_id, session["session_id"])
 
     for key in db_data: 
         db_data[key] = json.loads(db_data[key])
     
-    return render_template("dynamic-form_edit_TLS.html", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "/tsp/tsp_edit_db")
+    return render_template("dynamic-form_edit_TLS.html", title = "Trusted Service Provider", id = tsp_id, lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "/tsp/tsp_edit_db")
 
 @rpr.route('/tsp/tsp_edit_db', methods=["GET", "POST"])
 def tsp_edit_db():
 
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+    
+    tsp_id = request.form.get("id")
 
     form = dict(request.form)
     form.pop("proceed")
@@ -1166,27 +1371,75 @@ def tsp_edit_db():
     
     check = func.edit_tsp_db_info(
         grouped, 
-        user['id'], 
+        tsp_id, 
         session["session_id"]
     )
 
     if check is None:
         return ("erro")
     else:
-        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
-        session[temp_user_id]["role"] = check
+        return redirect('/tsp/list')
         
-        if(cfgserv.two_operators):
-            if(check == "tsl_op"):
-                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-            elif(check == "tsp_op"):
-                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
-            else:
-                return ("error")
-        else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+@rpr.route('/tsp/update_services', methods=["GET", "POST"])
+def update_services():
 
+    tsp_id = request.args.get("id")
+    services = ast.literal_eval(request.args.get("checks"))
+    user_id =request.args.get("user_id")
+    log_id = request.args.get("log_id")
+
+    for elem in services:
+        service_id = int(elem)
+
+        check = func.update_service(service_id, tsp_id, session["session_id"])
+        
+        if check is None:
+            return ("erro")
+
+    return redirect('/tsp/list')
+    
 # Service
+@rpr.route('/service/list')
+def list_service():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    service_dict = func.get_service_info(user["id"], session["session_id"])
+    header_table=[ "Service Type","Service Name","Status","Status Starting Date", "Qualifier", "SchemeService Definition URI"]
+
+    if(service_dict == "err"):
+        data = {}
+    else:
+        data = {}
+    
+        for service in service_dict:
+            data_temp={
+                service["service_id"]:{
+                    "Service Type": service["service_type"],
+                    "Service Name": service["ServiceName"],
+                    "Status": service["status"],
+                    "Status start date": service["status_start_date"],
+                    "Qualifier": service["qualifier"],
+                    "SchemeService Definition URI": service["SchemeServiceDefinitionURI"]
+                }
+            }
+            data.update(data_temp)
+    list = []
+    
+    if(cfgserv.two_operators):
+        role = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        if(role == "tsl_op"):
+            menu= cfgserv.service_url + "menu_tsl"
+            return render_template("CertificateList.html", menu = menu, data=data, title="Services", list= list, header_table=header_table, url=cfgserv.service_url +"service", temp_user_id = temp_user_id)
+        elif(role == "tsp_op"):
+            menu= cfgserv.service_url + "menu_tsp"
+            return render_template("CertificateList.html", menu = menu, data=data, title="Services", list= list, header_table=header_table, url=cfgserv.service_url +"service", temp_user_id = temp_user_id)
+        else:
+            return ("error")
+    else:
+        menu= cfgserv.service_url + "menu"
+        return render_template("CertificateList.html", menu = menu, data=data, title="Services", list= list, header_table=header_table, url=cfgserv.service_url +"service", temp_user_id = temp_user_id)
+
 @rpr.route('/service/create')
 def create_service():
     
@@ -1200,9 +1453,9 @@ def create_service():
         "Service Name": "string",
         "Qualifier": "select",
         "Digital Identity" : "string",
-        "Status": "string",
+        "Service Status": "status",
         "Status Start Date": "full-date",
-        "Uri": "string"
+        "Scheme Service Definition URI": "string"
     }
     descriptions = {
         "Lang": "string",
@@ -1217,7 +1470,7 @@ def create_service():
 
     attributesForm.update(form_items)
     
-    return render_template("form_service.html", title="Service", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+    return render_template("form_service.html", title="Service",status = cfgserv.ServiceStatus, lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
                            data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/create/db", qualified = cfgserv.qualified,
                            non_qualified = cfgserv.non_qualified, national = cfgserv.national, serv_cat = cfgserv.service_category)
 
@@ -1232,9 +1485,9 @@ def service_tsp_db():
     service_name = request.form.get('Service Name')
     qualifier = request.form.get('Qualifier')
     digital_identity = request.form.get('Digital Identity')
-    status = request.form.get('Status')
+    status = request.form.get('Service Status')
     status_start_date = request.form.get('Status Start Date')
-    uri = request.form.get('Uri')
+    uri = request.form.get('Scheme Service Definition URI')
     lang = request.form.get('Lang')
 
     ServiceName = '[{"lang":"' + lang + '", "text":"'+ service_name + '"}]'
@@ -1245,17 +1498,16 @@ def service_tsp_db():
     if check is None:
         return (check)
     else:
-        if(cfgserv.two_operators):
-            return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
-        else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+        
+        return redirect('/service/list')
        
-
-@rpr.route('/service/service_lang')
+@rpr.route('/service/data_lang')
 def service_lang():
     
     temp_user_id = session['temp_user_id']
     
+    service_id = request.args.get("id")
+
     attributesForm={}
 
     form_items={
@@ -1271,7 +1523,7 @@ def service_lang():
 
     attributesForm.update(form_items)
     
-    return render_template("form.html", countries=cfgserv.eu_countries, title="Service", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+    return render_template("form.html", id = service_id, countries=cfgserv.eu_countries, title="Service", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
                            data = cfgserv.qualifiers, redirect_url= cfgserv.service_url + "service/service_lang_db")
 
 
@@ -1281,11 +1533,13 @@ def service_db():
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
 
+    service_id = request.form.get("id")
+
     service_name = request.form.get('Service Name')
     uri = request.form.get('Uri')
     lang = request.form.get('Lang')
 
-    db_data, service_id = func.get_data_service(user['id'], session["session_id"])
+    db_data = func.get_data_service(service_id, session["session_id"])
     
     current_data_ServiceName = None
     current_data_SchemeServiceDefinitionURI = None
@@ -1303,7 +1557,6 @@ def service_db():
         current_data_SchemeServiceDefinitionURI = json.dumps(current_data_SchemeServiceDefinitionURI)
 
     check = func.service_db_lang(
-        session[temp_user_id]["id"],
         service_id,
         current_data_ServiceName,
         current_data_SchemeServiceDefinitionURI,
@@ -1313,30 +1566,31 @@ def service_db():
     if check is None:
         return ("err")
     else:
-        if(cfgserv.two_operators):
-            return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
-        else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+        return redirect('/service/list')
        
 
-@rpr.route('/service/service_edit')
+@rpr.route('/service/edit')
 def service_edit():
         
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
 
-    db_data = func.get_data_service_edit(user['id'], session["session_id"])
+    service_id = request.args.get("id")
+
+    db_data = func.get_data_service_edit(service_id, session["session_id"])
 
     for key in db_data: 
         db_data[key] = json.loads(db_data[key])
     
-    return render_template("dynamic-form_edit_TLS.html", lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "/service/service_edit_db")
+    return render_template("dynamic-form_edit_TLS.html", title = "Service", id = service_id, lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "/service/service_edit_db")
 
 @rpr.route('/service/service_edit_db', methods=["GET", "POST"])
 def service_edit_db():
 
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+
+    service_id = request.form.get("id")
 
     form = dict(request.form)
     form.pop("proceed")
@@ -1367,28 +1621,259 @@ def service_edit_db():
             
     check = func.edit_service_db_info(
         grouped, 
-        user['id'], 
+        service_id, 
         session["session_id"]
     )
 
     if check is None:
         return ("erro")
     else:
-        check = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
-        session[temp_user_id]["role"] = check
+        return redirect('/service/list')
+    
+# lotl
+
+@rpr.route('/lotl/update')
+def update_lotl():
         
-        if(cfgserv.two_operators):
-            if(check == "tsl_op"):
-                return render_template("operator_menu_tsl.html", user = user['given_name'], temp_user_id = temp_user_id)
-            elif(check == "tsp_op"):
-                return render_template("operator_menu_tsp.html", user = user['given_name'], temp_user_id = temp_user_id)
-            else:
-                return ("error")
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    checks = request.args.get('checks')
+    checks = json.loads(checks)
+
+    all_ids = func.get_all_tsls_ids(session["session_id"])
+    all_ids = [x[0] for x in all_ids]
+    
+    not_seleted = list(set(all_ids) - set(map(int, checks)))
+
+    print(not_seleted)
+    for tsl_id in checks:
+        aux = func.update_lotl(tsl_id, session["session_id"])  
+
+    for tsl_id in not_seleted:
+        aux = func.update_not_seleted_lotl(tsl_id, session["session_id"])
+
+    return "sucess"
+    
+@rpr.route('/lotl/list')
+def list_lotl():
+        
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    tsl_dict = func.get_lotl_tsl_info(session["session_id"])
+    
+    header_table=[ "Version","Sequence Number","TSL Type","Scheme Name","Scheme Territory","Issue Date","Next Update"]
+    if(tsl_dict == "err"):
+        data={}
+    else:
+        data={}
+
+        for tsl in tsl_dict:
+            if(tsl['lotl'] != None):
+                if(tsl['lotl'] == 0):
+                    included = False
+                elif(tsl['lotl'] == 1):
+                    included = True
+                data_temp={
+                    tsl["tsl_id"]:{
+                        "Version":tsl["Version"],
+                        "Sequence Number":tsl["SequenceNumber"],
+                        "TSL Type":tsl["TSLType"],
+                        "Scheme Name":tsl["SchemeName_lang"],
+                        "Scheme Territory":tsl["schemeTerritory"],
+                        "Issue Date":tsl["issue_date"],
+                        "Next Update":tsl["next_update"],
+                        "included":included
+                    }
+                }
+                data.update(data_temp)
+    
+    return render_template("AdminList.html", data=data, title="List Of Trusted Lists", menu= cfgserv.service_url + "menu_lotl", header_table=header_table, url=cfgserv.service_url +"lotl", temp_user_id = temp_user_id)
+
+
+
+@rpr.route('/lotl/xml', methods=["GET", "POST"])
+def lotl_xml():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    user_info = func.get_user_info(user["id"], session["session_id"])
+    tsl_list = []
+
+    tsl_info = func.get_tsl_loft(session["session_id"])
+
+    tsl_data = func.get_tsl_info(user["id"], session["session_id"])
+    
+    if(tsl_data == "err"):
+        flash("You don't have a Trusted List created, so it's not possible to generate the XML. Please create a new TSL.", "danger")
+        return redirect('/lotl/list')
+    else:
+        tsl_mom = tsl_data[0] 
+        dict_tsl_mom = {
+            "Version":  confxml.TLSVersionIdentifier,
+            "SequenceNumber":   tsl_mom["SequenceNumber"],
+            "SchemeName":   tsl_mom["SchemeName_lang"],
+            "SchemeInformationURI": tsl_mom["Version"],
+            "StatusDeterminationApproach":  confxml.StatusDeterminationApproach.get("EU"),
+            "SchemeTypeCommunityRules": tsl_mom["SchemeTypeCommunityRules_lang"],
+            "PolicyOrLegalNotice":  tsl_mom["PolicyOrLegalNotice_lang"],
+            "HistoricalInformationPeriod":  confxml.HistoricalInformationPeriod,
+            "TSLLocation"	:   "https://ec.europa.eu/tools/lotl/eu-lotl.xml",
+            "DistributionPoints" :  tsl_mom["DistributionPoints"],
+            "issue_date" :  tsl_mom["issue_date"],
+            "next_update":  tsl_mom["next_update"],
+            "status":   tsl_mom["status"]
+        }
+    
+        for each in tsl_info:
+            dictFromDB_trusted_lists = {
+                "Version":  confxml.TLSVersionIdentifier,
+                "SequenceNumber":   each["SequenceNumber"],
+                "TSLType":  confxml.TSLType.get("EU"),
+                "SchemeName":   each["SchemeName_lang"],
+                "SchemeInformationURI": each["Version"],
+                "StatusDeterminationApproach":  confxml.StatusDeterminationApproach.get("EU"),
+                "SchemeTypeCommunityRules": each["SchemeTypeCommunityRules_lang"],
+                "PolicyOrLegalNotice":  each["PolicyOrLegalNotice_lang"],
+                "pointers_to_other_tsl" :   each["pointers_to_other_tsl"].encode('utf-8'),
+                "HistoricalInformationPeriod":  confxml.HistoricalInformationPeriod,
+                "TSLLocation"	:   "https://ec.europa.eu/tools/lotl/eu-lotl.xml",
+                "DistributionPoints" :  each["DistributionPoints"],
+                "issue_date" :  each["issue_date"],
+                "next_update":  each["next_update"],
+                "status":   each["status"]
+            }
+            tsl_list.append(dictFromDB_trusted_lists) 
+            
+        file, thumbprint, xml_hash_before_sign = xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom)
+    
+        return render_template("download_lotl.html", xml_hash_before_sign = xml_hash_before_sign, thumbprint = thumbprint, tsl_list = tsl_list, file_data = file, temp_user_id = temp_user_id)
+    
+
+@rpr.route('/lotl/tsl_list')
+def list_tsl_lotl():
+        
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    tsl_dict = func.get_tsl_info(user["id"], session["session_id"])
+    
+    header_table=[ "Version","Sequence Number","TSL Type","Scheme Name","Scheme Territory","Issue Date","Next Update"]
+    if(tsl_dict == "err"):
+        data={}
+    else:
+        data={}
+
+        for tsl in tsl_dict:
+            data_temp={
+                tsl["tsl_id"]:{
+                    "Version":tsl["Version"],
+                    "Sequence Number":tsl["SequenceNumber"],
+                    "TSL Type":tsl["TSLType"],
+                    "Scheme Name":tsl["SchemeName_lang"],
+                    "Scheme Territory":tsl["schemeTerritory"],
+                    "Issue Date":tsl["issue_date"],
+                    "Next Update":tsl["next_update"]
+                }
+            }
+            data.update(data_temp)
+    
+    tsp_dict = func.get_tsp_update(user["id"], session["session_id"])
+    
+    list = []
+    if(tsp_dict != "err"):
+
+        for item in tsp_dict:
+            name = json.loads(item["name"])
+            
+            name_txt = name[0]["text"] if name else "No Name"
+            
+            new_item = {
+                "id": item["tsp_id"],
+                "name": name_txt,
+                "associated_id": item["tsl_id"]
+            }
+            
+            list.append(new_item)
+    if(cfgserv.two_operators):
+        role = func.check_role_user(session[temp_user_id]['id'], session["session_id"])
+        if(role == "tsl_op"):
+            menu= cfgserv.service_url + "menu_lotl"
+            return render_template("CertificateList.html", menu = menu, data=data, title="Trusted Lists (lotl)", list= list, header_table=header_table, url=cfgserv.service_url +"lotl", temp_user_id = temp_user_id)
         else:
-            return render_template("operator_menu.html", user = user['given_name'], temp_user_id = temp_user_id)
+            return ("error")
+    else:
+        menu= cfgserv.service_url + "menu_lotl"
+        return render_template("CertificateList.html", menu = menu, data=data, title="Trusted Lists (lotl)", list= list, header_table=header_table, url=cfgserv.service_url +"lotl", temp_user_id = temp_user_id)
+        
+    
+@rpr.route('/lotl/create')
+def create_tsl_lotl():
+    
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    attributesForm={}
 
+    form_items={
+        "Scheme Name": "string", 
+        "Scheme Information URI": "string",
+        "Policy Or Legal Notice": "string",
+        "Additional Information": "string"
+    }
+    descriptions = {
+        "Scheme Name": "string", 
+        "Scheme Information URI": "string",
+        "Policy Or Legal Notice": "string",
+        "Additional Information": "string"
+    }
 
+    attributesForm.update(form_items)
+    rules = cfgserv.SchemeTypeCommunityRules
+            
+    return render_template("form_create.html", countries=cfgserv.eu_countries, title="Trusted List LoTL", rules = rules, 
+                           status = cfgserv.statusDetermination,  TSLType= cfgserv.TSLType, lang = cfgserv.eu_languages, 
+                           desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, 
+                           redirect_url= cfgserv.service_url + "lotl/create/db")
 
+@rpr.route('/lotl/create/db', methods=["GET", "POST"])
+def create_lotl_db():
+    
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    Version = confxml.TLSVersionIdentifier
+    Sequence_number = 1
+    TSLType = request.form.get('TSL Type')
+    SchemeName_lang = request.form.get('Scheme Name')
+    Uri_lang = request.form.get('Scheme Information URI')
+    
+    options = request.form.getlist('rules')
+ 
+    schemeTerritory = request.form.get('Scheme Territory')
+    PolicyOrLegalNotice_lang = request.form.get('Policy Or Legal Notice')
+    PointerstootherTSL = request.form.get('Pointers to other TSL')
+    DistributionPoints = request.form.get('Distribution Points')
+    Issue_date = datetime.now()
+    NextUpdate = Issue_date + timedelta(days=6*30)
+    Status = request.form.get('Status determination approach')
+    AdditionalInformation = request.form.get('Additional Information')
+
+    SchemeTypeCommunityRules_lang = ", ".join(options)
+
+    check = func.check_country(user['issuing_country'], session["session_id"])
+    check = func.tsl_db_info(user['id'], Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+                             PolicyOrLegalNotice_lang, PointerstootherTSL, DistributionPoints, Issue_date, NextUpdate, Status, 
+                             AdditionalInformation, schemeTerritory, check, session["session_id"])
+    
+    
+    if check is None:
+        return ("err")
+    else:   
+        return redirect('/lotl/tsl_list')
+
+# logout
 @rpr.route('/logout')
 def logout():
     session.clear()
