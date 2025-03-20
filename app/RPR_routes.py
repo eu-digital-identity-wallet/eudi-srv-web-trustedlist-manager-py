@@ -415,16 +415,16 @@ def getpidoid4vp():
     if response.status_code != 200:
         error_msg= str(response.status_code)
         return jsonify({"error": error_msg}),400
-    
-    error, error_msg= validate_vp_token(response.json())
+
+    error, error_msg, pos= validate_vp_token(response.json())
 
     if error == True:
         return error_msg
     
-    mdoc_json = cbor2elems(response.json()["vp_token"][0] + "==")
+    mdoc_json = cbor2elems(response.json()["vp_token"][0] + "==", pos)
 
     attributesForm={}
-
+    
     for doctype in mdoc_json:
         for attribute, value in mdoc_json[doctype]:
             attributesForm.update({attribute:value})
