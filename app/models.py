@@ -931,6 +931,62 @@ def update_data_tsp(tsp_id, current_data_name, current_data_trade_name, current_
             connection.close()
 
 
+def update_data_tsl(tsl_id, current_data_schemeName, current_data_uri, current_data_schemeTypeCommunityRules, 
+                current_data_policyLegalNotice, current_data_distributionPoints, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            updates = []
+            values = []
+
+            if current_data_schemeName:
+                updates.append("SchemeName_lang = %s")
+                values.append(current_data_schemeName)
+
+            if current_data_uri:
+                updates.append("Uri_lang = %s")
+                values.append(current_data_uri)
+
+            if current_data_schemeTypeCommunityRules:
+                updates.append("SchemeTypeCommunityRules_lang = %s")
+                values.append(current_data_schemeTypeCommunityRules)
+
+            if current_data_policyLegalNotice:
+                updates.append("PolicyOrLegalNotice_lang = %s")
+                values.append(current_data_policyLegalNotice)
+
+            if current_data_distributionPoints:
+                updates.append("DistributionPoints = %s")
+                values.append(current_data_distributionPoints)
+
+            if updates:
+                insert_query = f"""
+                    UPDATE trusted_lists
+                    SET {', '.join(updates)}
+                    WHERE tsl_id = %s
+                """
+                values.append(tsl_id)
+
+                cursor.execute(insert_query, values)
+                connection.commit()
+            
+            extra = {'code': log_id} 
+            logger.info(f"TSL successfully updated: {tsl_id}", extra=extra)
+
+            print(f"TSL successfully updated: {tsl_id}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        extra = {'code': log_id} 
+        logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+
 def update_data_service(service_id, current_data_ServiceName, current_data_SchemeServiceDefinitionURI, log_id):
     try:
         connection = conn()
@@ -1022,7 +1078,7 @@ def get_data_edit_tsl(id, log_id):
             cursor = connection.cursor()
 
             select_query = """
-                SELECT schemeTerritory
+                SELECT schemeTerritory, SchemeName_lang, Uri_lang, PolicyOrLegalNotice_lang, SchemeTypeCommunityRules_lang, DistributionPoints
                 FROM trusted_lists
                 WHERE tsl_id = %s
             """
@@ -1061,12 +1117,18 @@ def edit_tsl(grouped, tsl_id, log_id):
         connection = conn()
         if connection:
             cursor = connection.cursor()
+            SchemeName_lang = json.dumps(grouped['SchemeName_lang'])
+            Uri_lang = json.dumps(grouped['Uri_lang'])
+            SchemeTypeCommunityRules_lang = json.dumps(grouped['SchemeTypeCommunityRules_lang'])
+            PolicyOrLegalNotice_lang = json.dumps(grouped['PolicyOrLegalNotice_lang'])
+            DistributionPoints = json.dumps(grouped['DistributionPoints'])
+
             insert_query = """
                                 UPDATE trusted_lists 
-                                SET schemeTerritory = %s
+                                SET schemeTerritory = %s, SchemeName_lang = %s, Uri_lang = %s, SchemeTypeCommunityRules_lang = %s, PolicyOrLegalNotice_lang = %s, DistributionPoints = %s
                                 WHERE tsl_id = %s
                             """
-            cursor.execute(insert_query, (grouped['SchemeCountry'], tsl_id))
+            cursor.execute(insert_query, (grouped['SchemeCountry'], SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang, PolicyOrLegalNotice_lang, DistributionPoints, tsl_id))
             
             connection.commit()
             
@@ -1733,3 +1795,173 @@ def get_lotl_tsl(log_id):
         if connection:
             cursor.close()
             connection.close()
+
+def edit_lotl_tsl(grouped, tsl_id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            
+            SchemeName_lang = json.dumps(grouped['SchemeName_lang'])
+            Uri_lang = json.dumps(grouped['Uri_lang'])
+            PolicyOrLegalNotice_lang = json.dumps(grouped['PolicyOrLegalNotice_lang'])
+            SchemeTypeCommunityRules_lang = json.dumps(grouped['SchemeTypeCommunityRules_lang'])
+
+            insert_query = """
+                                UPDATE trusted_lists 
+                                SET SchemeName_lang = %s, Uri_lang = %s, PolicyOrLegalNotice_lang = %s, SchemeTypeCommunityRules_lang = %s
+                                WHERE tsl_id = %s
+                            """
+            cursor.execute(insert_query, (SchemeName_lang, Uri_lang, PolicyOrLegalNotice_lang, SchemeTypeCommunityRules_lang, tsl_id))
+            
+            connection.commit()
+            
+            extra = {'code': log_id} 
+            logger.info(f"TSL successfully updated: {tsl_id}", extra=extra)
+
+            print(f"TSL successfully updated: {tsl_id}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        extra = {'code': log_id} 
+        logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def get_data_edit_lotl_tsl(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT SchemeName_lang, Uri_lang, PolicyOrLegalNotice_lang, SchemeTypeCommunityRules_lang
+                FROM trusted_lists
+                WHERE tsl_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                user_info = dict(zip(column_names, result))
+
+                extra = {'code': log_id} 
+                logger.error(f"Getting TSL information: {id}", extra=extra)
+                print(f"Getting TSL information: {id}")
+                
+                return user_info
+            else:
+                extra = {'code': log_id} 
+                logger.error(f"Error Getting TSL information: {id}", extra=extra)
+                print(f"Error Getting TSL information: {id}")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching USER info: {e}")
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form: {e}", extra=extra)
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def update_data_lotl_tsl(tsl_id, current_data_schemeName, current_data_uri, current_data_policyLegalNotice, 
+                         current_data_schemeTypeCommunityRules, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+            updates = []
+            values = []
+
+            if current_data_schemeName:
+                updates.append("SchemeName_lang = %s")
+                values.append(current_data_schemeName)
+
+            if current_data_uri:
+                updates.append("Uri_lang = %s")
+                values.append(current_data_uri)
+
+            if current_data_policyLegalNotice:
+                updates.append("PolicyOrLegalNotice_lang = %s")
+                values.append(current_data_policyLegalNotice)
+                
+            if current_data_schemeTypeCommunityRules:
+                updates.append("SchemeTypeCommunityRules_lang = %s")
+                values.append(current_data_schemeTypeCommunityRules)
+
+            if updates:
+                insert_query = f"""
+                    UPDATE trusted_lists
+                    SET {', '.join(updates)}
+                    WHERE tsl_id = %s
+                """
+                values.append(tsl_id)
+
+                cursor.execute(insert_query, values)
+                connection.commit()
+            
+            extra = {'code': log_id} 
+            logger.info(f"TSL successfully updated: {tsl_id}", extra=extra)
+
+            print(f"TSL successfully updated: {tsl_id}")
+            return cursor.lastrowid
+
+    except pymysql.MySQLError as e:
+        extra = {'code': log_id} 
+        logger.error(f"Error inserting user: {e}", extra=extra)
+        print(f"Error updating user: {e}")
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+def get_lotltsl(id, log_id):
+    try:
+        connection = conn()
+        if connection:
+            cursor = connection.cursor()
+
+            select_query = """
+                SELECT *
+                FROM trusted_lists
+                WHERE operator_id = %s
+            """
+            
+            cursor.execute(select_query, (id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                column_names = [desc[0] for desc in cursor.description]
+                tsl_info = dict(zip(column_names, result))
+
+                extra = {'code': log_id} 
+                logger.error(f"Getting TSL information: {id}", extra=extra)
+                print(f"Getting TSL information: {id}")
+                
+                return tsl_info
+            else:
+                extra = {'code': log_id} 
+                logger.error(f"Error Getting TSL information: {id}", extra=extra)
+                print(f"Erro Getting TSL information: {id}")
+                return None
+
+    except pymysql.MySQLError as e:
+        print(f"Error fetching TSL info: {e}")
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form: {e}", extra=extra)
+
+        return None
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+

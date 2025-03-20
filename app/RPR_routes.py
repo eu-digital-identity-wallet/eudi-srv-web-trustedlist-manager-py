@@ -19,6 +19,7 @@
 This rpr_routes.py file is the blueprint of the Web Trusted List Manager service.
 """
 
+from app import logger
 import base64
 import binascii
 from collections import defaultdict
@@ -98,6 +99,10 @@ def menu_tsl():
 def menu_lotl():
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+    
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
     
     return render_template("operator_menu_lotl.html", user = user['given_name'], temp_user_id = temp_user_id)
 
@@ -771,13 +776,40 @@ def xml():
     user_info = func.get_user_info(user["id"], session["session_id"])
 
     tsl_info = func.tsl_info(tsl_id, session["session_id"])
+
+    lang_based_fields = [
+        "SchemeName_lang",
+        "Uri_lang",
+        "SchemeTypeCommunityRules_lang",
+        "PolicyOrLegalNotice_lang"
+    ]
+
+    for key in lang_based_fields:
+        try:
+            tsl_info[key] = json.loads(tsl_info[key]) if tsl_info[key] else []
+        except json.JSONDecodeError:
+            extra = {'code': session["session_id"]} 
+            logger.error(f"Error decoding : {key}: {tsl_info[key]}", extra=extra)
+            print(f"Error decoding {key}: {tsl_info[key]}")
+            tsl_info[key] = []
+
+    try:
+        tsl_info["DistributionPoints"] = json.loads(tsl_info["DistributionPoints"]) if tsl_info["DistributionPoints"] else []
+        if not isinstance(tsl_info["DistributionPoints"], list):
+            raise ValueError("DistributionPoints não é uma lista válida!")
+    except (json.JSONDecodeError, ValueError):
+        extra = {'code': session["session_id"]} 
+        logger.error(f"Error decoding DistributionPoints: {tsl_info['DistributionPoints']}", extra=extra)
+        print(f"Error decoding DistributionPoints: {tsl_info['DistributionPoints']}")
+        tsl_info["DistributionPoints"] = []
+
     
     dictFromDB_trusted_lists={
         "Version":  confxml.TLSVersionIdentifier,
         "SequenceNumber":   tsl_info["SequenceNumber"],
         "TSLType":  confxml.TSLType.get("EU"),
         "SchemeName":   tsl_info["SchemeName_lang"],
-        "SchemeInformationURI": tsl_info["Version"],
+        "SchemeInformationURI": tsl_info["Uri_lang"],
         "StatusDeterminationApproach":  confxml.StatusDeterminationApproach.get("EU"),
         "SchemeTypeCommunityRules": tsl_info["SchemeTypeCommunityRules_lang"],
         "PolicyOrLegalNotice":  tsl_info["PolicyOrLegalNotice_lang"],
@@ -791,7 +823,7 @@ def xml():
         "next_update":  tsl_info["next_update"],
         "status":   tsl_info["status"]
     }
-
+    
     tsp_data = func.get_tsp_info_xml(tsl_id, session["session_id"])
 
     service_data = []
@@ -918,6 +950,7 @@ def create_tsl():
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "TSL Type" : "TSLType",
         "Scheme Name": "string", 
         "Scheme Information URI": "string",
@@ -930,9 +963,10 @@ def create_tsl():
         "Additional Information": "string"
     }
     descriptions = {
+        "Lang": "lang",
         "TSL Type" : "string",
         "Scheme Name": "string", 
-        "Uri": "string",
+        "Scheme Information URI": "string",
         "Scheme Territory": "country",
         "Scheme Type Community Rules": "string",
         "Policy Or Legal Notice": "string",
@@ -957,6 +991,7 @@ def create_tsl_db():
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
 
+    lang = request.form.get('Lang') 
     Version = confxml.TLSVersionIdentifier
     Sequence_number = 1
     TSLType = request.form.get('TSL Type')
@@ -982,13 +1017,19 @@ def create_tsl_db():
        options[i]= "http://uri.etsi.org/TrstSvc/TrustedList/schemerules/" + schemeTerritory
 
     SchemeTypeCommunityRules_lang = ", ".join(options)
+
+    SchemeName_lang = '[{"lang":"' + lang + '", "text":"'+ SchemeName_lang + '"}]'
+    Uri_lang = '[{"lang":"' + lang + '", "URI":"'+ Uri_lang + '"}]'
+    SchemeTypeCommunityRules_lang = '[{"lang":"' + lang + '", "URI":"'+ SchemeTypeCommunityRules_lang + '"}]'
+    PolicyOrLegalNotice_lang = '[{"lang":"' + lang + '", "text":"'+ PolicyOrLegalNotice_lang + '"}]'
+    DistributionPoints = '["'+ DistributionPoints + '"]'
+
     lotl = 0
 
     check = func.check_country(user['issuing_country'], session["session_id"])
     check = func.tsl_db_info(user['id'], Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
                              PolicyOrLegalNotice_lang, PointerstootherTSL, 
                              DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, lotl, check, session["session_id"])
-    
     
     if check is None:
         return ("err")
@@ -1007,7 +1048,15 @@ def tsl_edit():
     user = session[temp_user_id]
 
     db_data = func.get_data_tsl_edit(tsl_id, session["session_id"])
-    
+
+    for key in db_data:
+        if db_data[key]: 
+            try:
+                db_data[key] = json.loads(db_data[key])
+            except json.JSONDecodeError as e:
+                extra = {'code': session["session_id"]} 
+                logger.error(f"error: {e}", extra=extra)
+
     return render_template("dynamic-form_edit_TLS.html", id = tsl_id, lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "tsl/edit_db")
 
 @rpr.route('/tsl/edit_db', methods=["GET", "POST"])
@@ -1074,10 +1123,99 @@ def update_tsps():
 
     return redirect('/tsl/list')
 
+@rpr.route('/tsl/data_lang')
+def tsl_lang():
+    temp_user_id = session['temp_user_id']
+    
+    attributesForm={}
+    tsp_id = request.args.get("id")
+    form_items={
+        "Lang": "lang",
+        "Scheme Name": "string", 
+        "Uri": "string",
+        "Scheme Type Community Rules": "string",
+        "Policy Or Legal Notice": "string",
+        "Distribution Points": "string"
+    }
+    descriptions = {
+        "Lang": "lang",
+        "Scheme Name": "string", 
+        "Uri": "string",
+        "Scheme Type Community Rules": "string",
+        "Policy Or Legal Notice": "string",
+        "Distribution Points": "string"
+    }
 
-@rpr.route('/tsl/sign')
-def sign_tsl():
-    return "Assinar Digitalmente a TSL"
+    attributesForm.update(form_items)
+    
+    return render_template("form.html", id = tsp_id, countries=cfgserv.eu_countries, title="Trusted Lists", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "tsl/tsl_db_data_lang")
+
+
+@rpr.route('/tsl/tsl_db_data_lang', methods=["GET", "POST"])
+def tsl_db_lang():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    tsl_id = request.form.get("id")
+
+    schemeName = request.form.get('Scheme Name')
+    uri = request.form.get('Uri')
+    schemeTypeCommunityRules= request.form.get('Scheme Type Community Rules')
+    policyLegalNotice= request.form.get('Policy Or Legal Notice')
+    distributionPoints= request.form.get('Distribution Points')
+    lang = request.form.get('Lang')
+
+    db_data = func.get_data_tsl(tsl_id, session["session_id"])
+
+    current_data_schemeName = None
+    current_data_uri= None
+    current_data_schemeTypeCommunityRules = None
+    current_data_policyLegalNotice = None
+    current_data_distributionPoints = None
+
+    if schemeName:
+        schemeName_data = {"lang": lang, "text": schemeName}
+        current_data_schemeName = json.loads(db_data.get('SchemeName_lang', '[]'))
+        current_data_schemeName.append(schemeName_data)
+        current_data_schemeName = json.dumps(current_data_schemeName)
+
+    if uri:
+        uri_data = {"lang": lang, "URI": uri}
+        current_data_uri = json.loads(db_data.get('Uri_lang', '[]'))
+        current_data_uri.append(uri_data)
+        current_data_uri = json.dumps(current_data_uri)
+        
+    if schemeTypeCommunityRules:
+        schemeTypeCommunityRules_data = {"lang": lang, "URI": schemeTypeCommunityRules}
+        current_data_schemeTypeCommunityRules = json.loads(db_data.get('SchemeTypeCommunityRules_lang', '[]'))
+        current_data_schemeTypeCommunityRules.append(schemeTypeCommunityRules_data)
+        current_data_schemeTypeCommunityRules = json.dumps(current_data_schemeTypeCommunityRules)
+
+    if policyLegalNotice:
+        policyLegalNotice_data = {"lang": lang, "text": policyLegalNotice}
+        current_data_policyLegalNotice = json.loads(db_data.get('PolicyOrLegalNotice_lang', '[]'))
+        current_data_policyLegalNotice.append(policyLegalNotice_data)
+        current_data_policyLegalNotice = json.dumps(current_data_policyLegalNotice)
+
+    if distributionPoints:
+        distributionPoints_data = distributionPoints
+        current_data_distributionPoints = json.loads(db_data.get('DistributionPoints', '[]'))
+        current_data_distributionPoints.append(distributionPoints_data)
+        current_data_distributionPoints = json.dumps(current_data_distributionPoints)
+
+    check = func.tsl_db_lang(user['id'], 
+                             tsl_id, 
+                             current_data_schemeName, 
+                             current_data_uri, 
+                             current_data_schemeTypeCommunityRules,
+                             current_data_policyLegalNotice, 
+                             current_data_distributionPoints, 
+                             session["session_id"])
+
+    if check is None:
+        return "err"
+    else:   
+        return redirect('/tsl/list')
 
 # TSP
 @rpr.route('/tsp/list')
@@ -1332,6 +1470,7 @@ def tsp_edit():
 
     for key in db_data: 
         db_data[key] = json.loads(db_data[key])
+
     
     return render_template("dynamic-form_edit_TLS.html", title = "Trusted Service Provider", id = tsp_id, lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "/tsp/tsp_edit_db")
 
@@ -1635,9 +1774,13 @@ def service_edit_db():
 
 @rpr.route('/lotl/update')
 def update_lotl():
-        
+
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+    
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
 
     checks = request.args.get('checks')
     checks = json.loads(checks)
@@ -1661,6 +1804,10 @@ def list_lotl():
         
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
     
     tsl_dict = func.get_lotl_tsl_info(session["session_id"])
     
@@ -1698,24 +1845,44 @@ def list_lotl():
 def lotl_xml():
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
     
     user_info = func.get_user_info(user["id"], session["session_id"])
     tsl_list = []
 
     tsl_info = func.get_tsl_loft(session["session_id"])
 
-    tsl_data = func.get_tsl_info(user["id"], session["session_id"])
+    tsl_data = func.get_lotltsl_info(user["id"], session["session_id"])
+
+    lang_based_fields = [
+        "SchemeName_lang",
+        "Uri_lang",
+        "SchemeTypeCommunityRules_lang",
+        "PolicyOrLegalNotice_lang"
+    ]
+
+    for key in lang_based_fields:
+        try:
+            tsl_data[key] = json.loads(tsl_data[key]) if tsl_data[key] else []
+        except json.JSONDecodeError:
+            extra = {'code': session["session_id"]} 
+            logger.error(f"Error decoding : {key}: {tsl_data[key]}", extra=extra)
+            print(f"Error decoding {key}: {tsl_data[key]}")
+            tsl_data[key] = []
     
     if(tsl_data == "err"):
         flash("You don't have a Trusted List created, so it's not possible to generate the XML. Please create a new TSL.", "danger")
         return redirect('/lotl/list')
     else:
-        tsl_mom = tsl_data[0] 
+        tsl_mom = tsl_data
         dict_tsl_mom = {
             "Version":  confxml.TLSVersionIdentifier,
             "SequenceNumber":   tsl_mom["SequenceNumber"],
             "SchemeName":   tsl_mom["SchemeName_lang"],
-            "SchemeInformationURI": tsl_mom["Version"],
+            "SchemeInformationURI": tsl_mom["Uri_lang"],
             "StatusDeterminationApproach":  confxml.StatusDeterminationApproach.get("EU"),
             "SchemeTypeCommunityRules": tsl_mom["SchemeTypeCommunityRules_lang"],
             "PolicyOrLegalNotice":  tsl_mom["PolicyOrLegalNotice_lang"],
@@ -1757,6 +1924,10 @@ def list_tsl_lotl():
         
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
     
     tsl_dict = func.get_tsl_info(user["id"], session["session_id"])
     
@@ -1815,18 +1986,26 @@ def create_tsl_lotl():
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
     
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
+    
     attributesForm={}
 
     form_items={
+        "Lang": "lang",
         "Scheme Name": "string", 
         "Scheme Information URI": "string",
         "Policy Or Legal Notice": "string",
+        "Scheme Type Community Rules": "rules",
         "Additional Information": "string"
     }
     descriptions = {
+        "Lang": "lang",
         "Scheme Name": "string", 
         "Scheme Information URI": "string",
         "Policy Or Legal Notice": "string",
+        "Scheme Type Community Rules": "rules",
         "Additional Information": "string"
     }
 
@@ -1843,6 +2022,10 @@ def create_lotl_db():
     
     temp_user_id = session['temp_user_id']
     user = session[temp_user_id]
+    
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
 
     Version = confxml.TLSVersionIdentifier
     Sequence_number = 1
@@ -1860,19 +2043,192 @@ def create_lotl_db():
     NextUpdate = Issue_date + timedelta(days=6*30)
     Status = request.form.get('Status determination approach')
     AdditionalInformation = request.form.get('Additional Information')
+    lang = request.form.get('Lang')
 
     SchemeTypeCommunityRules_lang = ", ".join(options)
+
+    SchemeName_lang = '[{"lang":"' + lang + '", "text":"'+ SchemeName_lang + '"}]'
+    Uri_lang = '[{"lang":"' + lang + '", "URI":"'+ Uri_lang + '"}]'
+    SchemeTypeCommunityRules_lang = '[{"lang":"' + lang + '", "URI":"'+ SchemeTypeCommunityRules_lang + '"}]'
+    PolicyOrLegalNotice_lang = '[{"lang":"' + lang + '", "text":"'+ PolicyOrLegalNotice_lang + '"}]'
     
     check = func.check_country(user['issuing_country'], session["session_id"])
     check = func.tsl_db_info_lotl(user['id'], Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
                              PolicyOrLegalNotice_lang, PointerstootherTSL, DistributionPoints, Issue_date, NextUpdate, Status, 
                              AdditionalInformation, schemeTerritory, check, session["session_id"])
     
-    
     if check is None:
         return ("err")
     else:   
         return redirect('/lotl/tsl_list')
+    
+@rpr.route('lotl/edit', methods=["GET", "POST"])
+def lotl_tsl_edit():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
+    
+    if not request.args.get("id"):
+        return ""
+    
+    tsl_id = request.args.get("id")
+
+    db_data = func.get_data_lotl_tsl_edit(tsl_id, session["session_id"])
+
+    for key in db_data:
+        if db_data[key]:
+            try:
+                db_data[key] = json.loads(db_data[key])
+            except json.JSONDecodeError as e:
+                extra = {'code': session["session_id"]} 
+                logger.error(f"error: {e}", extra=extra)
+
+    return render_template("dynamic-form_edit_TLS.html", id = tsl_id, lang = cfgserv.lang, role = cfgserv.roles, data_edit = db_data, Langs=cfgserv.eu_languages,Countries=cfgserv.eu_countries, temp_user_id=temp_user_id, redirect_url= cfgserv.service_url + "lotl/edit_db")
+
+@rpr.route('/lotl/edit_db', methods=["GET", "POST"])
+def lotl_tsl_edit_db():
+
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
+
+    tsl_id = request.form.get("id")
+
+    form = dict(request.form)
+    form.pop("proceed")
+    grouped = defaultdict(list)
+
+    for key, value in form.items():
+        match = re.match(r"(lang|text|URI)_(.*?).(\d+)", key)
+        match2=re.match(r"(postal_address)_(.*?).(\d+)",key)
+        if match:
+            attr, prefix, index = match.groups()
+            index = int(index)
+            while len(grouped[prefix]) <= index:
+                grouped[prefix].append({})
+            grouped[prefix][index][attr] = value
+        elif match2:
+            attr, prefix, index = match2.groups()
+            index = int(index)
+            while len(grouped[attr]) <= index:
+                grouped[attr].append({})
+            grouped[attr][index][prefix] = value
+
+        elif "DistributionPoints" in key:
+                key_dict=key.split(".")
+                grouped[key_dict[0]].append(value)
+                
+        else:
+            grouped[key] = value
+
+    check = func.edit_lotl_tsl_db_info(
+        grouped, 
+        tsl_id, 
+        session["session_id"]
+    )
+
+    if check is None:
+        return ("erro")
+    else:
+        return redirect('/lotl/tsl_list')
+
+@rpr.route('/lotl/data_lang')
+def lotl_tsl_lang():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
+    
+    attributesForm={}
+    tsp_id = request.args.get("id")
+    form_items={
+        "Lang": "lang",
+        "Scheme Name": "string", 
+        "Uri": "string",
+        "Policy Or Legal Notice": "string",
+        "Scheme Type Community Rules": "string"
+    }
+    descriptions = {
+        "Lang": "lang",
+        "Scheme Name": "string", 
+        "Uri": "string",
+        "Policy Or Legal Notice": "string",
+        "Scheme Type Community Rules": "string"
+    }
+
+    attributesForm.update(form_items)
+    
+    return render_template("form.html", id = tsp_id, countries=cfgserv.eu_countries, title="Trusted Lists", lang = cfgserv.eu_languages, desc = descriptions, attributes = attributesForm, temp_user_id = temp_user_id, redirect_url= cfgserv.service_url + "lotl/lotl_tsl_db_data_lang")
+
+@rpr.route('/lotl/lotl_tsl_db_data_lang', methods=["GET", "POST"])
+def lotl_tsl_db_lang():
+    temp_user_id = session['temp_user_id']
+    user = session[temp_user_id]
+    
+    role = func.check_role_user(user["id"], session["session_id"])
+    if(role != "lotl_op"):
+        return redirect('/menu')
+
+    tsl_id = request.form.get("id")
+
+    schemeName = request.form.get('Scheme Name')
+    uri = request.form.get('Uri')
+    policyLegalNotice= request.form.get('Policy Or Legal Notice')
+    schemeTypeCommunityRules= request.form.get('Scheme Type Community Rules')
+    lang = request.form.get('Lang')
+
+    db_data = func.get_data_tsl(tsl_id, session["session_id"])
+
+    current_data_schemeName = None
+    current_data_uri= None
+    current_data_policyLegalNotice = None
+    current_data_schemeTypeCommunityRules = None
+
+    if schemeName:
+        schemeName_data = {"lang": lang, "text": schemeName}
+        current_data_schemeName = json.loads(db_data.get('SchemeName_lang', '[]'))
+        current_data_schemeName.append(schemeName_data)
+        current_data_schemeName = json.dumps(current_data_schemeName)
+
+    if uri:
+        uri_data = {"lang": lang, "URI": uri}
+        current_data_uri = json.loads(db_data.get('Uri_lang', '[]'))
+        current_data_uri.append(uri_data)
+        current_data_uri = json.dumps(current_data_uri)
+        
+    if policyLegalNotice:
+        policyLegalNotice_data = {"lang": lang, "text": policyLegalNotice}
+        current_data_policyLegalNotice = json.loads(db_data.get('PolicyOrLegalNotice_lang', '[]'))
+        current_data_policyLegalNotice.append(policyLegalNotice_data)
+        current_data_policyLegalNotice = json.dumps(current_data_policyLegalNotice)
+        
+    if schemeTypeCommunityRules:
+        schemeTypeCommunityRules_data = {"lang": lang, "URI": schemeTypeCommunityRules}
+        current_data_schemeTypeCommunityRules = json.loads(db_data.get('SchemeTypeCommunityRules_lang', '[]'))
+        current_data_schemeTypeCommunityRules.append(schemeTypeCommunityRules_data)
+        current_data_schemeTypeCommunityRules = json.dumps(current_data_schemeTypeCommunityRules)
+
+    check = func.lotl_tsl_db_lang(user['id'], 
+                             tsl_id, 
+                             current_data_schemeName, 
+                             current_data_uri, 
+                             current_data_policyLegalNotice, 
+                             current_data_schemeTypeCommunityRules,
+                             session["session_id"])
+
+    if check is None:
+        return "err"
+    else:   
+        return redirect('/lotl/tsl_list')
+
 
 # logout
 @rpr.route('/logout')

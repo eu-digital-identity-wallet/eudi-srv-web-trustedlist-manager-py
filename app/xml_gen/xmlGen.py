@@ -104,17 +104,17 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data):
     schemeName=test.InternationalNamesType()
 
     #for cycle
-    schemeName.add_Name(test.MultiLangNormStringType("en",dictFromDB_trusted_lists["SchemeName"]))
-
-    schemeInfo.set_SchemeName(schemeName)
+    for scheme in dictFromDB_trusted_lists["SchemeName"]:
+        schemeName.add_Name(test.MultiLangNormStringType(scheme["lang"], scheme["text"]))
+        schemeInfo.set_SchemeName(schemeName)
 
     #SchemeInformationURI
     schemeInformationURI=test.NonEmptyMultiLangURIListType()
 
     #for cycle
-    schemeInformationURI.add_URI(test.NonEmptyMultiLangURIType("en",dictFromDB_trusted_lists["SchemeInformationURI"]))
-
-    schemeInfo.set_SchemeInformationURI(schemeInformationURI)
+    for scheme in dictFromDB_trusted_lists["SchemeInformationURI"]:
+        schemeInformationURI.add_URI(test.NonEmptyMultiLangURIType(scheme["lang"], scheme["URI"]))
+        schemeInfo.set_SchemeInformationURI(schemeInformationURI)
 
     #StatusDeterminationApproach
     schemeInfo.StatusDeterminationApproach=test.NonEmptyURIType(dictFromDB_trusted_lists["StatusDeterminationApproach"])
@@ -123,9 +123,9 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data):
     schemeCRules= test.NonEmptyMultiLangURIListType()
 
     #for cycle
-    schemeCRules.add_URI(test.NonEmptyMultiLangURIType("en", dictFromDB_trusted_lists["SchemeTypeCommunityRules"]))
-    
-    schemeInfo.set_SchemeTypeCommunityRules(schemeCRules)
+    for scheme in dictFromDB_trusted_lists["SchemeTypeCommunityRules"]:
+        schemeCRules.add_URI(test.NonEmptyMultiLangURIType(scheme["lang"], scheme["URI"]))
+        schemeInfo.set_SchemeTypeCommunityRules(schemeCRules)
 
     #SchemeTerritory
     schemeInfo.set_SchemeTerritory(user_info["country"])
@@ -134,9 +134,9 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data):
     PolicyOrLegalNotice= test.PolicyOrLegalnoticeType()
 
     #for cycle
-    PolicyOrLegalNotice.add_TSLLegalNotice(test.MultiLangStringType("en", dictFromDB_trusted_lists["PolicyOrLegalNotice"]))
-    
-    schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
+    for scheme in dictFromDB_trusted_lists["PolicyOrLegalNotice"]:
+        PolicyOrLegalNotice.add_TSLLegalNotice(test.MultiLangStringType(scheme["lang"], scheme["text"]))
+        schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
 
     #HistoricalInformationPeriod
     schemeInfo.set_HistoricalInformationPeriod(dictFromDB_trusted_lists["HistoricalInformationPeriod"])
@@ -162,9 +162,9 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data):
     schemeNametest=test.InternationalNamesType()
 
     #for cycle
-    schemeNametest.add_Name(test.MultiLangNormStringType("en",dictFromDB_trusted_lists["SchemeName"]))
-
-    AdditionalInfo.add_OtherInformation(schemeNametest)
+    for scheme in dictFromDB_trusted_lists["SchemeName"]:
+        schemeNametest.add_Name(test.MultiLangNormStringType(scheme["lang"], scheme["text"]))
+        AdditionalInfo.add_OtherInformation(schemeNametest)
     
     Pointer.TSLLocation=test.NonEmptyURIType("https://trustedlist.eudiw.dev/tools/lotl/eu-lotl.xml")
     
@@ -184,9 +184,11 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data):
     URIDP=test.NonEmptyURIListType()
 
     #for cycle
-    URIDP.add_URI(test.NonEmptyURIType(dictFromDB_trusted_lists["DistributionPoints"]))
+    
+    for dp in dictFromDB_trusted_lists["DistributionPoints"]:
+        URIDP.add_URI(test.NonEmptyURIType(dp))
 
-    schemeInfo.DistributionPoints=URIDP
+        schemeInfo.DistributionPoints=URIDP
 
     root.SchemeInformation=schemeInfo
 
@@ -450,16 +452,16 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom):
 
     #schemeName
     #for cycle
-    schemeName.add_Name(test.MultiLangNormStringType("en",dict_tsl_mom["SchemeName"]))
-
-    schemeInfo.set_SchemeName(schemeName)
+    for scheme in dict_tsl_mom["SchemeName"]:
+        schemeName.add_Name(test.MultiLangNormStringType(scheme["lang"], scheme["text"]))
+        schemeInfo.set_SchemeName(schemeName)
 
     #SchemeInformationURI
     
     #for cycle
-    schemeInformationURI.add_URI(test.NonEmptyMultiLangURIType("en",dict_tsl_mom["SchemeInformationURI"]))
-
-    schemeInfo.set_SchemeInformationURI(schemeInformationURI)
+    for scheme in dict_tsl_mom["SchemeInformationURI"]:
+        schemeInformationURI.add_URI(test.NonEmptyMultiLangURIType(scheme["lang"], scheme["URI"]))
+        schemeInfo.set_SchemeInformationURI(schemeInformationURI)
 
     #StatusDeterminationApproach
     schemeInfo.StatusDeterminationApproach=test.NonEmptyURIType(confxml.StatusDeterminationApproach["EUDIW"])
@@ -467,9 +469,9 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom):
     #schemeTypeCommunityRules
 
 #for cycle
-    schemeCRules.add_URI(test.NonEmptyMultiLangURIType("en", confxml.SchemeTypeCommunityRules["EUDIW"]))
-
-    schemeInfo.set_SchemeTypeCommunityRules(schemeCRules)
+    for scheme in dict_tsl_mom["SchemeTypeCommunityRules"]:
+        schemeCRules.add_URI(test.NonEmptyMultiLangURIType(scheme["lang"], scheme["URI"]))
+        schemeInfo.set_SchemeTypeCommunityRules(schemeCRules)
 
     #SchemeTerritory
     schemeInfo.set_SchemeTerritory(user_info["country"])
@@ -477,9 +479,9 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom):
     #PolicyOrLegalNotice
 
     #for cycle
-    PolicyOrLegalNotice.add_TSLLegalNotice(test.MultiLangStringType("en", dict_tsl_mom["PolicyOrLegalNotice"]))
-
-    schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
+    for scheme in dict_tsl_mom["PolicyOrLegalNotice"]:
+        PolicyOrLegalNotice.add_TSLLegalNotice(test.MultiLangStringType(scheme["lang"], scheme["text"]))
+        schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
 
     #HistoricalInformationPeriod
     schemeInfo.set_HistoricalInformationPeriod(dict_tsl_mom["HistoricalInformationPeriod"])

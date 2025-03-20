@@ -60,7 +60,6 @@ class ConfService:
       "QCQSCDStatusAsInCert": "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCQSCDStatusAsInCert"
     }
 
-
     url_verifier="verifier-backend.eudiw.dev"
 
     lang = {
@@ -121,24 +120,9 @@ class ConfService:
               "http://uri.etsi.org/TrstSvc/Svctype/NationalRootCA-QC","http://uri.etsi.org/TrstSvc/Svctype/unspecified"]
 
 
-    #log_dir = "app/log"
-    log_dir = "/tmp/log"
+    log_dir = "app/log"
+    #log_dir = "/tmp/log"
     log_file_info = "logs.log"
-
-    backup_count = 7
-
-    log_handler_info = TimedRotatingFileHandler(
-        filename=f"{log_dir}/{log_file_info}",
-        when="midnight",  # Rotation midnight
-        interval=1,  # new file each day
-        backupCount=backup_count,
-    )
-
-    log_handler_info.setFormatter("%(asctime)s %(name)s %(levelname)s %(message)s")
-
-    logger_info = logging.getLogger("info")
-    logger_info.addHandler(log_handler_info)
-    logger_info.setLevel(logging.INFO)
 
     eu_languages = [
     "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr",

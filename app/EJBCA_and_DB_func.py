@@ -286,6 +286,19 @@ def get_data_tsp(tsp_id,  log_id):
         print(f"Error processing the form, get_data_tsp: {e}")
         return "Error processing the form.", 500
     
+def get_data_tsl(tsl_id,  log_id):
+    try:
+        check = db.get_tsl(tsl_id, log_id) 
+
+        return check
+    
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, get_data_tsl: {e}", extra=extra)
+        print(f"Error processing the form, get_data_tsl: {e}")
+        return "Error processing the form.", 500
+    
 
 def tsp_db_lang(id, tsp_id, current_data_name, current_data_trade_name, current_data_postal_address,
                              current_data_EletronicAddress, current_data_TSPInformationURI,  log_id):
@@ -300,6 +313,22 @@ def tsp_db_lang(id, tsp_id, current_data_name, current_data_trade_name, current_
         extra = {'code': log_id} 
         logger.error(f"Error processing the form, tsp_db_lang: {e}", extra=extra)
         print(f"Error processing the form, tsp_db_lang: {e}")
+        return "Error processing the form.", 500
+
+
+def tsl_db_lang(id, tsp_id, current_data_schemeName, current_data_uri, current_data_schemeTypeCommunityRules, current_data_policyLegalNotice, 
+                current_data_distributionPoints, log_id):
+    try:
+        check = db.update_data_tsl(tsp_id, current_data_schemeName, current_data_uri, current_data_schemeTypeCommunityRules, 
+                current_data_policyLegalNotice, current_data_distributionPoints, log_id) 
+
+        return check
+    
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, tsl_db_lang: {e}", extra=extra)
+        print(f"Error processing the form, tsl_db_lang: {e}")
         return "Error processing the form.", 500
     
 
@@ -720,5 +749,61 @@ def get_lotl_tsl_info(log_id):
         extra = {'code': log_id} 
         logger.error(f"Error processing the form, get_tsl_info: {e}", extra=extra)
         print(f"Error processing the form, get_tsl_info: {e}")
+        return "Error processing the form.", 500
+    
+def edit_lotl_tsl_db_info(grouped, tsl_id, log_id):
+    try:
+        check = db.edit_lotl_tsl(grouped, tsl_id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, edit_lotl_tsl_db_info: {e}", extra=extra)
+        print(f"Error processing the form, edit_lotl_tsl_db_info: {e}")
+        return "Error processing the form.", 500
+    
+def get_data_lotl_tsl_edit(tsl_id, log_id):
+    try:
+        check = db.get_data_edit_lotl_tsl(tsl_id, log_id)
+        return check
+        
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, get_data_lotl_tsl_edit: {e}", extra=extra)
+        print(f"Error processing the form, get_data_lotl_tsl_edit: {e}")
+        return "Error processing the form.", 500
+    
+def lotl_tsl_db_lang(id, tsp_id, current_data_schemeName, current_data_uri, current_data_policyLegalNotice, 
+                     current_data_schemeTypeCommunityRules, log_id):
+    try:
+        check = db.update_data_lotl_tsl(tsp_id, current_data_schemeName, current_data_uri, current_data_policyLegalNotice, 
+                                        current_data_schemeTypeCommunityRules, log_id) 
+
+        return check
+    
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, tsl_db_lang: {e}", extra=extra)
+        print(f"Error processing the form, tsl_db_lang: {e}")
+        return "Error processing the form.", 500
+    
+def get_lotltsl_info(id, log_id):
+    try:
+
+        check = db.get_lotltsl(id, log_id)
+        
+        if(check != None):
+            return check
+        else:
+            return ("err")
+        
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, get_lotltsl_info: {e}", extra=extra)
+        print(f"Error processing the form, get_lotltsl_info: {e}")
         return "Error processing the form.", 500
     

@@ -168,7 +168,7 @@
                                                     <td id="{{name}}">{{value}}</td>
                                                 {% endfor %}
                                                 <td>
-                                                    {% if title == "Trust Service Providers" or title == "Services" %}
+                                                    {% if title == "Trust Service Providers" or title == "Services" or title == "Trusted Lists" or title == "Trusted Lists (lotl)" %}
                                                         <a class="btn btn-primary btn-xs" id="{{id}}" href="{{url}}/data_lang?id={{id}}" ><span class="glyphicon glyphicon-plus"></span></a>
                                                     {% endif %}
                                                     <a class="btn btn btn-info btn-xs" id="{{id}}" href="{{url}}/edit?id={{id}}"><span class="glyphicon glyphicon-pencil"></span></a>
@@ -191,11 +191,11 @@
 
                 </div>
             </div>
-            {% if title == "Trust Service Providers" or title == "Services" %}
+            {% if title == "Trust Service Providers" or title == "Services" or title == "Trusted Lists" or title == "Trusted Lists (lotl)" %}
                 <p><span class="glyphicon glyphicon-plus"></span> = Add new language Info</p>
             {% endif %}
 
-            {% if title == "Trust Service Providers" or title == "Services" or title == "Trusted Lists" %}
+            {% if title == "Trust Service Providers" or title == "Services" or title == "Trusted Lists" or title == "Trusted Lists (lotl)" %}
                 <p><span class="glyphicon glyphicon-pencil"></span> = Edit {{title}}</p>
             {% endif %}
 
