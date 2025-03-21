@@ -233,7 +233,7 @@ def authentication():
         "pid_login_qr_code.html",
         url_data=deeplink_url,
         qrcode=qr_img_base64,
-        presentation_id=response["presentation_id"],
+        presentation_id=response["transaction_id"],
         redirect_url= cfgserv.service_url
     )
 @rpr.route("/authentication_List", methods=["GET","POST"])
@@ -363,7 +363,7 @@ def authentication_List():
         "pid_login_qr_code.html",
         url_data=deeplink_url,
         qrcode=qr_img_base64,
-        presentation_id=response["presentation_id"],
+        presentation_id=response["transaction_id"],
         redirect_url= cfgserv.service_url
     )
 
@@ -392,7 +392,7 @@ def getpidoid4vp():
     if "response_code" in request.args and "session_id" in request.args:
 
         response_code = request.args.get("response_code")
-        presentation_id = oid4vp_requests[request.args.get("session_id")]["response"]["presentation_id"]
+        presentation_id = oid4vp_requests[request.args.get("session_id")]["response"]["transaction_id"]
         session["session_id"]=request.args.get("session_id")
         if oid4vp_requests[request.args.get("session_id")]["certificate_List"] !=None:
             session["certificate_List"]=True
