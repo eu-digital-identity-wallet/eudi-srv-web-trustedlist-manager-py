@@ -98,28 +98,17 @@
                         <div class="genericErrors" id="genericErrorsDesc">
 
                         </div>
-                        <h2>Hello {{ user }}</h2>
     
-                        <h2>Operator Settings</h2>
-                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">New Info lang</a>
-                        <a href="{{ url_for('RPR.op_edit') }}" class="menu-option">Edit Info</a>
+                        <h2>Operator Information</h2>
+                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">Add information in new language</a>
+                        <a href="{{ url_for('RPR.op_edit') }}" class="menu-option">Edit information</a>
 
-                        <h2>Trusted Lists Management (TSL)</h2>
-                        <a href="{{ url_for('RPR.list_tsl') }}" class="menu-option"></span> List TSL</a>
-
-                        <h2>Updates and Auditing TSL</h2>
-                        <a href="#update-history" class="menu-option">View History(*)</a>
-                        <a href="#export-audit" class="menu-option">Export Audit Log(*)</a>
+                        <h2>Trusted Service List (TSL) Management</h2>
+                        <a href="{{ url_for('RPR.list_tsl') }}" class="menu-option"></span>Manage TSL</a>
                         
-                        <h2>Trust Service Providers Management (TSP)</h2>
-                        <a href="{{ url_for('RPR.list_tsp') }}" class="menu-option"></span> List TSPs</a>
-
-                        <h2>Trust Services Management</h2>
-                        <a href="{{ url_for('RPR.list_service') }}" class="menu-option"></span> List Trust Services</a>
-
-                        <h2>Updates and Auditing Service</h2>
-                        <a href="#update-history" class="menu-option">View History(*)</a>
-                        <a href="#export-audit" class="menu-option">Export Audit Log(*)</a>
+                        <h2>Trust Service Provider (TSP) Management</h2>
+                        <a href="{{ url_for('RPR.list_service') }}" class="menu-option"></span>Manage Trust Services</a>
+                        <a href="{{ url_for('RPR.list_tsp') }}" class="menu-option"></span>Manage TSP</a>
 
                         <a href="{{ url_for('RPR.logout') }}" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
                         <p>(*) Coming Soon</p>

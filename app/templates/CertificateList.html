@@ -89,6 +89,7 @@
                                 <tr class="d-flex">
                                     <th  class="col-sm-2">Name</th> 
                                     <th  class="col-sm-2">Add</th>
+                                    <th  class="col-sm-2">Associated Name</th>
                                 </tr>
                             </thead>
                             <tbody id="modalList-body"> 
@@ -107,7 +108,7 @@
         <div role="main" class="container">
             <div class="row">
                 <div >
-                    <h1>{{title}}</h1>
+                    <h1>{{h1}}</h1>
                     <div id="content" class="content-wrap  ">
                         
                         <div id="collapse1" class="panel panel-default">
@@ -115,13 +116,13 @@
                             <div class="panel-heading">
                                 <a type="button" href="{{ menu }}" class="btn btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Back</a>
                                 {% if title == "Trusted Lists (lotl)" and data == {} %}
-                                    <a type="button" href="{{url}}/create" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Create a new {{title}}</a>
+                                    <a type="button" href="{{url}}/create" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Create a new {{h1}}</a>
                                 {% endif %}
                                 {% if title != "Trusted Lists (lotl)" %}
-                                    <a type="button" href="{{url}}/create" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Create a new {{title}}</a>
+                                    <a type="button" href="{{url}}/create" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Create a new {{h1}}</a>
                                 {% endif %}
                                 </div>
-                            <h3 class="panel-title">Your {{title}}</h3>
+                            <h3 class="panel-title">Your {{h1}}</h3>
                             
                             <div class="panel-body" id="panel_msg">
                                 <strong>{{message}}</strong>
@@ -196,7 +197,7 @@
             {% endif %}
 
             {% if title == "Trust Service Providers" or title == "Services" or title == "Trusted Lists" or title == "Trusted Lists (lotl)" %}
-                <p><span class="glyphicon glyphicon-pencil"></span> = Edit {{title}}</p>
+                <p><span class="glyphicon glyphicon-pencil"></span> = Edit {{h1}}</p>
             {% endif %}
 
             <!-- <p><span class="glyphicon glyphicon-remove-circle"></span> = Delete {{title}}</p> -->
@@ -206,7 +207,7 @@
 
             {% if title == "Trusted Lists" %}
                 <p><span class="glyphicon glyphicon-cog"></span> = Add Trust Service Providers</p>
-                <p><span class="glyphicon glyphicon-file"></span> = Generate XML</p>
+                <p><span class="glyphicon glyphicon-file"></span> = Generate and Sign Trusted Service List</p>
             {% endif %}
         </div>
     </div>
@@ -279,6 +280,9 @@
             td_name.textContent= object.name
 
             var td_select=document.createElement("td");
+
+            var td_tsl_name = document.createElement("td");
+            td_tsl_name.textContent= object.ass_name
             
             if (object.associated_id == ID){ 
                 td_select.innerHTML='<input type="checkbox" name="select' + object.id + '" value='+ object.id +' checked />';
@@ -288,6 +292,7 @@
 
             row.append(td_name);
             row.append(td_select);
+            row.append(td_tsl_name);
             modalbody.appendChild(row);
             
         });

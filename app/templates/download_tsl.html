@@ -42,7 +42,7 @@
     <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/locval/locval_en_9.7.1.20.1679559965505.js" integrity="sha256-fGdBvjTPjOPZBmgDo8xMKgZUwmXXCzYZ+BbHErfhc/Q= sha384-Y9eAdYjT/TZ0VPUxw3Ex/TVSZZzPsV1mRoKD0BTkrQn0L615z24j26O2CZdT1Xl+ sha512-T9HoOOy1OkJ0l1GWqvT2RAR9frKd4zImDm1uyHxjmB/nxNBhmdjEhR9MckiWiNv2/UrFrMZJwSMB4Po/ExbFOw==" charset="UTF-8"></script>
 -->
 
-    <title>Form for your TSL Registration</title>
+    <title>Trusted Service List</title>
 
 </head>
 
@@ -66,10 +66,12 @@
             <div class="row">
                 <div class="col-md-12">
                         <div class="container mt-5">
-                            <h1 class="mb-4">DOWNLOAD TSL</h1>
+                            <h1 class="mb-4">Trusted Service List</h1>
                             <form id="download-form" action="/download" method="post" target="_blank">
                                 <input type="hidden" name="file_data" value="{{ file_data }}">
+                                <a type="button" href="{{ menu }}" class="btn btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Back</a>
                                 <button type="submit" class="btn btn-primary mt-3" onclick="downloadAndRedirect()"><span class="glyphicon glyphicon-download-alt"></span> Download XML</button>
+                                <a type="button" class="btn btn-primary mt-3" onclick="validateXML()"><span class="glyphicon glyphicon-ok"></span> Validate XML</a>
                                 <a type="button" href="{}" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Publish (*)</a>
                                 <div class="col-md-12" id="hidden_elems">
                                     <div class="col" >
@@ -78,7 +80,10 @@
                                 </div>
                             </form>
                             <br>
-                            <br><br>
+                            <br>
+                            <div class="panel-body" id="panel_msg">
+                            </div>
+                            <br>
                             <table class="table table-bordered">
                                 <thead class="table-dark">
                                     <tr>
@@ -142,6 +147,25 @@
         setTimeout(() => {
             window.location.href = '/operator_menu_tsl';
         }, 1);
+    }
+    function validateXML(){
+
+        $.ajax({
+            url: '{{url}}/validate_xml',
+            method: 'GET',
+            data:{"file": '{{file_data }}' },
+            success: function(response) {
+                document.getElementById("panel_msg").style.color="green"
+                document.getElementById("panel_msg").innerHTML=response["message"]
+            },
+            error: function(xhr, status, error) {
+                var err = JSON.parse(xhr.responseText);
+                document.getElementById("panel_msg").style.color="red"
+                document.getElementById("panel_msg").innerHTML=err["error"]
+                console.error('Error:', error);
+            }
+        });
+
     }
     </script>
 </html>

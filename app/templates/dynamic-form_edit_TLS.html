@@ -71,22 +71,22 @@
                     <!--
                     <p class="relying-party"><strong>etranslation</strong> requires you to authenticate</p>
                     -->
-                    <h1>Edit your {{ title }} Information</h1>
+                    <h1>{{ title }} Information</h1>
                     <div id="content" class="content-wrap text-wrap content-center col-md-6 col-sm-7" >
 
                         <!-- <status>EID_COUNTRY_SELECTION</status> -->
-                        <h2>Please edit/update your {{ title }} Information</h2>
+                        <h2>Please edit/update</h2>
                         <!--bean-ext:form action="" styleClass="mt"-->
                         <form id="regForm" method="post" action="{{redirect_url}}" accept-charset="UTF-8" enctype="multipart/form-data" autocapitalize="off" spellcheck="false">
                             <!-- <div class="nodisplay"><input type="hidden" name="TxId" value="ECAS_TX-7404446-Rej9lkLFeXORXm9rG7q4Xqo1xGRJ86gt3hoJcfMG3XyxQrAyn8mu9PbXRCZoKKUbCzLlIzG5jKgHy4vlfgkG5M-rS0vSrmBGYCAxyMeVAWeYi-PVgrhNnzagSfzJvUraGtvIPzqv8cbsV46ZMUiinVIlcDkNWEKzr5uBS6CMnabjUfRGxDHabrZictNyNLy0AsLWy" /></div><input type="hidden" name="loginRequestId" value="ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" id="loginRequestId" /> -->
                             
                             <input type="hidden" name="id" value="{{ id }}">
                             
-                            <h3>{{ title }}</h3>
+                            <h3>{{ h3 }}</h3>
                             {% for name, value in data_edit.items() %}
                                 {% if name == "postal_address" %}
                                     <div class="row g-3">
-                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">{{name}}</button>
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Postal Address</button>
                                         <div class="content">
                                             {% for data in value %}
                                                 <label for="Lang">Lang</label>
@@ -120,7 +120,7 @@
                                 {% elif name=="schemeTerritory" %}
                                     {% if value is not none and value|length > 0 %}
                                         <div class="row g-3">
-                                            <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">schemeTerritory</button>
+                                            <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Scheme Territory</button>
                                             <div class="content">
                                                 <label for="SchemeCountry">SchemeCountry</label>
                                                 <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="SchemeCountry"  required>
@@ -134,7 +134,7 @@
                                 {% elif name=="DistributionPoints" %}
                                     {% if value is not none and value|length > 0 %}
                                         <div class="row g-3">
-                                            <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">DistributionPoints</button>
+                                            <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Distribution Points</button>
                                             <div class="content">
                                                 {% for data in value %}
                                                     <div class="content_child">
@@ -144,10 +144,78 @@
                                                 {% endfor %}
                                             </div>
                                         </div>    
-                                    {% endif %}                         
+                                    {% endif %}  
+                                    {% elif name == "SchemeTypeCommunityRules_lang" %}
+                                        {% if value is not none and value|length > 0 %}
+                                            <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">
+                                                Scheme Type Community Rules
+                                            </button>
+                                            <div class="content">
+                                            {% for data in value %}
+                                                {% set outer_loop = loop %}
+                                                <div class="content_child">
+                                                    {% for key, key_data in data.items() %}
+                                                        {% if key == "lang" %}
+                                                            <label for="Lang">Lang</label>
+                                                            <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;" name="{{key}}_{{name}}.{{outer_loop.index0}}" required>
+                                                                {% for lang in Langs %}
+                                                                    <option value="{{ lang }}" {% if key_data == lang %} selected {% endif %}>{{ lang }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        {% elif key == "URI" %}
+                                                            <label for="{{ key }}">{{ key }}</label>
+                                                            <select class="form-control" name="{{ key }}_{{ name }}.{{ outer_loop.index0 }}" required>
+                                                                {% for rule_name, rule_value in rules.items() %}
+                                                                    <option value="{{ rule_value }}" {% if key_data == rule_value %} selected {% endif %}>
+                                                                        {{ rule_name }} - {{ rule_value }}
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        {% else %}
+                                                            <label for="{{ key }}">{{ key }}</label>
+                                                            <input type="text" class="form-control" placeholder="{{ key }}" aria-label="{{ key }}" name="{{ key }}_{{ name }}.{{ outer_loop.index0 }}" value="{{ key_data }}" required>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                
                                 {% else %}
                                     <div class="row g-3">
-                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">{{name}}</button>
+                                        {% if name=="operator_name" %}
+                                            <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Operator Name</button>
+ 
+                                        {% elif name=="ElectronicAddress" %}
+                                            <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Electronic Address</button>
+                                            
+                                        {% elif name=="EletronicAddress" %}
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Electronic Address</button>
+                                                        
+                                        {% elif name=="trade_name" %}
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Trade Name</button>
+                                                   
+                                        {% elif name=="ServiceName" %}
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Service Name</button>
+                                                  
+                                        {% elif name=="SchemeServiceDefinitionURI" %}
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Scheme Service Definition URI</button>
+                                                  
+                                        {% elif name=="SchemeName_lang" %}
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Scheme Name</button>
+                                                  
+                                        {% elif name=="Uri_lang" %}
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Uri</button>
+                                                  
+                                        {% elif name=="PolicyOrLegalNotice_lang" %}
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Policy Or Legal Notice</button>
+                                                  
+                                        {% elif name=="SchemeTypeCommunityRules_lang" %}
+                                        <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">Scheme Type Community Rules</button>
+                                                  
+                                        {% else %}
+                                            <button type="button" class="collapsible col-xs-12 col-md-12 btn btn-default">{{name}}</button>
+                                        {% endif %} 
                                         <div class="content">
                                             {% if value is not none and value|length > 0 %}
                                                 {% for data in value %}
@@ -163,7 +231,11 @@
                                                                 </select>
                                                             {% else %}
                                                                 <label for="{{ key }}">{{ key }}</label>
-                                                                <input type="text" class="form-control" placeholder="{{key}}" aria-label="{{key}}" name="{{key}}_{{name}}.{{outer_loop.index0}}" value="{{key_data}}" required>
+                                                                {% if name == "operator_name" and outer_loop.first %}
+                                                                    <input type="text" class="form-control" placeholder="{{ key }}" aria-label="{{ key }}" value="{{ key_data }}" readonly>
+                                                                {% else %}
+                                                                    <input type="text" class="form-control" placeholder="{{ key }}" aria-label="{{ key }}" name="{{ key }}_{{ name }}.{{ outer_loop.index0 }}" value="{{ key_data }}" required>
+                                                                {% endif %}
                                                             {% endif %}
                                                         {% endfor %}
                                                     </div>
@@ -214,6 +286,9 @@
     <!-- Version 9.7.1.20 - 23/03/2023 - 09:26 -->
 </body>
 <script>
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+    });
     $(document).ready(function() {
         $('.js-example-basic-single').select2();
     });

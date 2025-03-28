@@ -71,21 +71,21 @@
                     <!--
                     <p class="relying-party"><strong>etranslation</strong> requires you to authenticate</p>
                     -->
-                    <h1>Enter the data for the {{title}} Registration</h1>
+                    <h1>Trusted List Manager</h1>
                     <div id="content" class="content-wrap content-center col-md-6 col-sm-7">
 
                         <div class="genericErrors" id="genericErrorsDesc">
 
                         </div>
                         <!-- <status>EID_COUNTRY_SELECTION</status> -->
-                        <h2>Please enter your information</h2>
+                        <h2>Please enter your data</h2>
                         <!--bean-ext:form action="" styleClass="mt"-->
                         <form id="selectCountryForm" method="post" action="{{redirect_url}}" onsubmit="return validateImage()" accept-charset="UTF-8" enctype="multipart/form-data" autocapitalize="off" spellcheck="false">
                             
                             <input type="hidden" name="id" value="{{ id }}">
                             
                             <!-- <div class="nodisplay"><input type="hidden" name="TxId" value="ECAS_TX-7404446-Rej9lkLFeXORXm9rG7q4Xqo1xGRJ86gt3hoJcfMG3XyxQrAyn8mu9PbXRCZoKKUbCzLlIzG5jKgHy4vlfgkG5M-rS0vSrmBGYCAxyMeVAWeYi-PVgrhNnzagSfzJvUraGtvIPzqv8cbsV46ZMUiinVIlcDkNWEKzr5uBS6CMnabjUfRGxDHabrZictNyNLy0AsLWy" /></div><input type="hidden" name="loginRequestId" value="ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" id="loginRequestId" /> -->
-                            <h3>Test Provider Form</h3>
+                            <h3>{{ h3 }}</h3>
                             <p>This data is only used for {{title}}  Registration for testing purposes.</p>
                             <div id="eidasCountries">
                                 {% for name, value in attributes.items() %}
@@ -100,7 +100,14 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                    </div>     
+                                    </div>
+                                        {% elif value == 'op_name' %}
+                                        <div class="row g-3">
+                                            <div class="col-md-12">
+                                                <label for="{{ name }}">{{ name }}</label>
+                                                <p>{{ user_name }}</p> 
+                                            </div>
+                                        </div>  
                                         {% elif value == 'rules' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">
@@ -198,6 +205,7 @@
                                     <div class="col-md-12" id="hidden_elems">
                                         <div class="col" >
                                             <input type="hidden" value="{{ temp_user_id }}" name="temp_user_id">
+                                            <input type="hidden" value="{{ user_name }}" name="operator_name">
                                         </div>
                                     </div>
                                 </div>

@@ -214,13 +214,12 @@ def check_country(user_country, log_id):
         print(f"Error processing the form, check_country: {e}")
         return "Error processing the form.", 500
     
-def tsl_db_info(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
-             PolicyOrLegalNotice_lang, PointerstootherTSL, 
-                DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, lotl, country, log_id):
+def tsl_db_info(user_id, Version, Sequence_number, SchemeName_lang, Uri_lang,
+                             PolicyOrLegalNotice_lang, Issue_date, NextUpdate, 
+                             AdditionalInformation, schemeTerritory, lotl, country, log_id):
     try:
-        check = db.insert_tsl_info(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
-                             PolicyOrLegalNotice_lang, PointerstootherTSL, 
-                             DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, lotl, country, log_id) 
+        check = db.insert_tsl_info(user_id, Version, Sequence_number, SchemeName_lang, Uri_lang, PolicyOrLegalNotice_lang, Issue_date, 
+                                   NextUpdate, AdditionalInformation, schemeTerritory, lotl, country, log_id) 
 
         return check
     
@@ -231,11 +230,11 @@ def tsl_db_info(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri
         print(f"Error processing the form, tsl_db_info: {e}")
         return "Error processing the form.", 500
     
-def tsl_db_info_lotl(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+def tsl_db_info_lotl(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang,
              PolicyOrLegalNotice_lang, PointerstootherTSL, 
                 DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id):
     try:
-        check = db.insert_tsl_info_lotl(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang, SchemeTypeCommunityRules_lang,
+        check = db.insert_tsl_info_lotl(user_id, Version, Sequence_number, TSLType, SchemeName_lang, Uri_lang,
                              PolicyOrLegalNotice_lang, PointerstootherTSL, 
                              DistributionPoints, Issue_date, NextUpdate, Status, AdditionalInformation, schemeTerritory, country, log_id) 
 
@@ -332,9 +331,9 @@ def tsl_db_lang(id, tsp_id, current_data_schemeName, current_data_uri, current_d
         return "Error processing the form.", 500
     
 
-def service_db_info(user_id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, log_id):
+def service_db_info(user_id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, log_id):
     try:
-        check = db.insert_service_info(user_id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, qualifier, log_id) 
+        check = db.insert_service_info(user_id, ServiceName, SchemeServiceDefinitionURI, digital_identity, service_type, status, status_start_date, log_id) 
 
         return check
     
@@ -586,6 +585,40 @@ def get_tsp_update(id, log_id):
         logger.error(f"Error processing the form, get_tsp_update: {e}", extra=extra)
         print(f"Error processing the form, get_tsp_update: {e}")
         return "Error processing the form.", 500
+
+def get_tsl_name(id, log_id):
+    try:
+
+        check = db.get_tsl_name(id, log_id)
+        
+        if(check != None):
+            return check
+        else:
+            return ("err")
+        
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, get_tsl_name: {e}", extra=extra)
+        print(f"Error processing the form, get_tsl_name: {e}")
+        return "Error processing the form.", 500
+    
+def get_tsp_name(id, log_id):
+    try:
+
+        check = db.get_tsp_name(id, log_id)
+        
+        if(check != None):
+            return check
+        else:
+            return ("err")
+        
+    except Exception as e:
+        
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, get_tsp_name: {e}", extra=extra)
+        print(f"Error processing the form, get_tsp_name: {e}")
+        return "Error processing the form.", 500
     
 def update_tsp(tsp_id, tsl_id, log_id):
     try:
@@ -807,3 +840,28 @@ def get_lotltsl_info(id, log_id):
         print(f"Error processing the form, get_lotltsl_info: {e}")
         return "Error processing the form.", 500
     
+def insert_old_cert(cert, tsl_id, log_id):
+    try:
+        check = db.insert_lotl_old_cert(cert, tsl_id, log_id)
+
+        return check
+
+    except Exception as e:
+            
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, check_country: {e}", extra=extra)
+        print(f"Error processing the form, check_country: {e}")
+        return "Error processing the form.", 500
+
+def get_old_cert(tsl_id, log_id):
+    try:
+        check = db.get_lotl_old_cert(tsl_id, log_id)
+
+        return check
+
+    except Exception as e:
+            
+        extra = {'code': log_id} 
+        logger.error(f"Error processing the form, check_country: {e}", extra=extra)
+        print(f"Error processing the form, check_country: {e}")
+        return "Error processing the form.", 500

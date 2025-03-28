@@ -92,26 +92,23 @@
                     <!--
                     <p class="relying-party"><strong>etranslation</strong> requires you to authenticate</p>
                     -->
-                    <h1>Operator Menu</h1>
+                    <h1>List of Trusted Lists (LoTL) Menu</h1>
                     <div id="content" class="content-wrap content-center col-md-6 col-sm-7">
 
                         <div class="genericErrors" id="genericErrorsDesc">
 
                         </div>
-                        <h2>Hello {{ user }}</h2>
     
-                        <h2>Operator Settings</h2>
-                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">New Info lang</a>
-                        <a href="{{ url_for('RPR.op_edit') }}" class="menu-option">Edit Info</a>
+                        <h2>Operator Information</h2>
+                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">Add information in new language</a>
+                        <a href="{{ url_for('RPR.op_edit') }}" class="menu-option">Edit information</a>
 
-                        <h2>Add TSLs</h2>
-                        <a href="{{ url_for('RPR.list_lotl') }}" class="menu-option"></span> Add TSLs</a>
                         
-                        <h2>LOTL Management</h2>
-                        <a href="{{ url_for('RPR.list_tsl_lotl') }}" class="menu-option"></span> LOTL Management</a>
+                        <h2>LoTL Management</h2>
+                        <a href="{{ url_for('RPR.list_lotl') }}" class="menu-option"></span>Create LoTL</a>
+                        <a href="{{ url_for('RPR.list_tsl_lotl') }}" class="menu-option"></span>LoTL Information</a>
 
                         <a href="{{ url_for('RPR.logout') }}" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
-                        <p>(*) Coming Soon</p>
                         <form>
                             <div class="col-md-12" id="hidden_elems">
                                 <div class="col" >

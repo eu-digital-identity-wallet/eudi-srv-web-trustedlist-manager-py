@@ -49,8 +49,8 @@ class ConfService:
     priv_key_UT = "/etc/eudiw/pid-issuer/privkey/PID-DS-0001_UT.pem"
 
     roles = {
-      "tsl_op":"TSL Operator",
       "tsp_op":"TSP Operator",
+      "tsl_op":"TSL Operator",
       "lotl_op": "LoTL Operator"
     }
 

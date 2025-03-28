@@ -1,0 +1,38 @@
+2025-03-20 14:20:32,341 app_logger ERROR - Message: TrustedCA Error: file not found.
+ [WinError 3] O sistema não conseguiu localizar o caminho especificado: '/etc/eudiw/pid-issuer/cert/'
+2025-03-20 14:20:33,355 app_logger ERROR - Message: TrustedCA Error: file not found.
+ [WinError 3] O sistema não conseguiu localizar o caminho especificado: '/etc/eudiw/pid-issuer/cert/'
+2025-03-20 14:28:23,153 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 14:28:23,159 app_logger ERROR - Message: Getting OPERATOR information: 48uj4Q2/exwS80SFq2oOILqn5Nf/LFV5D7VCEgGdGQY=
+2025-03-20 14:28:23,190 app_logger ERROR - Message: Getting OPERATOR information: 6
+2025-03-20 14:28:23,237 app_logger ERROR - Message: Getting OPERATOR information: 6
+2025-03-20 15:55:19,508 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 15:55:19,536 app_logger ERROR - Message: Error Getting OPERATOR information
+2025-03-20 15:55:19,549 app_logger INFO - Message: OPERATOR successfully added. New OPERATOR ID: 8
+2025-03-20 16:39:55,534 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 16:39:55,556 app_logger ERROR - Message: Error Getting OPERATOR information
+2025-03-20 16:39:55,576 app_logger INFO - Message: OPERATOR successfully added. New OPERATOR ID: 9
+2025-03-20 16:43:27,704 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 16:43:27,732 app_logger ERROR - Message: Error Getting OPERATOR information
+2025-03-20 16:43:27,768 app_logger INFO - Message: OPERATOR successfully added. New OPERATOR ID: 10
+2025-03-20 16:43:49,329 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 16:43:49,346 app_logger ERROR - Message: Getting OPERATOR information: X0aNL8I6wQDoC2i4bPB9nOAGj/dyl5y8dfDpsYpwX10=
+2025-03-20 16:43:49,377 app_logger ERROR - Message: Getting OPERATOR information: 10
+2025-03-20 16:44:47,577 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 16:44:47,609 app_logger ERROR - Message: Error Getting OPERATOR information
+2025-03-20 16:44:47,646 app_logger INFO - Message: OPERATOR successfully added. New OPERATOR ID: 11
+2025-03-20 16:44:58,682 app_logger INFO - Message: OPERATOR successfully updated: 11
+2025-03-20 16:44:58,699 app_logger ERROR - Message: Getting OPERATOR information: 11
+2025-03-20 16:45:15,799 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 16:45:15,815 app_logger ERROR - Message: Getting OPERATOR information: vb2bqSTaqrIdI5a7gpi2LSA/0q2thJMCm+p1+y0g+eM=
+2025-03-20 16:45:15,821 app_logger ERROR - Message: Getting OPERATOR information: 11
+2025-03-20 16:46:34,137 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 16:46:34,155 app_logger ERROR - Message: Getting OPERATOR information: 48uj4Q2/exwS80SFq2oOILqn5Nf/LFV5D7VCEgGdGQY=
+2025-03-20 16:46:34,170 app_logger ERROR - Message: Getting OPERATOR information: 6
+2025-03-20 16:46:34,200 app_logger ERROR - Message: Getting OPERATOR information: 6
+2025-03-20 16:46:58,422 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 16:46:58,452 app_logger ERROR - Message: Getting OPERATOR information: X0aNL8I6wQDoC2i4bPB9nOAGj/dyl5y8dfDpsYpwX10=
+2025-03-20 16:46:58,482 app_logger ERROR - Message: Getting OPERATOR information: 10
+2025-03-20 16:47:18,774 app_logger ERROR - Message: Getting Countries information, for the Country Code: FC
+2025-03-20 16:47:18,790 app_logger ERROR - Message: Getting OPERATOR information: vb2bqSTaqrIdI5a7gpi2LSA/0q2thJMCm+p1+y0g+eM=
+2025-03-20 16:47:18,823 app_logger ERROR - Message: Getting OPERATOR information: 11

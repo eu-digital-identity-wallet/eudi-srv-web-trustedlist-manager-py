@@ -2490,37 +2490,37 @@ class TrustStatusListType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" ', name_='TrustStatusList', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('TrustStatusList')
+    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" ', name_='TrustServiceStatusList', pretty_print=True):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get('TrustServiceStatusList')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'TrustStatusList':
+        if self.original_tagname_ is not None and name_ == 'TrustServiceStatusList':
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
             namespaceprefix_ = self.ns_prefix_ + ':'
         showIndent(outfile, level, pretty_print)
         outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='TrustStatusList')
+        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='TrustServiceStatusList')
         if self.has__content():
             outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='TrustStatusList', pretty_print=pretty_print)
+            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='TrustServiceStatusList', pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
         else:
             outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='TrustStatusList'):
+    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='TrustServiceStatusList'):
         if self.TSLTag is not None and 'TSLTag' not in already_processed:
             already_processed.add('TSLTag')
             outfile.write(' TSLTag=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.TSLTag), input_name='TSLTag')), ))
         if self.Id is not None and 'Id' not in already_processed:
             already_processed.add('Id')
             outfile.write(' Id=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.Id), input_name='Id')), ))
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" ', name_='TrustStatusList', fromsubclass_=False, pretty_print=True):
+    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" ', name_='TrustServiceStatusList', fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -2570,7 +2570,7 @@ class TrustStatusListType(GeneratedsSuper):
             obj_.build(child_, gds_collector_=gds_collector_)
             self.Signature = obj_
             obj_.original_tagname_ = 'Signature'
-# end class TrustStatusListType
+# end class TrustServiceStatusListType
 
 
 class TrustServiceProviderListType(GeneratedsSuper):

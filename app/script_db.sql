@@ -29,6 +29,18 @@ CREATE TABLE IF NOT EXISTS `countries` (
 
 -- Exportação de dados não seleccionada.
 
+-- A despejar estrutura para tabela trusted_lists.lotl_old_certificates
+CREATE TABLE IF NOT EXISTS `lotl_old_certificates` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cert` text DEFAULT NULL,
+  `tsl_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `tsl` (`tsl_id`),
+  CONSTRAINT `tsl` FOREIGN KEY (`tsl_id`) REFERENCES `trusted_lists` (`tsl_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Exportação de dados não seleccionada.
+
 -- A despejar estrutura para tabela trusted_lists.scheme_operators
 CREATE TABLE IF NOT EXISTS `scheme_operators` (
   `operator_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -42,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `scheme_operators` (
   PRIMARY KEY (`operator_id`),
   KEY `country_id` (`country_id`),
   CONSTRAINT `scheme_operators_ibfk_2` FOREIGN KEY (`country_id`) REFERENCES `countries` (`country_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Exportação de dados não seleccionada.
 
@@ -85,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `trusted_lists` (
   KEY `tl_op` (`operator_id`),
   CONSTRAINT `tl_op` FOREIGN KEY (`operator_id`) REFERENCES `scheme_operators` (`operator_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `trusted_lists_ibfk_1` FOREIGN KEY (`country_id`) REFERENCES `countries` (`country_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Exportação de dados não seleccionada.
 

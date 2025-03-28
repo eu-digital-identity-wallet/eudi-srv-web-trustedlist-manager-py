@@ -25,24 +25,30 @@ class ConfXML:
 
     TLSVersionIdentifier=6
     TSLType={
-        "EU":"http://trustedlist.eudiw.dev/TrstSvc/TrustedList/TSLType/EUgeneric",
-        "EUDIW":"http://trustedlist.eudiw.dev/TrstSvc/TrustedList/TSLType/EUlistofthelists"
+        "EU":"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric",
+        "LoTL":"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists"
     }
 
     StatusDeterminationApproach={
-        "EU":"http://trustedlist.eudiw.devTrstSvc/TrustedList/StatusDetn/EUappropriate",
-        "EUDIW":"http://trustedlist.eudiw.dev/TrstSvc/TrustedList/StatusDetn/EUlistofthelists"
+        "EU":"http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/EUappropriate",
+        "LoTL":"http://uri.etsi.org/TrstSvc/TrustedList/StatusDetn/EUlistofthelists"
     }
 
     SchemeTypeCommunityRules={
-        "EUDIW":"http://trustedlist.eudiw.dev/TrstSvc/TrustedList/schemerules/EUlistofthelists"
+        "EU":"http://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUcommon",
+        "LoTL":"http://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUlistofthelists",
+        "Country":"http://uri.etsi.org/TrstSvc/TrustedList/schemerules/"
     }
 
     DistributionPoints={
-        "EUDIW":"https://trustedlist.eudiw.dev/tools/lotl/eu-lotl.xml"
+        "LoTL":"https://trustedlist.eudiw.dev/lotl/eu-lotl.xml"
     }
 
+    lotl_location="https://trustedlist.eudiw.dev/lotl/eu-lotl.xml"
+
     HistoricalInformationPeriod=65535
+
+    schema = r"app\xml_gen\ts_119612v020101_xsd_modified.xsd"
 
     #months
     validity=6
