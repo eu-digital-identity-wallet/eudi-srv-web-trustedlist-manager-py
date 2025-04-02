@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 ###############################################################################
+from http.client import HTTPException
 import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -141,6 +142,10 @@ setup_trusted_CAs()
 
 def handle_exception(e):
 
+    if isinstance(e, HTTPException):
+        return e
+    logger.exception("- WARN - Error 500")
+
     return (
         render_template(
             "500.html",
@@ -151,6 +156,8 @@ def handle_exception(e):
     )
 
 def page_not_found(e):
+
+    logger.exception("- WARN - Error 404")
 
     return (
         render_template(
@@ -166,7 +173,7 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config['SECRET_KEY'] = ConfService.secret_key
 
-    #app.register_error_handler(Exception, handle_exception)
+    app.register_error_handler(Exception, handle_exception)
     app.register_error_handler(404, page_not_found)
 
     from . import (RPR_routes)
