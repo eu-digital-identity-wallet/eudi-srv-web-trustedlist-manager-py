@@ -152,12 +152,6 @@ def authentication():
                     },
                     {
                     "path": [
-                        "$['eu.europa.ec.eudi.pid.1']['age_over_18']"
-                    ],
-                    "intent_to_retain": False
-                    },
-                    {
-                    "path": [
                         "$['eu.europa.ec.eudi.pid.1']['issuing_authority']"
                     ],
                     "intent_to_retain": False
@@ -277,12 +271,6 @@ def authentication_List():
                     {
                     "path": [
                         "$['eu.europa.ec.eudi.pid.1']['birth_date']"
-                    ],
-                    "intent_to_retain": False
-                    },
-                    {
-                    "path": [
-                        "$['eu.europa.ec.eudi.pid.1']['age_over_18']"
                     ],
                     "intent_to_retain": False
                     },
