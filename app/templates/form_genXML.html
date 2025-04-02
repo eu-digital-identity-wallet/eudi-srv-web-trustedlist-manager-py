@@ -45,7 +45,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
-    <title>Form for your {{title}} Registration</title>
+    <title>Generate XML</title>
 </head>
 
 <body id="responsive-main-nav">
@@ -71,134 +71,35 @@
                     <!--
                     <p class="relying-party"><strong>etranslation</strong> requires you to authenticate</p>
                     -->
-                    <h1>Enter the data for the {{title}} Registration</h1>
+                    <h1>Generate XML</h1>
                     <div id="content" class="content-wrap content-center col-md-6 col-sm-7">
 
                         <div class="genericErrors" id="genericErrorsDesc">
 
                         </div>
                         <!-- <status>EID_COUNTRY_SELECTION</status> -->
-                        <h2>Please enter your information</h2>
+                        <h2>Please select trusted list</h2>
                         <!--bean-ext:form action="" styleClass="mt"-->
-                        <form id="selectCountryForm" method="post" action="{{redirect_url}}" onsubmit="return validateImage()" accept-charset="UTF-8" enctype="multipart/form-data" autocapitalize="off" spellcheck="false">
+                        <form id="selectCountryForm" method="post" action="{{redirect_url}}"  accept-charset="UTF-8" enctype="multipart/form-data" autocapitalize="off" spellcheck="false">
                             
                             <input type="hidden" name="id" value="{{ id }}">
                             
                             <!-- <div class="nodisplay"><input type="hidden" name="TxId" value="ECAS_TX-7404446-Rej9lkLFeXORXm9rG7q4Xqo1xGRJ86gt3hoJcfMG3XyxQrAyn8mu9PbXRCZoKKUbCzLlIzG5jKgHy4vlfgkG5M-rS0vSrmBGYCAxyMeVAWeYi-PVgrhNnzagSfzJvUraGtvIPzqv8cbsV46ZMUiinVIlcDkNWEKzr5uBS6CMnabjUfRGxDHabrZictNyNLy0AsLWy" /></div><input type="hidden" name="loginRequestId" value="ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" id="loginRequestId" /> -->
-                            <h3>Test Provider Form</h3>
-                            <p>This data is only used for {{title}}  Registration for testing purposes.</p>
                             <div id="eidasCountries">
-                                {% for name, value in attributes.items() %}
-                                        {% if value == 'select' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" name="{{ name }}">
-                                                        {% for code, description in data.items() %}
-                                                            <option value="{{ code }}">{{ code }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            </div>     
-                                        {% elif value == 'rules' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-multiple" id="rules" name="rules" multiple="multiple"style="width: 100%; box-sizing: border-box;"> 
-                                                        {% for name, value in rules.items() %}
-                                                            <option value="{{ value }}">{{ name }} - {{ value }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            </div>   
-                                        {% elif value == 'lang' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" id="Lang" name="Lang" style="width: 100%; box-sizing: border-box;" required>
-                                                        <option value="">--Select--</option>
-                                                        {% for value in lang %}
-                                                            <option value="{{ value }}">{{ value }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        {% elif value == 'TSLType' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" id="{{name}}" name="{{name}}" style="width: 100%; box-sizing: border-box;">
-                                                        {% for value in TSLType %}
-                                                            <option value="{{ value }}">{{ value }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        {% elif value == 'StatusDetermination' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="js-example-basic-single" id="{{name}}" name="{{name}}" style="width: 100%; box-sizing: border-box;">
-                                                        {% for value in status %}
-                                                            <option value="{{ value }}">{{ value }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            </div>                      
-                                        {% elif value == 'int' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <input type="number" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}">
-                                                </div>
-                                            </div> 
-                                        {% elif value == 'string' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" >
-                                                </div>
-                                            </div>    
-                                            {% elif value == 'binary' %}
-                                                <div class="row g-3">
-                                                    <div class="col-md-12">
-                                                        <label for="{{ name }}">{{ name }}</label>
-                                                        <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                        <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" >
-                                                    </div>
-                                                </div>
-                                        {% elif value == 'full-date' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    {{name}}
-                                                    <input type="date" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" >
-                                                </div>
-                                            </div>
-                                        {% elif value == 'country' %}
-                                            <div class="row g-3">
-                                                <div class="col-md-12">
-                                                    <label for="{{ name }}">{{ name }}</label>
-                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                    <select class="form-control js-example-basic-single" style="width: 100%; box-sizing: border-box;"  name="{{name}}">
-                                                        <option value="">--Select--</option>{% for country in countries %}
-                                                            <option value="{{ country }}" >{{ country }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        {% endif %} 
-                                    {% endfor %}
-                                    <div class="col-md-12" id="hidden_elems">
-                                        <div class="col" >
-                                            <input type="hidden" value="{{ temp_user_id }}" name="temp_user_id">
-                                        </div>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label >Trusted List</label>
+                                        <select class="js-example-basic-single" name="tsl" style="width: 100%; font-size: 16px;">
+                                            {% for item in data %}
+                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>     
+                                        
+                                <div class="col-md-12" id="hidden_elems">
+                                    <div class="col" >
+                                        <input type="hidden" value="{{ temp_user_id }}" name="temp_user_id">
                                     </div>
                                 </div>
                             </div>
@@ -386,51 +287,6 @@
                 document.getElementById('myselectCountryForm').submit();
             }
         }
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        let fields = ["Street Address", "Locality", "State Or Province", "Postal Code", "Country Name"];
-
-        function checkFields() {
-            let anyFilled = fields.some(name => document.querySelector(`[name="${name}"]`).value.trim() !== "");
-            let allFilled = fields.every(name => document.querySelector(`[name="${name}"]`).value.trim() !== "");
-
-            fields.forEach(name => {
-                let field = document.querySelector(`[name="${name}"]`);
-                let errorMsg = document.getElementById(`${name}-error`);
-
-                if (anyFilled && !allFilled) {
-                    errorMsg.style.display = "block";
-                } else {
-                    errorMsg.style.display = "none"; 
-                }
-            });
-        }
-
-        
-        fields.forEach(name => {
-            let field = document.querySelector(`[name="${name}"]`);
-            if (field) {
-                let errorMsg = document.createElement("small");
-                errorMsg.id = `${name}-error`;
-                errorMsg.style.color = "red";
-                errorMsg.style.display = "none";
-                errorMsg.innerText = "If you fill in one of these fields, all of this ones must be filled in.";
-                field.parentNode.appendChild(errorMsg);
-
-                field.addEventListener("input", checkFields);
-            }
-        });
-
-        document.getElementById("selectCountryForm").addEventListener("submit", function (event) {
-            let anyFilled = fields.some(name => document.querySelector(`[name="${name}"]`).value.trim() !== "");
-            let allFilled = fields.every(name => document.querySelector(`[name="${name}"]`).value.trim() !== "");
-
-            if (anyFilled && !allFilled) {
-                event.preventDefault(); 
-                alert("To add the Address, all fields must be filled: Operator Address, Locality, State or Province, Postal Code, and Country.");
-            }
-        });
     });
 
 </script>

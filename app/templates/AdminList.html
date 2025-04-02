@@ -42,41 +42,15 @@
     <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/locval/locval_en_9.7.1.20.1679559965505.js" integrity="sha256-fGdBvjTPjOPZBmgDo8xMKgZUwmXXCzYZ+BbHErfhc/Q= sha384-Y9eAdYjT/TZ0VPUxw3Ex/TVSZZzPsV1mRoKD0BTkrQn0L615z24j26O2CZdT1Xl+ sha512-T9HoOOy1OkJ0l1GWqvT2RAR9frKd4zImDm1uyHxjmB/nxNBhmdjEhR9MckiWiNv2/UrFrMZJwSMB4Po/ExbFOw==" charset="UTF-8"></script>
 -->
 
-    <title>Operator Menu</title>
-    <style>
-        .menu-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .menu-option {
-            padding: 15px;
-            background-color: #0073e6;
-            color: #fff;
-            text-align: center;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            display: block;
-        }
-        .menu-option:hover {
-            background-color: #005bb5;
-        }
-    </style>
+    <title>Add Trusted Lists</title>
+    
 </head>
 
 <body id="responsive-main-nav">
     <!--
     <div id="skip"><a href="#content" accesskey="M">Skip to Main Content</a></div>
     -->
-
     <div class="main container-fluid">
-
-
         <header role="banner" class="main-header">
             <div class="container">
                 <div class="row">
@@ -87,44 +61,99 @@
 
         <div role="main" class="container">
             <div class="row">
-                <div class="col-md-12">
+                <div >
+                    <h1>Create LoTL</h1>
+                    <div id="content" class="content-wrap  ">
+                        
+                        <div id="collapse1" class="panel panel-default">
 
-                    <!--
-                    <p class="relying-party"><strong>etranslation</strong> requires you to authenticate</p>
-                    -->
-                    <h1>Operator Menu</h1>
-                    <div id="content" class="content-wrap content-center col-md-6 col-sm-7">
-
-                        <div class="genericErrors" id="genericErrorsDesc">
-
-                        </div>
-                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">New Info lang</a>
-
-                        <h2>Operator Information</h2>
-                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">Add information in new language</a>
-                        <a href="{{ url_for('RPR.op_edit') }}" class="menu-option">Edit information</a>
-
-                        <h2>Trust Service Provider (TSP) Management</h2>
-                        <a href="{{ url_for('RPR.list_service') }}" class="menu-option"></span>Manage Trust Services</a>
-                        <a href="{{ url_for('RPR.list_tsp') }}" class="menu-option"></span>Manage TSP</a>
-
-                        <a href="{{ url_for('RPR.logout') }}" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
-
-                        <p>(*) Coming Soon</p>
-
-                        <form>
-                            <div class="col-md-12" id="hidden_elems">
-                                <div class="col" >
-                                    <input type="hidden" value="{{ temp_user_id }}" name="temp_user_id">
-                                </div>
+                            <div class="panel-heading">
+                                <a type="button" href="{{ menu }}" class="btn btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Back</a>
+                                <a type="button" id="commit_id" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span>Update selected Trusted Service Lists (TSL)</a>
+                                <a type="button" href="{{ servi }}" class="btn btn-success"><span class="glyphicon glyphicon-file"></span>Generate and Sign LoTL</a>
                             </div>
-                        </form>
-                            <div class="clearfix"></div>
+                            <h3 class="panel-title">{{h3}}</h3>
+                            
+                            <div class="panel-body" id="panel_msg">
+                                <strong>{{message}}</strong>
+                                {% with messages = get_flashed_messages(with_categories=true) %}
+                                    {% if messages %}
+                                        <div id="flash-alert-container" class="alert-container">
+                                            <script>
+                                                var messages = {{ messages|tojson }};
+                                                window.addEventListener('DOMContentLoaded', (event) => {
+                                                    var alertContainer = document.getElementById('flash-alert-container');
+                                                    
+                                                    alertContainer.innerHTML = '';
+                                                    
+                                                    messages.forEach(function([category, message]) {
+                                                        var alertDiv = document.createElement('div');
+                                                        alertDiv.className = `alert alert-${category} mt-2`;
+                                                        alertDiv.textContent = message;
+                                                        
+                                                        alertContainer.appendChild(alertDiv);
+                                                    });
+                                                    
+                                                    alertContainer.style.display = 'block';
+                                                    
+                                                });
+                                            </script>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                            <div class="table-responsive">
+                                <input class="form-control" id="myInput" type="text" placeholder="Search.." style="width: 80%;margin-left: 2%;">
+                                <br>
+                                <table class="table table-striped" id="Add_list">
+                                    <thead>
+                                        <tr class="d-flex">
+                                            {% for attribute in header_table %}
+                                                <th  class="col-sm-1">{{attribute}}</th>
+                                            {% endfor %}
+                                            <th  class="col-sm-2">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="TSLList">
+                                        {% for id, certificate in data.items() %}
+                                            <tr id="{{id}}">
+                                                {% for name, value in certificate.items() %}
+                                                    {% if name == "included" %}
+                                                        <td>
+                                                            <input type="checkbox" name="select {{id}}" value='{{id}}' {% if value == True %} checked {% endif %} />          
+                                                        </td>
+                                                    {% else %}
+                                                        <td id="{{name}}">{{value}}</td>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         <!--<script type="text/javascript" src="{{ url_for('static', filename='scripts/dynamic-validator/selectCountryForm_9.7.1.20.1679559965505_en.js') }}" charset="UTF-8" defer="true"></script>-->
                     </div>
 
                 </div>
             </div>
+            {% if title == "Trust Service Providers" or title == "Services" %}
+                <p><span class="glyphicon glyphicon-plus"></span> = Add new language Info</p>
+            {% endif %}
+
+            {% if title == "Trust Service Providers" or title == "Services" or title == "Trusted Lists" %}
+                <p><span class="glyphicon glyphicon-pencil"></span> = Edit {{title}}</p>
+            {% endif %}
+
+            <!-- <p><span class="glyphicon glyphicon-remove-circle"></span> = Delete {{title}}</p> -->
+            {% if title == "Trust Service Providers"%}
+                <p><span class="glyphicon glyphicon-cog"></span> = Add Services</p>
+            {% endif %}
+
+            {% if title == "Trusted Lists" %}
+                <p><span class="glyphicon glyphicon-cog"></span> = Add Trust Service Providers</p>
+                <p><span class="glyphicon glyphicon-file"></span> = Generate XML</p>
+            {% endif %}
         </div>
     </div>
 
@@ -155,4 +184,59 @@
     </footer>
     <!-- Version 9.7.1.20 - 23/03/2023 - 09:26 -->
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+<script>
+
+    $(document).ready(function(){
+        $("#myInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#TSLList tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const flashAlert = document.getElementById('flash-alert');
+        if (flashAlert) {
+            setTimeout(function() {
+                flashAlert.style.display = 'none';
+            }, 5000);
+        }
+    });
+    var table = document.getElementById("Add_list");
+    var commitButton = document.getElementById("commit_id");
+    commitButton.onclick= function() { var selectedCheckboxes = Array.from(table.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(checkbox => checkbox.value); Ajax_request_update(selectedCheckboxes) };
+
+function Ajax_request_update(checks) {
+
+    var check = JSON.stringify(checks)
+    console.log("test")
+    $.ajax({
+        url: "/lotl/update",
+        method: 'GET',
+        data:{"checks" : check , "user_id":'{{temp_user_id}}', "log_id": '{{log_id}}'},
+        success: function(response) {
+            
+            document.getElementById("panel_msg").style.color="green"
+            document.getElementById("panel_msg").innerHTML="Successfully Changed."
+            
+            location.reload();
+            
+        },
+        error: function(xhr, status, error) {
+            var err = JSON.parse(xhr.responseText);
+            document.getElementById("panel_msg").style.color="red"
+            document.getElementById("panel_msg").innerHTML=err["error"]
+            console.error('Error:', error);
+        }
+    });
+}
+
+
+</script>
+
 </html>

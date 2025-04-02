@@ -41,7 +41,6 @@ def validate_vp_token(response_json):
     """
     Validate VP token, checking document and presentation_submission attributes
     """
-
     auth_request_values = {
         "definition_id": "32f54163-7166-48f1-93d8-ff217bdb0653",
         "id": "eu.europa.ec.eudi.pid.1",
@@ -115,31 +114,32 @@ def validate_vp_token(response_json):
             return True, errorMsg
 
         # Validate values received are the same values requested
-        namespaces = mdoc_cbor["documents"][pos]["issuerSigned"]["nameSpaces"]
-        attributes_requested = auth_request_values["input_descriptor"]
-        attributes_received = []
+        for pos in range(len(mdoc_cbor["documents"])):
+            namespaces = mdoc_cbor["documents"][pos]["issuerSigned"]["nameSpaces"]
+            attributes_requested = auth_request_values["input_descriptor"]
+            attributes_received = []
 
-        for n in namespaces.keys():
-            l = []
-            for e in namespaces[n]:  # e is a CBORTag
-                val = cbor2.decoder.loads(e.value)
-                id = val["elementIdentifier"]
-                attributes_received.append(id)
+            for n in namespaces.keys():
+                l = []
+                for e in namespaces[n]:  # e is a CBORTag
+                    val = cbor2.decoder.loads(e.value)
+                    id = val["elementIdentifier"]
+                    attributes_received.append(id)
 
-        if len(attributes_received) != len(attributes_requested):
+            if len(attributes_received) != len(attributes_requested):
 
-            if set(attributes_received).issubset(set(attributes_requested)):
+                if set(attributes_received).issubset(set(attributes_requested)):
 
-                # missing_attributes = list(set(attributes_requested) - set(attributes_received))
-                return True, "Missing attributes"  # missing_attributes
-            else:
-                return True, "There are values that weren't requested."
+                    missing_attributes = list(set(attributes_requested) - set(attributes_received))
+                    # if pos == len(mdoc_cbor["documents"]) - 1:
+                    #     return True, "Missing attributes: " + str(missing_attributes) + "Received Attributes: " + str(attributes_received)  # missing_attributes
+                    # else:
+                    #     return True, "There are values that weren't requested."
+            if all(x in attributes_requested for x in attributes_received) and all(
+                x in attributes_received for x in attributes_requested
+            ):
 
-        if all(x in attributes_requested for x in attributes_received) and all(
-            x in attributes_received for x in attributes_requested
-        ):
-
-            return False, ""
+                return False, "", pos
 
 
 def validate_certificate(mdoc):
@@ -277,7 +277,7 @@ def validate_certificate(mdoc):
 
     return True, ""
 
-def cbor2elems(mdoc):
+def cbor2elems(mdoc, pos):
     """Receives the base64 encoded mdoc and returns a dict with the (element, value) contained in the namespaces of the mdoc
 
     Keyword arguments:
@@ -286,7 +286,7 @@ def cbor2elems(mdoc):
     Return: Returns a dict with (element, values) contained in the namespaces of the mdoc. E.g. {'ns1': [('e1', 'v1'), ('e2', 'v2')], 'ns2': [('e3', 'v3')]}
     """
     d = {}
-    namespaces = cbor2.decoder.loads(base64.urlsafe_b64decode(mdoc))["documents"][0][
+    namespaces = cbor2.decoder.loads(base64.urlsafe_b64decode(mdoc))["documents"][pos][
         "issuerSigned"
     ]["nameSpaces"]
     for n in namespaces.keys():

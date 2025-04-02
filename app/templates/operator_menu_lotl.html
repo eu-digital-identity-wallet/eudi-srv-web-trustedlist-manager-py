@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="Title" content="PID Form" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" />
-    <meta name="Title" content="Request Credentials" />
-    <meta name="Keywords" content="EUDI Wallet, Credentials, Enrolment" />
-    <meta name="Description" content="Request Credentials for EUDI Wallet" />
+    <meta name="Keywords" content="EUDI Wallet, PID, Enrolment, Form" />
+    <meta name="Description" content="PID Form for EUDI Wallet" />
     <meta name="robots" content="noindex, nofollow" />
     <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -15,20 +15,67 @@
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" />
     <link href="{{ url_for('static', filename='bootstrap-3.4.1-dist/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ url_for('static', filename='css/stylesheets/custom/custom_en_9.7.1.20.1679559965505.css') }}" media="all" rel="stylesheet" type="text/css" />
+   
     <link href="{{ url_for('static', filename='fontawesome-free-5.15.4-web/css/fontawesome.min.css') }}" rel="stylesheet" type="text/css" />
     <script type="text/javascript" id="jqueryId" src="{{ url_for('static', filename='scripts/jquery/jquery-3.6.3.min.js') }}" charset="UTF-8"></script>
+
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/promiz/promiz-1.0.6.js') }}" charset="UTF-8"></script>
+    <!--
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/sha3/sha3_en_9.7.1.20.1679559965505.js" integrity="sha256-CtgtQUShEl8dHOb+FeLo3tfArvxek4PGiS6UGczk5OY= sha384-DUt2v30t+xTbxAyvcy9BpswNEUrWJT8Fl1P1Fc+ScGgcUzrwtm2idVOj35m6NisW sha512-HrljBBDmVHa8MfWcgNifCVutUrKi/3eutVkadMdDUAP3dcraj6n1u2mx5J+UkkRFwYnEoCpFabG46Jxp8EdDnQ==" charset="UTF-8"></script>
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/static-validator/static-validator_en_9.7.1.20.1679559965505.js" integrity="sha256-hBVKKp1NO+Jxso6WVWYJzYcEyGudrlIJwUpEDp1Zf5E= sha384-my8RgF2Pk8SwCkcpI3HRVX8PX5QyMv+tlmLwVhekljHUBgLVcNe8PxqjYnn9lhUw sha512-VvLFAJWMDPOVXf6HAWnhROxaXLFB0LZWzeglGtlliYHLLEQzrV3N9ixrCfPg3LOrfxtyifR4xdI9+QL2QxRoKw==" charset="UTF-8"></script>
+-->
+
     <script type="text/javascript" src="{{ url_for('static', filename='bootstrap-3.4.1-dist/js/bootstrap.min.js') }}" charset="UTF-8" defer="true"></script>
+
+    <!--
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/screen/screen_en_9.7.1.20.1679559965505.js" integrity="sha256-Bt/KIz2P8ILyeohGr85rPLuC6V7lURI5hYwMKIDc2zw= sha384-Mm+L2nENQ0OpPq7RNoEtQVUpvJPZF+lp01OK3yDSCZBHNQFEMT+buBppzOCO2FVk sha512-OdapdrhB9SEwj64seVqqRD2sJWGAC02OvoKuc8nev/DYqy10gviD21XH+wsZcwKI5yVUpcUa215v7PBkJUJ40g==" charset="UTF-8" defer="true"></script>
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/contrast/contrast_en_9.7.1.20.1679559965505.js" integrity="sha256-s379ROUOzGyyK1H8neCEIRKo3wQnabmtXqp1Moh0Vo8= sha384-O7XOTZyM/toKPrGBJBI379zpo4nUxnJT3eUq1dgPwDkuzeJ3N8alAprhuAD3UKhT sha512-nsaRCL+FvdZ0S0dy8btbepr17GnX//XjBpJfr/UYDKpwS2tRUaYs4u8vh8RikLSgKudgRt39EeBuKvkWaCoGPA==" charset="UTF-8" defer="true"></script>
+    -->
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/html5shiv/html5shiv-3.7.3.js') }}" charset="UTF-8"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/respond/respond-1.4.2.js') }}" charset="UTF-8"></script>
     <meta name="referrer" content="no-referrer">
+    <!--
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/framekiller/framekiller_en_9.7.1.20.1679559965505.js" integrity="sha256-4eAcfcjcYggBc15lar0Ti3diGjQ2qnhfNeAQo2n7f+g= sha384-OOLLE3ikdVyR66gGCHsB/hGYstmmpUtONQOe/U8tP/PRXocqpI43ariFDGzKFcIG sha512-/7sPyYaEFDxkPyGQzkLKHSi/RSXBAbR5BjZLgUtkaRx8Qk4SROLIH96d+7bbkpU61osJDdB9gyjtilpPIFnF6w==" charset="UTF-8"></script>
+    -->
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/loc/loc_en_9.7.1.20.1679559965505.js') }}" charset="UTF-8"></script>
-    <title>Authentication for your Trusted List Registration</title>
+    <!--
+    <script type="text/javascript" src="https://webgate.ec.europa.eu/cas/scripts/locval/locval_en_9.7.1.20.1679559965505.js" integrity="sha256-fGdBvjTPjOPZBmgDo8xMKgZUwmXXCzYZ+BbHErfhc/Q= sha384-Y9eAdYjT/TZ0VPUxw3Ex/TVSZZzPsV1mRoKD0BTkrQn0L615z24j26O2CZdT1Xl+ sha512-T9HoOOy1OkJ0l1GWqvT2RAR9frKd4zImDm1uyHxjmB/nxNBhmdjEhR9MckiWiNv2/UrFrMZJwSMB4Po/ExbFOw==" charset="UTF-8"></script>
+-->
+
+    <title>Operator Menu</title>
+    <style>
+        .menu-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .menu-option {
+            padding: 15px;
+            background-color: #0073e6;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+        }
+        .menu-option:hover {
+            background-color: #005bb5;
+        }
+    </style>
 </head>
 
 <body id="responsive-main-nav">
+    <!--
+    <div id="skip"><a href="#content" accesskey="M">Skip to Main Content</a></div>
+    -->
 
     <div class="main container-fluid">
+
 
         <header role="banner" class="main-header">
             <div class="container">
@@ -37,31 +84,47 @@
                 </div>
             </div>
         </header>
-        
+
         <div role="main" class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h1>Authentication for your Trusted List Registration</h1>
-                    <div id="content" class="content-wrap1 content-center col-md-6 text-center">
-                        <h2>QR Code</h2>
-                        <div class="row justify-content-center">
-                            <div class="col-md-6">
-                                <img src="{{qrcode}}">
-                            </div>
-                            <div class="col-md-3 col-md-offset-2">
-                                <p>Scan the QR Code with your phone's camera app or click Request to be redirected</p>
-                            </div>
-                            
+
+                    <!--
+                    <p class="relying-party"><strong>etranslation</strong> requires you to authenticate</p>
+                    -->
+                    <h1>List of Trusted Lists (LoTL) Menu</h1>
+                    <div id="content" class="content-wrap content-center col-md-6 col-sm-7">
+
+                        <div class="genericErrors" id="genericErrorsDesc">
+
                         </div>
+    
+                        <h2>Operator Information</h2>
+                        <a href="{{ url_for('RPR.op_lang') }}" class="menu-option">Add information in new language</a>
+                        <a href="{{ url_for('RPR.op_edit') }}" class="menu-option">Edit information</a>
+
                         
-                        <a href="{{url_data}}" class="btn btn-primary">Request</a>
-                        <a href="/" class="btn btn-back">Back</a>
+                        <h2>LoTL Management</h2>
+                        <a href="{{ url_for('RPR.list_lotl') }}" class="menu-option"></span>Create LoTL</a>
+                        <a href="{{ url_for('RPR.list_tsl_lotl') }}" class="menu-option"></span>LoTL Information</a>
+
+                        <a href="{{ url_for('RPR.logout') }}" class="menu-option" style="background-color: #ff4d4d;">Logout</a>
+                        <form>
+                            <div class="col-md-12" id="hidden_elems">
+                                <div class="col" >
+                                    <input type="hidden" value="{{ temp_user_id }}" name="temp_user_id">
+                                </div>
+                            </div>
+                        </form>
+                            <div class="clearfix"></div>
+                        <!--<script type="text/javascript" src="{{ url_for('static', filename='scripts/dynamic-validator/selectCountryForm_9.7.1.20.1679559965505_en.js') }}" charset="UTF-8" defer="true"></script>-->
                     </div>
-                    
+
                 </div>
             </div>
         </div>
     </div>
+
     <footer class="main-footer container-fluid" role="contentinfo">
         <div class="container">
             <div class="row">
@@ -89,49 +152,4 @@
     </footer>
     <!-- Version 9.7.1.20 - 23/03/2023 - 09:26 -->
 </body>
-<script>
-
-$('#check').change(function() {
-  $('#btncheck').prop("disabled", !this.checked);
-});
-
-</script>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script>
-
-var presentation_id= '{{presentation_id}}'
-function Ajax_request() {
-    $.ajax({
-        url: '{{redirect_url}}pid_authorization',
-        method: 'GET',
-        data:{"presentation_id": presentation_id },
-        success: function(response) {
-            console.log('Success:', response);
-            window.location.replace(location.origin + "/getpidoid4vp?presentation_id=" + presentation_id);
-            clearInterval(intervalId);
-            
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
-        }
-    });
-}
-
-function makeRequests() {
-    let counter = 0;
-    const intervalId = setInterval(() => {
-        if (counter >= 15) {
-            clearInterval(intervalId); 
-            console.log('Stopped making requests after 30 seconds.');
-        } else {
-            Ajax_request(); 
-            counter++;
-        }
-    }, 4000);
-}
-
-makeRequests();
-
-</script>
 </html>

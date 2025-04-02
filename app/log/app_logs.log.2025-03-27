@@ -1,0 +1,42 @@
+2025-03-27 12:38:13,845 app_logger ERROR - Message: TrustedCA Error: file not found.
+ [WinError 3] O sistema não conseguiu localizar o caminho especificado: '/etc/eudiw/pid-issuer/cert/'
+2025-03-27 12:38:14,564 app_logger ERROR - Message: TrustedCA Error: file not found.
+ [WinError 3] O sistema não conseguiu localizar o caminho especificado: '/etc/eudiw/pid-issuer/cert/'
+2025-03-27 12:38:17,129 app_logger ERROR - Message: Getting SERVICE information, for the OPERATOR: 1
+2025-03-27 12:39:48,247 app_logger ERROR - Message: Getting TSP information, for the OPERATOR: 1
+2025-03-27 12:39:48,263 app_logger ERROR - Message: Getting SERVICE information, for the OPERATOR: 1
+2025-03-27 12:39:52,270 app_logger INFO - Message: SERVICE successfully updated: 1
+2025-03-27 12:39:52,314 app_logger ERROR - Message: Getting TSP information, for the OPERATOR: 1
+2025-03-27 12:39:52,336 app_logger ERROR - Message: Getting SERVICE information, for the OPERATOR: 1
+2025-03-27 12:39:52,343 app_logger ERROR - Message: Getting TSP information: 1
+2025-03-27 12:39:52,413 app_logger ERROR - Message: Getting TSP information, for the OPERATOR: 1
+2025-03-27 12:39:52,430 app_logger ERROR - Message: Getting SERVICE information, for the OPERATOR: 1
+2025-03-27 12:39:52,435 app_logger ERROR - Message: Getting TSP information: 1
+2025-03-27 12:39:54,994 app_logger ERROR - Message: Getting SERVICE information, for the OPERATOR: 1
+2025-03-27 12:39:56,682 app_logger ERROR - Message: Getting SERVICE information: 1
+2025-03-27 12:40:01,056 app_logger ERROR - Message: Getting TSL information, for the OPERATOR: 1
+2025-03-27 12:40:01,082 app_logger ERROR - Message: Getting TSP information, for the OPERATOR: 1
+2025-03-27 12:40:01,104 app_logger ERROR - Message: Getting TSL information: 1
+2025-03-27 12:40:03,694 app_logger INFO - Message: TSP successfully updated: 1
+2025-03-27 12:40:03,741 app_logger ERROR - Message: Getting TSL information, for the OPERATOR: 1
+2025-03-27 12:40:03,767 app_logger ERROR - Message: Getting TSP information, for the OPERATOR: 1
+2025-03-27 12:40:03,774 app_logger ERROR - Message: Getting TSL information: 1
+2025-03-27 12:40:03,856 app_logger ERROR - Message: Getting TSL information, for the OPERATOR: 1
+2025-03-27 12:40:03,859 app_logger ERROR - Message: Getting TSP information, for the OPERATOR: 1
+2025-03-27 12:40:03,884 app_logger ERROR - Message: Getting TSL information: 1
+2025-03-27 12:40:06,399 app_logger ERROR - Message: Getting TSP information, for the OPERATOR: 1
+2025-03-27 12:40:06,416 app_logger ERROR - Message: Getting SERVICE information, for the OPERATOR: 1
+2025-03-27 12:40:06,432 app_logger ERROR - Message: Getting TSP information: 1
+2025-03-27 12:40:11,444 app_logger ERROR - Message: Getting TSL information, for the OPERATOR: 1
+2025-03-27 12:40:11,461 app_logger ERROR - Message: Getting TSP information, for the OPERATOR: 1
+2025-03-27 12:40:11,471 app_logger ERROR - Message: Getting TSL information: 1
+2025-03-27 12:40:12,516 app_logger ERROR - Message: Getting TSP information, for the TSL: 1
+2025-03-27 12:40:12,536 app_logger ERROR - Message: Getting SERVICE information, for the TSP: 1
+2025-03-27 12:40:12,546 app_logger ERROR - Message: Getting OPERATOR information: 1
+2025-03-27 12:40:12,570 app_logger ERROR - Message: Getting TSL information: 1
+2025-03-27 12:41:53,617 app_logger ERROR - Message: Getting TSP information, for the TSL: 1
+2025-03-27 12:41:53,634 app_logger ERROR - Message: Getting SERVICE information, for the TSP: 1
+2025-03-27 12:41:53,651 app_logger ERROR - Message: Getting OPERATOR information: 1
+2025-03-27 12:41:53,667 app_logger ERROR - Message: Getting TSL information: 1
+2025-03-27 12:41:53,683 app_logger ERROR - Message: Getting TSP information, for the TSL: 1
+2025-03-27 12:41:53,700 app_logger ERROR - Message: Getting SERVICE information, for the TSP: 1

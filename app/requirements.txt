@@ -9,3 +9,6 @@ pycose
 pymysql
 cbor2==5.4.6
 requests-pkcs12
+signxml
+lxml
+python-dateutil
