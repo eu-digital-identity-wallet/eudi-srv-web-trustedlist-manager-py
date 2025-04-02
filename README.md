@@ -80,38 +80,31 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
   ### 3. Menu - Scheme Operator Trusted List user
 
   1. Once the user has logged in with the EUDI Wallet, they are presented with a menu. It contains the following options:
-     + New Info Lang: Add new info to scheme operator data;
-     + Edit Info: Edit scheme Operator data;
-     + List TSL: List all Trusted Lists associated to user;
+     + Add information in new language: Add new info to scheme operator data;
+     + Edit Information: Edit scheme Operator data;
+     + Manage TSL: List all Trusted Lists associated to user;
     
   3. When the user accesses the option List TSL, they will be presented with a list of all the TSLs associated with them. It contains the following options:
-     + Create TSL: Create Trusted List;
-     + Update TSL: Update Trusted Lists data that are associated to user;
+     + Create a new Trusted Service List: Create Trusted List;
+     + Edit TSL: Update Trusted Lists data that are associated to user;
      + Add new language Info: To add new information to the data in different languages;
      + Add Trust Service Providers: Select Trust Service Providers to be associated with the TSL.
-     + Generate XML: Generate the XML of the selected TSL;
-     
-  2. Other options are currentelly under development:
-     + View History: View past updates of Trusted List;
-     + Export Audit Log: Export Audit Log;
-     + Operator Profile: Operator data;
-     + Security Settings: Security Settings;
-     + Permissions Management: Permissions Management;
+     + Generate and sign Trusted Service List: Generate the XML of the selected TSL;
        
   ### 4. Menu - Trust Service Provider user
 
   1.  Once the user has logged in with the EUDI Wallet, they are presented with a menu. It contains the following options:
-      + List TSPs: List all Trust Service Providers associated to user;
-      + List Trust Services: List all Trust Services created by user;
+      + Manage TSP: List all Trust Service Providers associated to user;
+      + Manage Trust Services: List all Trust Services created by user;
     
   2.  When the user accesses the option List TSPs, they will be presented with a list of all the TSPs associated with them. It contains the following options:
-      +  Add New TSP: Adds a New Trust Service Provider;
-      +  Edit TSP: Edit Trust Service Providers associated to user;
+      +  Create a new Trust Service Provider: Adds a New Trust Service Provider;
+      +  Edit Trust Service Provider: Edit Trust Service Providers associated to user;
       +  Add new language Info: To add new information to the data in different language;
       +  Add Services: Select services to be associated with the TSP.
 
   3. When the user accesses the option List Trust Services, they will be presented with a list of all the Trust Services associated with them. It contains the following options:
-      +  Add New Service: Adds a New Service;
+      +  Create a new Service: Adds a New Service;
       +  Edit Trust Service: Edit Trust Services associated to user;
       +  Add new language Info: To add new information to the data in different language;  
 
@@ -119,22 +112,23 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
      + Remove TSP: Remove Trust Service Providers Associated to user;
      + Remove Service: Remove Services created by user;
      + Service Status History: List all Service Status History;
-     + View History: View past updates of Trust Service Providers associated to user;
      + Export Audit Log: Export Audit Log;
-     + Operator Profile: Operator data;
-     + Security Settings: Security Settings;
-     + Permissions Management: Permissions Management;
 
        
   ### 5. Menu - Admin user
   The Admin user is the only user who can create a single LoTL (List of Trusted Lists).
   
   1. Once the user has logged in with the EUDI Wallet, they are presented with a menu. It contains the following options:
-     + New Info Lang: Add new info to LoTL;
-     + Edit Info: Edit LoTL;
-     + Generate XML: Generate LoTL xml;
-     + List TSL: List of all the trust lists that the admin can add to LoTL;
+     + Add information in new language: Add new info to scheme operator data;
+     + Edit Information: Edit scheme Operator data;
+     + Create LoTL: List of all the trust lists that the admin can add to LoTL and generate LoTL xml;
+     + LoTL Information: Manage Information related to LoTL;
        
-  2. When the user accesses the option List TSL, they will be presented with a list of all the TSLs. It contains the following options:
-     + Add selected Trusted Lists: Add Trusted Lists with the checkbox checked in the Actions column ;
+  2. When the user accesses the option Create LoTL, they will be presented with a list of all the TSLs in the system. It contains the following options:
+     + Update selected Trusted Service Lists: Add Trusted Lists with the checkbox checked in the Actions column ;
+     + Generate and sign LoTL;
+       
+  3. When the user accesses the option LoTL Information, they will be presented with the following options:
+     +  Add new language Info: To add new information to the data in different language;
+     +  Edit Lotl Information: Update existing LoTL-related data; 
      
