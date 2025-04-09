@@ -267,25 +267,27 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     #TrustServiceProviderList
 
     TrustServiceProviderList=test.TrustServiceProviderListType()
-    TrustServiceProvider= test.TSPType()
-    TSPInformation=test.TSPInformationType()
-    TSPName=test.InternationalNamesType()
-    TSPTradeName= test.InternationalNamesType()
-    TSPAddress=test.AddressType()
-    TSPPostalAddress=test.PostalAddressListType()
-    TSPEletronicAddress=test.ElectronicAddressType()
-    TSPInformationURI= test.NonEmptyMultiLangURIListType()
 
-    for each in tsp_data:
-        name = parse_json_field(each["name"])
+
+    for tsp in tsp_data:
+        TrustServiceProvider= test.TSPType()
+        TSPInformation=test.TSPInformationType()
+        TSPName=test.InternationalNamesType()
+        TSPTradeName= test.InternationalNamesType()
+        TSPAddress=test.AddressType()
+        TSPPostalAddress=test.PostalAddressListType()
+        TSPEletronicAddress=test.ElectronicAddressType()
+        TSPInformationURI= test.NonEmptyMultiLangURIListType()
+
+        name = parse_json_field(tsp["name"])
         for item in name:
             TSPName.add_Name(test.MultiLangNormStringType(item['lang'], item["text"]))
 
-        trade_name = parse_json_field(each["trade_name"])
+        trade_name = parse_json_field(tsp["trade_name"])
         for item in trade_name:
             TSPTradeName.add_Name(test.MultiLangNormStringType(item['lang'], item["text"]))
 
-        address = parse_json_field(each["postal_address"])
+        address = parse_json_field(tsp["postal_address"])
         for item in address:
             postal1=test.PostalAddressType()
             postal1.set_lang(item['lang'])
@@ -298,12 +300,12 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         
         
     
-        ele_address = parse_json_field(each["EletronicAddress"])
+        ele_address = parse_json_field(tsp["EletronicAddress"])
         for item in ele_address:
             TSPEletronicAddress.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["URI"]))
 
 
-        uri = parse_json_field(each["TSPInformationURI"])
+        uri = parse_json_field(tsp["TSPInformationURI"])
         for item in uri:
             TSPInformationURI.add_URI(test.NonEmptyMultiLangURIType(item['lang'],item["URI"]))
 
@@ -315,101 +317,96 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         TSPInformation.set_TSPInformationURI(TSPInformationURI)
         TrustServiceProvider.set_TSPInformation(TSPInformation)
 
-    #Services
-    TSPServices=test.TSPServicesListType()
+        #Services
+        TSPServices=test.TSPServicesListType()
 
-    #for cycle
-    TSPService=test.TSPServiceType()
-    ServiceInformation=test.TSPServiceInformationType()
-    ServiceName=test.InternationalNamesType()
-    SchemeServiceDefinitionURI=test.NonEmptyMultiLangURIListType()
-    #ServiceInformationExtensions=test.ExtensionsListType()
-    # Extension =test.ExtensionType()
-    # Qualifications=test.QualificationsType()
-    # qualificationElement=test.QualificationElementType()
-    # qualifiers=test.QualifiersType()
-    # qualifier=test.QualifierType()
-    # CriteriaList=test.CriteriaListType()
-    # PolicySet=test.PoliciesListType()
-    # PolicyIdentifier=test.ObjectIdentifierType()
-    # Identifier=test.IdentifierType()
-    # AdditionalServiceInformation=test.AdditionalServiceInformationType()
-    # ExtensionAdditionalServiceInformation=test.ExtensionType()
-    # ExtensionAdditionalServiceInformation.set_anytypeobjs_(test.AdditionalServiceInformationType())
-    # Extension.set_anytypeobjs_(test.QualificationsType())
+        #ServiceInformationExtensions=test.ExtensionsListType()
+        # Extension =test.ExtensionType()
+        # Qualifications=test.QualificationsType()
+        # qualificationElement=test.QualificationElementType()
+        # qualifiers=test.QualifiersType()
+        # qualifier=test.QualifierType()
+        # CriteriaList=test.CriteriaListType()
+        # PolicySet=test.PoliciesListType()
+        # PolicyIdentifier=test.ObjectIdentifierType()
+        # Identifier=test.IdentifierType()
+        # AdditionalServiceInformation=test.AdditionalServiceInformationType()
+        # ExtensionAdditionalServiceInformation=test.ExtensionType()
+        # ExtensionAdditionalServiceInformation.set_anytypeobjs_(test.AdditionalServiceInformationType())
+        # Extension.set_anytypeobjs_(test.QualificationsType())
 
-    for each in service_data:
-        ServiceInformation.set_ServiceTypeIdentifier(test.NonEmptyURIType(each["service_type"]))
+        for each in service_data:
 
-        serv_name = parse_json_field(each["ServiceName"])
-        for item in serv_name:
-            ServiceName.add_Name(test.MultiLangNormStringType(item["lang"], item["text"]))
-            ServiceInformation.set_ServiceName(ServiceName)
+            if each["tsp_id"] == tsp["tsp_id"]:
+                
+                TSPService=test.TSPServiceType()
+                ServiceInformation=test.TSPServiceInformationType()
+                ServiceName=test.InternationalNamesType()
+                SchemeServiceDefinitionURI=test.NonEmptyMultiLangURIListType()
 
-        ServiceDigitalIdentity=test.DigitalIdentityListType()
-        digitalID = test.DigitalIdentityType()
-        digitalID.set_X509Certificate(each["digital_identity"].encode("utf-8"))
-        ServiceDigitalIdentity.add_DigitalId(digitalID)
-        ServiceInformation.set_ServiceDigitalIdentity(ServiceDigitalIdentity)
+                ServiceInformation.set_ServiceTypeIdentifier(test.NonEmptyURIType(each["service_type"]))
 
-        ServiceInformation.set_ServiceStatus(test.NonEmptyURIType(each["status"]))
-        ServiceInformation.set_StatusStartingTime(datetime.datetime.now())
+                serv_name = parse_json_field(each["ServiceName"])
+                for item in serv_name:
+                    ServiceName.add_Name(test.MultiLangNormStringType(item["lang"], item["text"]))
 
-        uri = parse_json_field(each["SchemeServiceDefinitionURI"])
-        for item in uri:
-            SchemeServiceDefinitionURI.add_URI(test.NonEmptyMultiLangURIType(item["lang"],item["URI"]))
-            ServiceInformation.set_SchemeServiceDefinitionURI(SchemeServiceDefinitionURI)
+                ServiceInformation.set_ServiceName(ServiceName)
 
-        #Extensions
+                ServiceDigitalIdentity=test.DigitalIdentityListType()
+                digitalID = test.DigitalIdentityType()
+                digitalID.set_X509Certificate(each["digital_identity"].encode("utf-8"))
+                ServiceDigitalIdentity.add_DigitalId(digitalID)
+                ServiceInformation.set_ServiceDigitalIdentity(ServiceDigitalIdentity)
 
-        #Qualification
-        # Qualifications.__setattr__("_Critical",True)
+                ServiceInformation.set_ServiceStatus(test.NonEmptyURIType(each["status"]))
+                ServiceInformation.set_StatusStartingTime(each["status_start_date"])
 
-        # qualifier.set_uri(each["qualifier"])
-        # qualifiers.add_Qualifier(qualifier)
+                uri = parse_json_field(each["SchemeServiceDefinitionURI"])
+                for item in uri:
+                    SchemeServiceDefinitionURI.add_URI(test.NonEmptyMultiLangURIType(item["lang"],item["URI"]))
+                    ServiceInformation.set_SchemeServiceDefinitionURI(SchemeServiceDefinitionURI)
 
-        # Identifier.set_Qualifier("OIDAsURI")
-        # Identifier.set_valueOf_("0.4.0.194112.1.2")
-        # PolicyIdentifier.add_Identifier(Identifier)
-    
+                #Extensions
 
-    # PolicySet.add_PolicyIdentifier(PolicyIdentifier)
+                #Qualification
+                # Qualifications.__setattr__("_Critical",True)
 
-    # CriteriaList.add_PolicySet(PolicySet)
-    # CriteriaList.set_assert("all")
+                # qualifier.set_uri(each["qualifier"])
+                # qualifiers.add_Qualifier(qualifier)
 
-    # qualificationElement.set_CriteriaList(CriteriaList)
-    # qualificationElement.set_Qualifiers(qualifiers)
+                # Identifier.set_Qualifier("OIDAsURI")
+                # Identifier.set_valueOf_("0.4.0.194112.1.2")
+                # PolicyIdentifier.add_Identifier(Identifier)
+            
 
-    # Qualifications.add_QualificationElement(qualificationElement)
+                # PolicySet.add_PolicyIdentifier(PolicyIdentifier)
 
-    
-    # AdditionalServiceInformation.set_URI(test.NonEmptyMultiLangURIType("en","	https://www.teste.com"))
-    # Extension.set_valueOf_(Qualifications)
-    # Extension.set_Critical(True)
+                # CriteriaList.add_PolicySet(PolicySet)
+                # CriteriaList.set_assert("all")
 
-    # ExtensionAdditionalServiceInformation.set_valueOf_(AdditionalServiceInformation)
-    # ExtensionAdditionalServiceInformation.set_Critical(True)
+                # qualificationElement.set_CriteriaList(CriteriaList)
+                # qualificationElement.set_Qualifiers(qualifiers)
 
-    # ServiceInformationExtensions.add_Extension(Extension)
-    # ServiceInformationExtensions.add_Extension(ExtensionAdditionalServiceInformation)
-    # ServiceInformation.set_ServiceInformationExtensions(ServiceInformationExtensions)
+                # Qualifications.add_QualificationElement(qualificationElement)
 
-    #AdditionalServiceInformation		
-    
+                
+                # AdditionalServiceInformation.set_URI(test.NonEmptyMultiLangURIType("en","	https://www.teste.com"))
+                # Extension.set_valueOf_(Qualifications)
+                # Extension.set_Critical(True)
 
-    ##ServiceHistoryInstance
-    #equal to Service Information
-    # ServiceHistory=test.ServiceHistoryType()
-    # ServiceHistoryInstance=test.ServiceHistoryInstanceType()
+                # ExtensionAdditionalServiceInformation.set_valueOf_(AdditionalServiceInformation)
+                # ExtensionAdditionalServiceInformation.set_Critical(True)
 
-    # ServiceHistory.add_ServiceHistoryInstance(ServiceHistoryInstance)
+                # ServiceInformationExtensions.add_Extension(Extension)
+                # ServiceInformationExtensions.add_Extension(ExtensionAdditionalServiceInformation)
+                # ServiceInformation.set_ServiceInformationExtensions(ServiceInformationExtensions)
 
-    TSPService.set_ServiceInformation(ServiceInformation)
-    #TSPService.set_ServiceHistory(ServiceHistory)
-    TSPServices.add_TSPService(TSPService)
-    TrustServiceProvider.set_TSPServices(TSPServices)
-    TrustServiceProviderList.add_TrustServiceProvider(TrustServiceProvider)
+                TSPService.set_ServiceInformation(ServiceInformation)
+                TSPServices.add_TSPService(TSPService)
+
+        #AdditionalServiceInformation		
+        TrustServiceProvider.set_TSPServices(TSPServices)
+        TrustServiceProviderList.add_TrustServiceProvider(TrustServiceProvider)
 
     root.set_TrustServiceProviderList(TrustServiceProviderList)
 
