@@ -60,7 +60,7 @@ class ConfService:
       "QCQSCDStatusAsInCert": "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCQSCDStatusAsInCert"
     }
 
-    url_verifier="verifier-backend.ama.projj.eu"
+    url_verifier="verifier-backend.eudiw.dev"
 
     lang = {
       "Portugues": "pt", 
