@@ -46,7 +46,7 @@ class ConfService:
     cert_UT = "/etc/eudiw/pid-issuer/cert/PID-DS-0001_UT_cert.der"
 
     #priv_key_UT = "app/xml_gen/privkey_UT.pem"
-    priv_key_UT = "/etc/eudiw/pid-issuer/privkey/PID-DS-0001_UT.pem"
+    priv_key_UT = "/etc/eudiw/pid-issuer/privKey/PID-DS-0001_UT.pem"
 
     roles = {
       "tsp_op":"TSP Operator",

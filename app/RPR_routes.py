@@ -1647,7 +1647,7 @@ def create_service():
         "Service Type": "Type of service provided",
         "Service Name": "Provide the service name",
         #"Qualifier": "Select applicable qualifiers",
-        "Digital Identity": "Specify the digital identity",
+        "Digital Identity": "Specify the digital Certificate (It's not necessary to include BEGIN or END certificate.)",
         "Status": "Service status",
         "Status Start Date": "Start date of the current status",
         "Uri": "Service URI"
