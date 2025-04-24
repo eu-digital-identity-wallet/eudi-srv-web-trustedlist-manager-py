@@ -1901,6 +1901,9 @@ def lotl_xml():
 
     tsl_data = func.get_lotltsl_info(user["id"], session["session_id"])
 
+    if(tsl_data == "err"):
+        flash("You don't have a Lotl Trusted List created, so it's not possible to generate the XML. Please create a new Lotl TSL.", "danger")
+        return redirect('/lotl/list')
     lang_based_fields = [
         "SchemeName_lang",
         "Uri_lang",
@@ -1917,9 +1920,6 @@ def lotl_xml():
             print(f"Error decoding {key}: {tsl_data[key]}")
             tsl_data[key] = []
     
-    if(tsl_data == "err"):
-        flash("You don't have a Trusted List created, so it's not possible to generate the XML. Please create a new TSL.", "danger")
-        return redirect('/lotl/list')
     else:
         tsl_mom = tsl_data
         dict_tsl_mom = {
@@ -1973,6 +1973,10 @@ def lotl_xml():
             else:
                 return ("error")
         else:
+            if(role == "lotl_op"):
+                menu= cfgserv.service_url + "menu_lotl"
+                return render_template("download_lotl.html", menu = menu, xml_hash_before_sign = xml_hash_before_sign, thumbprint = thumbprint, tsl_list = tsl_list, file_data = file, temp_user_id = temp_user_id)
+            
             menu= cfgserv.service_url + "menu"
 
         return render_template("download_lotl.html", menu = menu, xml_hash_before_sign = xml_hash_before_sign, thumbprint = thumbprint, tsl_list = tsl_list, file_data = file, temp_user_id = temp_user_id)
