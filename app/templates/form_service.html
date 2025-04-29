@@ -152,14 +152,23 @@
                                                     <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required >
                                                 </div>
                                             </div>    
-                                            {% elif value == 'binary' %}
-                                                <div class="row g-3">
-                                                    <div class="col-md-12">
-                                                        <label for="{{ name }}">{{ name }}</label>
-                                                        <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                        <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required >
-                                                    </div>
+                                        {% elif value == 'textarea' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <textarea class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" rows="4" style="resize: none; height: 300px;" required></textarea>
                                                 </div>
+                                            </div>
+                                               
+                                        {% elif value == 'binary' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required >
+                                                </div>
+                                            </div>
                                         {% elif value == 'full-date' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">

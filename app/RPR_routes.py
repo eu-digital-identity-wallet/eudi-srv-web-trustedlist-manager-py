@@ -1637,7 +1637,7 @@ def create_service():
         "Service Type": "select_type",
         "Service Name": "string",
         #"Qualifier": "select",
-        "Digital Identity" : "string",
+        "Digital Identity" : "textarea",
         "Service Status": "status",
         "Status Start Date": "full-date",
         "Scheme Service Definition URI": "string"
