@@ -1,6 +1,6 @@
 services:
   tsl_manager:
-    image: eudi-srv-web-trustedlist-manager-py:0.1
+    image: ghcr.io/niscy-eudiw/eudi-srv-web-trustedlist-manager-py:latest
     container_name: tsl_manager
     ports:
       - "5000:5000"
