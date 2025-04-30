@@ -130,5 +130,41 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
        
   3. When the user accesses the option LoTL Information, they will be presented with the following options:
      +  Add new language Info: To add new information to the data in different language;
-     +  Edit Lotl Information: Update existing LoTL-related data; 
+     +  Edit Lotl Information: Update existing LoTL-related data;
      
+## Configuration
+
+The Web Trusted List Manager application can be configured using the following environment variables:
+
+Variable: `SERVICE_URL`<br>
+Description: Application service url
+
+Variable: `TRUSTED_CAS_PATH`<br>
+Description: Container path where CA certificates are located for validate vp_token when doing PID login
+
+Variable: `VERIFIER`<br>
+Description: Verifier URL
+
+Variable: `LOG_PATH`<br>
+Description: Path where log files are saved
+
+Variable: `CERT`<br>
+Description: Container path where the XML signing certificate is stored
+
+Variable: `PRIV_KEY`<br>
+Description: Container path where the private key of the XML signing certificate is stored
+
+Variable: `DB_HOST`<br>
+Description: Database URL
+
+Variable: `DB_PORT`<br>
+Description: Port where Database is running
+
+Variable: `DB_USER`<br>
+Description: Username of Database user
+
+Variable: `DB_PASSWORD`<br>
+Description: Password of Database user
+
+Variable: `DB_NAME`<br>
+Description: Name of Database
