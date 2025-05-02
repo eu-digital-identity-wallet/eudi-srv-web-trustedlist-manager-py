@@ -131,6 +131,26 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
   3. When the user accesses the option LoTL Information, they will be presented with the following options:
      +  Add new language Info: To add new information to the data in different language;
      +  Edit Lotl Information: Update existing LoTL-related data;
+
+## Run docker
+
+To start Web Trusted List Manager service a docker compose file has been implemented that can be found in `docker` directory.
+
+To start the docker compose environment
+
+```
+# From project root directory 
+cd docker
+docker-compose up -d
+```
+
+To stop the docker compose environment
+
+```
+# From project root directory 
+cd docker
+docker-compose down
+````
      
 ## Configuration
 
