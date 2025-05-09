@@ -134,7 +134,7 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
 
 ## Run docker
 
-To start Web Trusted List Manager service a docker compose file has been implemented that can be found in `docker` directory.
+To start Web Trusted List Manager service a docker compose file, [docker-compose.yml](docker/docker-compose.yml), has been implemented that can be found in `docker` directory.
 
 To start the docker compose environment
 
