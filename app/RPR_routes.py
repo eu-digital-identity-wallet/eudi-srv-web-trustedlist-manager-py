@@ -803,6 +803,7 @@ def xml():
         #"pointers_to_other_tsl" :   tsl_info["pointers_to_other_tsl"].encode('utf-8'),
         "HistoricalInformationPeriod":  confxml.HistoricalInformationPeriod,
         "TSLLocation"	:   "https://ec.europa.eu/tools/lotl/eu-lotl.xml",
+        "schemeTerritory": tsl_info["schemeTerritory"],
         #AdditionalInformation,ver
 
         #"DistributionPoints" :  tsl_info["DistributionPoints"],
