@@ -147,7 +147,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     schemeInfo.set_SchemeTypeCommunityRules(schemeCRules)
 
     #SchemeTerritory
-    schemeInfo.set_SchemeTerritory(user_info["country"])
+    schemeInfo.set_SchemeTerritory(dictFromDB_trusted_lists["schemeTerritory"])
 
     #PolicyOrLegalNotice
     PolicyOrLegalNotice= test.PolicyOrLegalnoticeType()
