@@ -51,8 +51,10 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     service_data = [service for sublist in service_data for service in sublist]
 
     der_data=open(cfgserv.cert_UT, "rb").read()
-    cert = x509.load_der_x509_certificate(der_data)
-    cert = cert.public_bytes(encoding=serialization.Encoding.PEM)
+    cert_der = x509.load_der_x509_certificate(der_data)
+    cert = cert_der.public_bytes(encoding=serialization.Encoding.PEM)
+
+    cert_cleaned=base64.b64encode(cert_der.public_bytes(encoding=Encoding.DER)).decode('ascii')
 
     check = func.get_old_cert(tsl_id, log_id)
     aux = 0
@@ -62,9 +64,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
                 aux = 1
     else:
         if(aux != 1):
-            func.insert_old_cert(cert, tsl_id, log_id)
-
-    #lotl_otherTSLPointer_digital_id=base64.b64encode(cert.public_bytes(encoding=Encoding.DER)).decode()
+            func.insert_old_cert(cert_cleaned, tsl_id, log_id)
     
     root=test.TrustStatusListType()
 
@@ -461,9 +461,9 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     der_data=open(cfgserv.cert_UT, "rb").read()
-    cert = x509.load_der_x509_certificate(der_data)
-    lotl_otherTSLPointer_digital_id=base64.b64encode(cert.public_bytes(encoding=Encoding.DER)).decode()
-    cert = cert.public_bytes(encoding=serialization.Encoding.PEM)
+    cert_der= x509.load_der_x509_certificate(der_data)
+    cert_cleaned=base64.b64encode(cert_der.public_bytes(encoding=Encoding.DER)).decode('ascii')
+    cert = cert_der.public_bytes(encoding=serialization.Encoding.PEM)
 
     root=test.TrustStatusListType()
 
