@@ -258,7 +258,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     
     # for dp in dictFromDB_trusted_lists["DistributionPoints"]:
     #     URIDP.add_URI(test.NonEmptyURIType(dp))
-    last= next(reversed(dictFromDB_trusted_lists["SchemeInformationURI"].values()))
+    last= dictFromDB_trusted_lists["SchemeInformationURI"][next(reversed(dictFromDB_trusted_lists["SchemeInformationURI"]))]
         
     URIDP.add_URI(test.NonEmptyURIType(last))
 
