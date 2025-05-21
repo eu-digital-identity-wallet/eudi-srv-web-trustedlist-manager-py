@@ -61,7 +61,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     aux = 0
     if(check is not None):
         for each in check:
-            if(each["cert"] != cert):
+            if(each["cert"] != cert_cleaned):
                 aux = 1
     else:
         if(aux != 1):
@@ -172,7 +172,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     serviceDigitalIdentity=test.DigitalIdentityListType()
 
     digitalID=test.DigitalIdentityType()
-    digitalID.set_X509Certificate(cert)
+    digitalID.set_X509Certificate(cert_cleaned)
 
     serviceDigitalIdentity.add_DigitalId(digitalID)
     ServiceDigitalIdentities.add_ServiceDigitalIdentity(serviceDigitalIdentity)
@@ -359,7 +359,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
                 ServiceDigitalIdentity=test.DigitalIdentityListType()
                 digitalID = test.DigitalIdentityType()
-                digitalID.set_X509Certificate(each["digital_identity"].encode("utf-8"))
+                digitalID.set_X509Certificate(each["digital_identity"])
                 ServiceDigitalIdentity.add_DigitalId(digitalID)
                 ServiceInformation.set_ServiceDigitalIdentity(ServiceDigitalIdentity)
 
@@ -656,7 +656,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
         for each in aux:
             digitalID=test.DigitalIdentityType()
-            digitalID.set_X509Certificate(each["cert"].encode("utf-8"))
+            digitalID.set_X509Certificate(each["cert"])
             serviceDigitalIdentity.add_DigitalId(digitalID)
         #end
 
