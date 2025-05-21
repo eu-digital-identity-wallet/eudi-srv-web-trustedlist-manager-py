@@ -1946,7 +1946,7 @@ def lotl_xml():
                 "SequenceNumber":   each["SequenceNumber"],
                 #"TSLType":  confxml.TSLType.get("EU"),
                 "SchemeName":   each["SchemeName_lang"],
-                "SchemeInformationURI": each["Version"],
+                "SchemeInformationURI": each["Uri_lang"],
                 #"StatusDeterminationApproach":  confxml.StatusDeterminationApproach.get("EU"),
                 #"SchemeTypeCommunityRules": each["SchemeTypeCommunityRules_lang"],
                 "PolicyOrLegalNotice":  each["PolicyOrLegalNotice_lang"],

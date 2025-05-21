@@ -259,7 +259,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     # for dp in dictFromDB_trusted_lists["DistributionPoints"]:
     #     URIDP.add_URI(test.NonEmptyURIType(dp))
     last= dictFromDB_trusted_lists["SchemeInformationURI"][-1].get("URI")
-      
+
     URIDP.add_URI(test.NonEmptyURIType(last))
 
     schemeInfo.DistributionPoints=URIDP
@@ -637,7 +637,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     AdditionalInfo.add_OtherInformation(objectMimeType)
 
-    last = next(reversed(dict_tsl_mom["SchemeInformationURI"].values()))
+    last = dict_tsl_mom["SchemeInformationURI"][-1].get("URI")
     Pointer.TSLLocation=test.NonEmptyURIType(last)
 
     Pointer.AdditionalInformation=AdditionalInfo
@@ -717,7 +717,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
         AdditionalInfo.add_OtherInformation(objectMimeType)
 
-        last= next(reversed(tsl_data["SchemeInformationURI"].values()))
+        last= tsl_data["SchemeInformationURI"][-1].get("URI")
         Pointer.TSLLocation=test.NonEmptyURIType(last)
 
         Pointer.AdditionalInformation=AdditionalInfo
@@ -735,7 +735,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     #for cycle
     URIDP=test.NonEmptyURIListType()
-    last= next(reversed(dict_tsl_mom["SchemeInformationURI"].values()))
+    last= dict_tsl_mom["SchemeInformationURI"][-1].get("URI")
     URIDP.add_URI(test.NonEmptyURIType(last))
 
     schemeInfo.DistributionPoints=URIDP
