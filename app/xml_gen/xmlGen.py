@@ -172,7 +172,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     serviceDigitalIdentity=test.DigitalIdentityListType()
 
     digitalID=test.DigitalIdentityType()
-    digitalID.set_X509Certificate(cert_cleaned)
+    digitalID.set_X509Certificate(base64.b64encode(cert_cleaned))
 
     serviceDigitalIdentity.add_DigitalId(digitalID)
     ServiceDigitalIdentities.add_ServiceDigitalIdentity(serviceDigitalIdentity)
@@ -359,7 +359,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
                 ServiceDigitalIdentity=test.DigitalIdentityListType()
                 digitalID = test.DigitalIdentityType()
-                digitalID.set_X509Certificate(each["digital_identity"])
+                digitalID.set_X509Certificate(base64.b64encode(each["digital_identity"]))
                 ServiceDigitalIdentity.add_DigitalId(digitalID)
                 ServiceInformation.set_ServiceDigitalIdentity(ServiceDigitalIdentity)
 
@@ -575,7 +575,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     serviceDigitalIdentity=test.DigitalIdentityListType()
 
     digitalID=test.DigitalIdentityType()
-    digitalID.set_X509Certificate(cert)
+    digitalID.set_X509Certificate(base64.b64encode(cert_cleaned))
 
     serviceDigitalIdentity.add_DigitalId(digitalID)
     ServiceDigitalIdentities.add_ServiceDigitalIdentity(serviceDigitalIdentity)
@@ -656,7 +656,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
         for each in aux:
             digitalID=test.DigitalIdentityType()
-            digitalID.set_X509Certificate(each["cert"])
+            digitalID.set_X509Certificate(base64.b64encode(each["cert"]))
             serviceDigitalIdentity.add_DigitalId(digitalID)
         #end
 
