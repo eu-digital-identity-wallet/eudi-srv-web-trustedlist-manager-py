@@ -717,7 +717,6 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
         AdditionalInfo.add_OtherInformation(objectMimeType)
 
-        print(tsl_data["SchemeInformationURI"])
         last= tsl_data["SchemeInformationURI"][-1].get("URI")
         Pointer.TSLLocation=test.NonEmptyURIType(last)
 

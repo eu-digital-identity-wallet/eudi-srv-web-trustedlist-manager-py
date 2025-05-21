@@ -1940,6 +1940,15 @@ def lotl_xml():
         }
     
         for each in tsl_info:
+            for key in lang_based_fields:
+                try:
+                    each[key] = json.loads(each[key]) if each[key] else []
+                except json.JSONDecodeError:
+                    extra = {'code': session["session_id"]} 
+                    logger.error(f"Error decoding : {key}: {each[key]}", extra=extra)
+                    print(f"Error decoding {key}: {each[key]}")
+                    each[key] = []
+
             dictFromDB_trusted_lists = {
                 "id": each["tsl_id"],
                 "Version":  confxml.TLSVersionIdentifier,
