@@ -52,6 +52,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     der_data=open(cfgserv.cert_UT, "rb").read()
     cert = x509.load_der_x509_certificate(der_data)
+    cert = cert.public_bytes(encoding=serialization.Encoding.PEM)
 
     check = func.get_old_cert(tsl_id, log_id)
     aux = 0
@@ -63,8 +64,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         if(aux != 1):
             func.insert_old_cert(cert, tsl_id, log_id)
 
-    lotl_otherTSLPointer_digital_id=base64.b64encode(cert.public_bytes(encoding=Encoding.DER)).decode()
-    cert = cert.public_bytes(encoding=serialization.Encoding.PEM)
+    #lotl_otherTSLPointer_digital_id=base64.b64encode(cert.public_bytes(encoding=Encoding.DER)).decode()
     
     root=test.TrustStatusListType()
 
@@ -125,7 +125,8 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     #for cycle
     for scheme in dictFromDB_trusted_lists["SchemeName"]:
         schemeName.add_Name(test.MultiLangNormStringType(scheme["lang"], scheme["text"]))
-        schemeInfo.set_SchemeName(schemeName)
+    
+    schemeInfo.set_SchemeName(schemeName)
 
     #SchemeInformationURI
     schemeInformationURI=test.NonEmptyMultiLangURIListType()
@@ -133,7 +134,8 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     #for cycle
     for scheme in dictFromDB_trusted_lists["SchemeInformationURI"]:
         schemeInformationURI.add_URI(test.NonEmptyMultiLangURIType(scheme["lang"], scheme["URI"]))
-        schemeInfo.set_SchemeInformationURI(schemeInformationURI)
+    
+    schemeInfo.set_SchemeInformationURI(schemeInformationURI)
 
     #StatusDeterminationApproach
     schemeInfo.StatusDeterminationApproach=test.NonEmptyURIType(confxml.StatusDeterminationApproach["EU"])
@@ -143,7 +145,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     #for cycle
     schemeCRules.add_URI(test.NonEmptyMultiLangURIType("en", confxml.SchemeTypeCommunityRules["EU"]))
-    schemeCRules.add_URI(test.NonEmptyMultiLangURIType("en", confxml.SchemeTypeCommunityRules["Country"] +user_info["country"] ))
+    schemeCRules.add_URI(test.NonEmptyMultiLangURIType("en", confxml.SchemeTypeCommunityRules["Country"] + dictFromDB_trusted_lists["schemeTerritory"] ))
     schemeInfo.set_SchemeTypeCommunityRules(schemeCRules)
 
     #SchemeTerritory
@@ -194,7 +196,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     #SchemeNameOperatorAdditionalInformation
     #for cycle
     schemeNametest=test.InternationalNamesType()
-    schemeNametest.add_Name(test.MultiLangNormStringType("en", "EUDIW LoTL"))
+    schemeNametest.add_Name(test.MultiLangNormStringType("en", "EU-LOTL"))
 
     testes=test.TakenOverByType()
     testes.SchemeOperatorName=schemeNametest
@@ -256,8 +258,10 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     
     # for dp in dictFromDB_trusted_lists["DistributionPoints"]:
     #     URIDP.add_URI(test.NonEmptyURIType(dp))
+    last= next(reversed(dictFromDB_trusted_lists["SchemeInformationURI"].values()))
+        
+    URIDP.add_URI(test.NonEmptyURIType(last))
 
-    URIDP.add_URI(test.NonEmptyURIType("https://trustedlist.eudiw.dev/" + user_info["country"] + "/tsl-" + user_info["country"] + ".xml" ))
     schemeInfo.DistributionPoints=URIDP
 
     root.SchemeInformation=schemeInfo
@@ -364,7 +368,8 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
                 uri = parse_json_field(each["SchemeServiceDefinitionURI"])
                 for item in uri:
                     SchemeServiceDefinitionURI.add_URI(test.NonEmptyMultiLangURIType(item["lang"],item["URI"]))
-                    ServiceInformation.set_SchemeServiceDefinitionURI(SchemeServiceDefinitionURI)
+                
+                ServiceInformation.set_SchemeServiceDefinitionURI(SchemeServiceDefinitionURI)
 
                 #Extensions
 
@@ -525,14 +530,16 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     #for cycle
     for scheme in dict_tsl_mom["SchemeName"]:
         schemeName.add_Name(test.MultiLangNormStringType(scheme["lang"], scheme["text"]))
-        schemeInfo.set_SchemeName(schemeName)
+    
+    schemeInfo.set_SchemeName(schemeName)
 
     #SchemeInformationURI
     
     #for cycle
     for scheme in dict_tsl_mom["SchemeInformationURI"]:
         schemeInformationURI.add_URI(test.NonEmptyMultiLangURIType(scheme["lang"], scheme["URI"]))
-        schemeInfo.set_SchemeInformationURI(schemeInformationURI)
+    
+    schemeInfo.set_SchemeInformationURI(schemeInformationURI)
 
     #StatusDeterminationApproach
     schemeInfo.StatusDeterminationApproach=test.NonEmptyURIType(confxml.StatusDeterminationApproach["LoTL"])
@@ -551,7 +558,8 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     #for cycle
     for scheme in dict_tsl_mom["PolicyOrLegalNotice"]:
         PolicyOrLegalNotice.add_TSLLegalNotice(test.MultiLangStringType(scheme["lang"], scheme["text"]))
-        schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
+    
+    schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
 
     #HistoricalInformationPeriod
     schemeInfo.set_HistoricalInformationPeriod(dict_tsl_mom["HistoricalInformationPeriod"])
@@ -588,8 +596,9 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     #SchemeNameOperatorAdditionalInformation
     #for cycle
     schemeNametest=test.InternationalNamesType()
-    schemeNametest.add_Name(test.MultiLangNormStringType("en", "EUDIW LoTL"))
-
+    for item in op_name:
+        schemeNametest.add_Name(test.MultiLangNormStringType(item['lang'], item["text"]))
+    
     testes=test.TakenOverByType()
     testes.SchemeOperatorName=schemeNametest
 
@@ -628,7 +637,8 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     AdditionalInfo.add_OtherInformation(objectMimeType)
 
-    Pointer.TSLLocation=test.NonEmptyURIType(confxml.lotl_location)
+    last = next(reversed(dict_tsl_mom["SchemeInformationURI"].values()))
+    Pointer.TSLLocation=test.NonEmptyURIType(last)
 
     Pointer.AdditionalInformation=AdditionalInfo
     Pointers.add_OtherTSLPointer(Pointer)
@@ -707,7 +717,8 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
         AdditionalInfo.add_OtherInformation(objectMimeType)
 
-        Pointer.TSLLocation=test.NonEmptyURIType("https://trustedlist.eudiw.dev/" + tsl_data["schemeTerritory"] + "/tsl-" + tsl_data["schemeTerritory"] + ".xml" )
+        last= next(reversed(tsl_data["SchemeInformationURI"].values()))
+        Pointer.TSLLocation=test.NonEmptyURIType(last)
 
         Pointer.AdditionalInformation=AdditionalInfo
         Pointers.add_OtherTSLPointer(Pointer)
@@ -724,8 +735,8 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     #for cycle
     URIDP=test.NonEmptyURIListType()
-    
-    URIDP.add_URI(test.NonEmptyURIType(confxml.DistributionPoints["LoTL"]))
+    last= next(reversed(dict_tsl_mom["SchemeInformationURI"].values()))
+    URIDP.add_URI(test.NonEmptyURIType(last))
 
     schemeInfo.DistributionPoints=URIDP
 
