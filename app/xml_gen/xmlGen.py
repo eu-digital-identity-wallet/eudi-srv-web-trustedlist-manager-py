@@ -54,7 +54,8 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     cert_der = x509.load_der_x509_certificate(der_data)
     cert = cert_der.public_bytes(encoding=serialization.Encoding.PEM)
 
-    cert_cleaned=base64.b64encode(cert_der.public_bytes(encoding=Encoding.DER)).decode('ascii')
+    pem_str = cert.decode('utf-8')
+    cert_cleaned = ''.join(line for line in pem_str.splitlines() if "CERTIFICATE" not in line)
 
     check = func.get_old_cert(tsl_id, log_id)
     aux = 0
@@ -462,8 +463,10 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     der_data=open(cfgserv.cert_UT, "rb").read()
     cert_der= x509.load_der_x509_certificate(der_data)
-    cert_cleaned=base64.b64encode(cert_der.public_bytes(encoding=Encoding.DER)).decode('ascii')
     cert = cert_der.public_bytes(encoding=serialization.Encoding.PEM)
+
+    pem_str = cert.decode('utf-8')
+    cert_cleaned = ''.join(line for line in pem_str.splitlines() if "CERTIFICATE" not in line)
 
     root=test.TrustStatusListType()
 
