@@ -2490,7 +2490,7 @@ class TrustStatusListType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" ', name_='TrustServiceStatusList', pretty_print=True):
+    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tslx="http://uri.etsi.org/02231/v2/additionaltypes#" ', name_='TrustServiceStatusList', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('TrustServiceStatusList')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_

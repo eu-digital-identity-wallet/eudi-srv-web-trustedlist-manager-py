@@ -25,10 +25,9 @@ from flask import send_file
 from signxml import DigestAlgorithm
 from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFormat)
 import xml_gen.trustedlists_api as test
-from signxml import DigestAlgorithm
 from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFormat)
 from xml_gen.xml_config import ConfXML as confxml
-from signxml import XMLSigner, algorithms
+from signxml import XMLSigner, algorithms, methods
 import json
 
 from app_config.config import ConfService as cfgserv
@@ -440,7 +439,19 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     root_bytes = etree.tostring(root_lxml, method="c14n")
     xml_hash_before_sign = hashlib.sha256(root_bytes).hexdigest()
 
-    signed_root = XMLSigner(signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256).sign(data=rootTemp, key=key, cert=cert)
+    data_object_format = XAdESDataObjectFormat(
+        Description="TSL signature",
+        MimeType="text/xml",
+    )
+    signer = XAdESSigner(
+        claimed_roles=["signer"],
+        data_object_format=data_object_format,
+        c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
+        signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
+        digestAlgorithm=DigestAlgorithm.SHA256
+    )
+
+    signed_root = signer.sign(data=rootTemp, key=key, cert=cert, method=methods.enveloped)
     #verified_data = XMLVerifier().verify(signed_root)
 
     # with open ("teste.xml", "w") as file: 
@@ -680,7 +691,8 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         #SchemeNameOperatorAdditionalInformation
         #for cycle
         schemeNametest=test.InternationalNamesType()
-        schemeNametest.add_Name(test.MultiLangNormStringType("en", tsl_data["SchemeName"]))
+        for item in tsl_data["SchemeName"]:
+            schemeNametest.add_Name(test.MultiLangNormStringType(item['lang'], item["text"]))
 
         testes=test.TakenOverByType()
         testes.SchemeOperatorName=schemeNametest
@@ -769,7 +781,19 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     root_bytes = etree.tostring(root_lxml, method="c14n")
     xml_hash_before_sign = hashlib.sha256(root_bytes).hexdigest()
 
-    signed_root = XMLSigner(signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256).sign(data=rootTemp, key=key, cert=cert)
+    data_object_format = XAdESDataObjectFormat(
+        Description="TSL signature",
+        MimeType="text/xml",
+    )
+    signer = XAdESSigner(
+        claimed_roles=["signer"],
+        data_object_format=data_object_format,
+        c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
+        signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
+        digestAlgorithm=DigestAlgorithm.SHA256
+    )
+
+    signed_root = signer.sign(data=rootTemp, key=key, cert=cert, methods=methods.enveloped)
     #verified_data = XMLVerifier().verify(signed_root)
 
     # with open ("teste.xml", "w") as file: 
