@@ -649,7 +649,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     objectMimeType=test.AnyType()
     objectMimeType.set_valueOf_(ObjectType)
-    objectMimeType.set_extensiontype_("http://uri.etsi.org/02231/v2/additionaltypes#")
+    objectMimeType.set_ns_prefix_("http://uri.etsi.org/02231/v2/additionaltypes#")
 
     AdditionalInfo.add_OtherInformation(objectMimeType)
 
