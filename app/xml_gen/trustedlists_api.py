@@ -2490,7 +2490,7 @@ class TrustStatusListType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tslx="http://uri.etsi.org/02231/v2/additionaltypes#" ', name_='TrustServiceStatusList', pretty_print=True):
+    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" ', name_='TrustServiceStatusList', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('TrustServiceStatusList')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2520,7 +2520,7 @@ class TrustStatusListType(GeneratedsSuper):
         if self.Id is not None and 'Id' not in already_processed:
             already_processed.add('Id')
             outfile.write(' Id=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.Id), input_name='Id')), ))
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tslx="http://uri.etsi.org/02231/v2/additionaltypes#"', name_='TrustServiceStatusList', fromsubclass_=False, pretty_print=True):
+    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" ', name_='TrustServiceStatusList', fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -9287,7 +9287,7 @@ class ObjectType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='ds:', namespacedef_='xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:None="http://www.w3.org/2001/XMLSchema" ', name_='ObjectType', pretty_print=True):
+    def export(self, outfile, level, namespaceprefix_='tslx:', namespacedef_='xmlns:tslx="http://uri.etsi.org/02231/v2/additionaltypes#" ', name_='ObjectType', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ObjectType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9307,7 +9307,7 @@ class ObjectType(GeneratedsSuper):
         self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_, pretty_print=pretty_print)
         outfile.write(self.convert_unicode(self.valueOf_))
         outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='ds:', name_='ObjectType'):
+    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='tslx:', name_='ObjectType'):
         if self.Id is not None and 'Id' not in already_processed:
             already_processed.add('Id')
             outfile.write(' Id=%s' % (quote_attrib(self.Id), ))
@@ -9317,7 +9317,7 @@ class ObjectType(GeneratedsSuper):
         if self.Encoding is not None and 'Encoding' not in already_processed:
             already_processed.add('Encoding')
             outfile.write(' Encoding=%s' % (quote_attrib(self.Encoding), ))
-    def _exportChildren(self, outfile, level, namespaceprefix_='ds:', namespacedef_='xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:None="http://www.w3.org/2001/XMLSchema" ', name_='ObjectType', fromsubclass_=False, pretty_print=True):
+    def _exportChildren(self, outfile, level, namespaceprefix_='tslx:', namespacedef_='xmlns:tslx="http://uri.etsi.org/02231/v2/additionaltypes#" ', name_='ObjectType', fromsubclass_=False, pretty_print=True):
         if not fromsubclass_:
             for item_ in self.content_:
                 item_.export(outfile, level, item_.name, namespaceprefix_, pretty_print=pretty_print)

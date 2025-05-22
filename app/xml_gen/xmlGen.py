@@ -431,7 +431,6 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         
     key=open(cfgserv.priv_key_UT, "rb").read()
     xml.register_namespace("","http://uri.etsi.org/02231/v2#")
-    xml.register_namespace("","http://uri.etsi.org/02231/v2#")
     
     rootTemp=xml.fromstring(xml_string)
 
@@ -649,7 +648,6 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     objectMimeType=test.AnyType()
     objectMimeType.set_valueOf_(ObjectType)
-    objectMimeType.set_ns_prefix_("http://uri.etsi.org/02231/v2/additionaltypes#")
 
     AdditionalInfo.add_OtherInformation(objectMimeType)
 
