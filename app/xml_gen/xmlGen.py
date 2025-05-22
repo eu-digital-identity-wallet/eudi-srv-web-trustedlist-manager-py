@@ -448,9 +448,10 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         data_object_format=data_object_format,
         c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
         signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
+        method=methods.enveloped
     )
 
-    signed_root = signer.sign(data=rootTemp, key=key, cert=cert, method=methods.enveloped)
+    signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
     #verified_data = XMLVerifier().verify(signed_root)
 
     # with open ("teste.xml", "w") as file: 
@@ -789,9 +790,10 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         data_object_format=data_object_format,
         c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
         signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
+        method=methods.enveloped
     )
 
-    signed_root = signer.sign(data=rootTemp, key=key, cert=cert, method=methods.enveloped)
+    signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
     #verified_data = XMLVerifier().verify(signed_root)
 
     # with open ("teste.xml", "w") as file: 
