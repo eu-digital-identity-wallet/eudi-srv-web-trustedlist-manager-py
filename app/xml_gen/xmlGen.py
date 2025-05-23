@@ -772,7 +772,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         
     key=open(cfgserv.priv_key_UT, "rb").read()
     
-    rootTemp=ET.fromstring(xml_string)
+    rootTemp=xml.fromstring(xml_string)
 
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
