@@ -9233,7 +9233,7 @@ class ObjectType(GeneratedsSuper):
         self.Id = _cast(None, Id)
         self.Id_nsprefix_ ="tslx"
         self._prefix = _cast(None, _prefix)
-        self._prefix_nsprefix_ = "tslx"
+        self._prefix_nsprefix_ = None
         self.Encoding = _cast(None, Encoding)
         self.Encoding_nsprefix_ = "tslx"
         self.anytypeobjs_ = anytypeobjs_
