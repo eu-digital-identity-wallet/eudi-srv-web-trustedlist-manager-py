@@ -430,7 +430,6 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     #     key = serialization.load_pem_private_key(key_file.read(),password=None,backend=default_backend())
         
     key=open(cfgserv.priv_key_UT, "rb").read()
-    xml.register_namespace("","http://uri.etsi.org/02231/v2#")
     
     rootTemp=xml.fromstring(xml_string)
 
@@ -475,6 +474,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     der_data=open(cfgserv.cert_UT, "rb").read()
     cert_der= x509.load_der_x509_certificate(der_data)
     cert = cert_der.public_bytes(encoding=serialization.Encoding.PEM)
+    ET.register_namespace("teste","http://uri.etsi.org/02231/v2/additionaltypes#")
 
     pem_str = cert.decode('utf-8')
     cert_cleaned = ''.join(line for line in pem_str.splitlines() if "CERTIFICATE" not in line)
