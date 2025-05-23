@@ -474,7 +474,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     der_data=open(cfgserv.cert_UT, "rb").read()
     cert_der= x509.load_der_x509_certificate(der_data)
     cert = cert_der.public_bytes(encoding=serialization.Encoding.PEM)
-    ET.register_namespace("teste","http://uri.etsi.org/02231/v2/additionaltypes#")
+    ET.register_namespace("ns4","http://uri.etsi.org/02231/v2/additionaltypes#")
 
     pem_str = cert.decode('utf-8')
     cert_cleaned = ''.join(line for line in pem_str.splitlines() if "CERTIFICATE" not in line)
@@ -643,7 +643,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     #MimeType
     ObjectType=test.ObjectType()
-    ObjectType.original_tagname_="ns4:MimeType"
+    ObjectType.original_tagname_="MimeType"
     ObjectType.set_valueOf_("application/vnd.etsi.tsl+xml")
 
     objectMimeType=test.AnyType()
@@ -724,7 +724,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
         #MimeType
         ObjectType=test.ObjectType()
-        ObjectType.original_tagname_="ns4:MimeType"
+        ObjectType.original_tagname_="MimeType"
         ObjectType.set_valueOf_("application/vnd.etsi.tsl+xml")
 
         objectMimeType=test.AnyType()
