@@ -228,7 +228,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     #MimeType
     ObjectType=test.ObjectType()
-    ObjectType.original_tagname_="MimeType"
+    ObjectType.original_tagname_="ns4:MimeType"
     ObjectType.set_valueOf_("application/vnd.etsi.tsl+xml")
 
     objectMimeType=test.AnyType()
@@ -643,7 +643,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     #MimeType
     ObjectType=test.ObjectType()
-    ObjectType.original_tagname_="MimeType"
+    ObjectType.original_tagname_="ns4:MimeType"
     ObjectType.set_valueOf_("application/vnd.etsi.tsl+xml")
 
     objectMimeType=test.AnyType()
@@ -724,8 +724,9 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
         #MimeType
         ObjectType=test.ObjectType()
-        ObjectType.original_tagname_="MimeType"
+        ObjectType.original_tagname_="ns4:MimeType"
         ObjectType.set_valueOf_("application/vnd.etsi.tsl+xml")
+        ObjectType.set__prefix("teste")
 
         objectMimeType=test.AnyType()
         objectMimeType.set_valueOf_(ObjectType)
@@ -772,7 +773,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     #     key = serialization.load_pem_private_key(key_file.read(),password=None,backend=default_backend())
         
     key=open(cfgserv.priv_key_UT, "rb").read()
-    xml.register_namespace("","http://uri.etsi.org/02231/v2#")
+    ET.register_namespace("teste","http://uri.etsi.org/02231/v2/additionaltypes#")
     
     rootTemp=xml.fromstring(xml_string)
 
@@ -799,8 +800,8 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
     
-    
-    tree = xml.ElementTree(signed_root) 
+    signed_root=ET.Element('{http://uri.etsi.org/02231/v2/additionaltypes#}signed_root')
+    tree = ET.ElementTree(signed_root)
     
     xml_data = io.BytesIO()
     tree.write(xml_data, encoding='utf-8', xml_declaration=True)
