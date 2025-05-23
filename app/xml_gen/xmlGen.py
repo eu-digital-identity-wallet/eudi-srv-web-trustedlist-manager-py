@@ -797,7 +797,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
     
-    tree = ET.ElementTree(signed_root)
+    tree = xml.ElementTree(signed_root)
     
     xml_data = io.BytesIO()
     tree.write(xml_data, encoding='utf-8', xml_declaration=True)
