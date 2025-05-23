@@ -158,7 +158,8 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     #for cycle
     for scheme in dictFromDB_trusted_lists["PolicyOrLegalNotice"]:
         PolicyOrLegalNotice.add_TSLLegalNotice(test.MultiLangStringType(scheme["lang"], scheme["text"]))
-        schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
+        
+    schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
 
     #HistoricalInformationPeriod
     schemeInfo.set_HistoricalInformationPeriod(dictFromDB_trusted_lists["HistoricalInformationPeriod"])
@@ -229,7 +230,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     #MimeType
     ObjectType=test.ObjectType()
-    ObjectType.original_tagname_="ns4:MimeType"
+    ObjectType.original_tagname_="MimeType"
     ObjectType.set_valueOf_("application/vnd.etsi.tsl+xml")
 
     objectMimeType=test.AnyType()
@@ -464,7 +465,15 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     tree.write(xml_data, encoding='utf-8', xml_declaration=True)
     xml_data.seek(0)
 
-    encoded_file = base64.b64encode(xml_data.read()).decode('utf-8')
+    content=xml_data.read().decode('utf-8')
+
+    content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
+
+    # Remover todos os prefixos ns0 das tags
+    content = re.sub(r'<ns0:', r'<', content)
+    content = re.sub(r'</ns0:', r'</', content)
+
+    encoded_file = base64.b64encode(content.encode("utf-8")).decode('utf-8')
 
 
     return encoded_file, thumbprint, xml_hash_before_sign
@@ -811,7 +820,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     # Remover todos os prefixos ns0 das tags
     content = re.sub(r'<ns0:', r'<', content)
     content = re.sub(r'</ns0:', r'</', content)
-    
+
     encoded_file = base64.b64encode(content.encode('utf-8')).decode('utf-8')
 
 
