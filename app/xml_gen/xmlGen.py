@@ -798,7 +798,6 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
     
-    signed_root=ET.Element('{http://uri.etsi.org/02231/v2/additionaltypes#}signed_root')
     tree = ET.ElementTree(signed_root)
     
     xml_data = io.BytesIO()
