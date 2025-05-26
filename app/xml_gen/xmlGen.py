@@ -420,6 +420,13 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     xml_buffer=StringIO()
     root.export(xml_buffer,0,"")
     xml_string=xml_buffer.getvalue()
+    
+    content=xml_string
+    content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
+
+    # Remover todos os prefixos ns0 das tags
+    content = re.sub(r'<ns0:', r'<', content)
+    content = re.sub(r'</ns0:', r'</', content)
 
     # with open ("cert_UT.pem", "rb") as file: 
     #     cert = file.read()
@@ -433,7 +440,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         
     key=open(cfgserv.priv_key_UT, "rb").read()
     
-    rootTemp=xml.fromstring(xml_string)
+    rootTemp=xml.fromstring(content)
 
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
@@ -455,12 +462,6 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
 
-    verified_data = XAdESVerifier().verify(signed_root, x509_cert=cert, expect_references=3)
-
-    for verify_result in verified_data:
-        if isinstance(verify_result, XAdESVerifyResult):
-            print(verify_result.signed_properties) # use this to access parsed XAdES properties
-
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
     
@@ -471,15 +472,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     tree.write(xml_data, encoding='utf-8', xml_declaration=True)
     xml_data.seek(0)
 
-    content=xml_data.read().decode('utf-8')
-
-    content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
-
-    # Remover todos os prefixos ns0 das tags
-    content = re.sub(r'<ns0:', r'<', content)
-    content = re.sub(r'</ns0:', r'</', content)
-
-    encoded_file = base64.b64encode(content.encode("utf-8")).decode('utf-8')
+    encoded_file = base64.b64encode(xml_data.read()).decode('utf-8')
 
     
     return encoded_file, thumbprint, xml_hash_before_sign
@@ -776,6 +769,13 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     root.export(xml_buffer,0,"")
     xml_string=xml_buffer.getvalue()
 
+    content=xml_string
+    content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
+
+    # Remover todos os prefixos ns0 das tags
+    content = re.sub(r'<ns0:', r'<', content)
+    content = re.sub(r'</ns0:', r'</', content)
+
     # with open ("cert_UT.pem", "rb") as file: 
     #     cert = file.read()
     #     cert=x509.load_pem_x509_certificate(cert)
@@ -819,15 +819,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     tree.write(xml_data, encoding='utf-8', xml_declaration=True)
     xml_data.seek(0)
 
-    content=xml_data.read().decode('utf-8')
-
-    content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
-
-    # Remover todos os prefixos ns0 das tags
-    content = re.sub(r'<ns0:', r'<', content)
-    content = re.sub(r'</ns0:', r'</', content)
-
-    encoded_file = base64.b64encode(content.encode('utf-8')).decode('utf-8')
+    encoded_file = base64.b64encode(xml_data.read()).decode('utf-8')
 
 
     return encoded_file, thumbprint, xml_hash_before_sign
