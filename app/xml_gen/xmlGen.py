@@ -459,7 +459,6 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
         method=methods.enveloped
     )
-    signer.namespaces={None, "http://uri.etsi.org/02231/v2#"}
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
 
