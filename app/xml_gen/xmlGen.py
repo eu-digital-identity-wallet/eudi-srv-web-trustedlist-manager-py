@@ -444,12 +444,8 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     rootTemp=ET.ElementTree(rootTemp)
 
-    xml_data = io.BytesIO()
-    rootTemp.write(xml_data, encoding='utf-8', xml_declaration=True)
-    xml_data.seek(0)
-
     with open ("teste.xml", "wb") as file: 
-        file.write(xml_data.read(), level=0) 
+        rootTemp.write(file, encoding="utf-8",xml_declaration=True) 
 
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
