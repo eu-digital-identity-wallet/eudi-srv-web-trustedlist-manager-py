@@ -444,6 +444,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         Description="TSL signature",
         MimeType="text/xml",
     )
+
     signer = XAdESSigner(
         claimed_roles=["signer"],
         data_object_format=data_object_format,
@@ -454,7 +455,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
 
-    verified_data = XAdESVerifier().verify(signed_root, x509_cert=cert, expect_references=2)
+    verified_data = XAdESVerifier().verify(signed_root, x509_cert=cert, expect_references=3)
 
     for verify_result in verified_data:
         if isinstance(verify_result, XAdESVerifyResult):
