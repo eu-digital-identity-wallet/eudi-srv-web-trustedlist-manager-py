@@ -458,6 +458,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
         signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
         method=methods.enveloped
+        namespace={"": "http://uri.etsi.org/02231/v2#"}
     )
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
