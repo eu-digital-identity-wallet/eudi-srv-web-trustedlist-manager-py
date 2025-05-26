@@ -24,7 +24,7 @@ import xml.etree.ElementTree as xml
 from dateutil.relativedelta import relativedelta
 from flask import send_file
 from signxml import DigestAlgorithm
-from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFormat)
+from signxml.xades import (XAdESSigner,XAdESVerifier, XAdESSignaturePolicy,XAdESVerifyResult, XAdESDataObjectFormat)
 import xml_gen.trustedlists_api as test
 from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFormat)
 from xml_gen.xml_config import ConfXML as confxml
@@ -51,7 +51,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     service_data = [service for sublist in service_data for service in sublist]
 
     der_data=open(cfgserv.cert_UT, "rb").read()
-    cert_der = x509.load_der_x509_certificate(der_data)
+    cert_der = x509.load_der_x509_certificate(der_data, backend=default_backend())
     cert = cert_der.public_bytes(encoding=serialization.Encoding.PEM)
 
     pem_str = cert.decode('utf-8')
@@ -158,7 +158,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     #for cycle
     for scheme in dictFromDB_trusted_lists["PolicyOrLegalNotice"]:
         PolicyOrLegalNotice.add_TSLLegalNotice(test.MultiLangStringType(scheme["lang"], scheme["text"]))
-        
+
     schemeInfo.set_PolicyOrLegalNotice(PolicyOrLegalNotice)
 
     #HistoricalInformationPeriod
@@ -453,7 +453,12 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     )
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
-    #verified_data = XMLVerifier().verify(signed_root)
+
+    verified_data = XAdESVerifier().verify(signed_root, x509_cert=cert, expect_references=2)
+
+    for verify_result in verified_data:
+        if isinstance(verify_result, XAdESVerifyResult):
+            print(verify_result.signed_properties) # use this to access parsed XAdES properties
 
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
@@ -475,14 +480,14 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     encoded_file = base64.b64encode(content.encode("utf-8")).decode('utf-8')
 
-
+    
     return encoded_file, thumbprint, xml_hash_before_sign
 
 
 def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
 
     der_data=open(cfgserv.cert_UT, "rb").read()
-    cert_der= x509.load_der_x509_certificate(der_data)
+    cert_der= x509.load_der_x509_certificate(der_data, backend=default_backend())
     cert = cert_der.public_bytes(encoding=serialization.Encoding.PEM)
 
     pem_str = cert.decode('utf-8')
