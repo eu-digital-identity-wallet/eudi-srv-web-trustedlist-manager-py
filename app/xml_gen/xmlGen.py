@@ -445,8 +445,6 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     rootTemp1=ET.ElementTree(rootTemp)
 
-    rootTemp1.write("teste.xml", encoding="utf-8",xml_declaration=True) 
-
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
     root_bytes = etree.tostring(root_lxml, method="c14n")
@@ -465,7 +463,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         method=methods.enveloped
     )
 
-    signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
+    signed_root = signer.sign(data=rootTemp1, key=key, cert=cert)
     
     tree = ET.ElementTree(signed_root) 
     
