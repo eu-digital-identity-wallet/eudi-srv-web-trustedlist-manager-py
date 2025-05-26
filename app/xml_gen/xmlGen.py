@@ -441,8 +441,10 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     key=open(cfgserv.priv_key_UT, "rb").read()
     
     rootTemp=xml.fromstring(content)
+    print(content)
 
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
+    print(root_temp_str)
     root_lxml = etree.fromstring(root_temp_str)
     root_bytes = etree.tostring(root_lxml, method="c14n")
     xml_hash_before_sign = hashlib.sha256(root_bytes).hexdigest()
@@ -457,8 +459,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         data_object_format=data_object_format,
         c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
         signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
-        method=methods.enveloped,
-        namespace={"": "http://uri.etsi.org/02231/v2#"}
+        method=methods.enveloped
     )
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
@@ -804,8 +805,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         data_object_format=data_object_format,
         c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
         signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
-        method=methods.enveloped,
-        namespace={"": "http://uri.etsi.org/02231/v2#"}
+        method=methods.enveloped
     )
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
