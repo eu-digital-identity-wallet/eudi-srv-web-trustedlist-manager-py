@@ -462,15 +462,16 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
     
-    xml_bytes = etree.tostring(
-        signed_root,                
-        encoding="utf-8"       
-    )  
+    tree = ET.ElementTree(signed_root) 
+    
+    xml_data = io.BytesIO()
+    tree.write(xml_data, encoding='utf-8', xml_declaration=True)
+    xml_data.seek(0)
 
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
 
-    encoded_file = base64.b64encode(xml_bytes).decode('utf-8')
+    encoded_file = base64.b64encode(xml_data.read()).decode('utf-8')
 
     return encoded_file, thumbprint, xml_hash_before_sign
 
