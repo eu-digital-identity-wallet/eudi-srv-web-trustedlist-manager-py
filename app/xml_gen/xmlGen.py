@@ -464,9 +464,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     
     xml_bytes = etree.tostring(
         signed_root,                
-        encoding="utf-8",       
-        xml_declaration=True,   
-        pretty_print=True       
+        encoding="utf-8"       
     )  
 
     # with open ("teste.xml", "w") as file: 
