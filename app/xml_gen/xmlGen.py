@@ -445,8 +445,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     rootTemp1=ET.ElementTree(rootTemp)
 
-    with open ("teste.xml", "wb") as file: 
-        rootTemp1.write(file, encoding="utf-8",xml_declaration=True) 
+    rootTemp1.write("teste.xml", encoding="utf-8",xml_declaration=True) 
 
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
