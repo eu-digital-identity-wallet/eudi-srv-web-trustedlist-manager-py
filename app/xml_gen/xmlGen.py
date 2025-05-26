@@ -465,7 +465,6 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
     
-    
     tree = xml.ElementTree(signed_root) 
     
     xml_data = io.BytesIO()
@@ -788,7 +787,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         
     key=open(cfgserv.priv_key_UT, "rb").read()
     
-    rootTemp=xml.fromstring(xml_string)
+    rootTemp=xml.fromstring(content)
 
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
@@ -805,6 +804,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
         signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
         method=methods.enveloped
+        namespace={"": "http://uri.etsi.org/02231/v2#"}
     )
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
