@@ -27,7 +27,7 @@ from signxml.xades import (XAdESSigner,XAdESVerifier, XAdESSignaturePolicy,XAdES
 import xml_gen.trustedlists_api as test
 from signxml.xades import (XAdESSigner, XAdESSignaturePolicy, XAdESDataObjectFormat)
 from xml_gen.xml_config import ConfXML as confxml
-from signxml import XMLSigner, algorithms, methods
+from signxml import XMLSigner, algorithms, methods, namespaces
 import json
 
 from app_config.config import ConfService as cfgserv
@@ -423,7 +423,6 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     content=xml_string
     content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
 
-    # Remover todos os prefixos ns0 das tags
     content = re.sub(r'<ns0:', r'<', content)
     content = re.sub(r'</ns0:', r'</', content)
 
@@ -443,6 +442,15 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
 
     rootTemp=ET.fromstring(content)
 
+    new_root = ET.Element(rootTemp.tag, attrib=rootTemp.attrib)
+    new_root.text = rootTemp.text
+
+    new_root.attrib["xmlns:ns2"] = "http://www.w3.org/2000/09/xmldsig#"
+    new_root.attrib["xmlns:ns3"] = "http://uri.etsi.org/01903/v1.3.2#"
+
+    for child in rootTemp:
+        new_root.append(child )
+
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
     root_bytes = etree.tostring(root_lxml, method="c14n")
@@ -461,18 +469,16 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         method=methods.enveloped
     )
 
-    signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
+    signed_root = signer.sign(data=new_root, key=key, cert=cert)
     
-    tree = ET.ElementTree(signed_root) 
-    
-    xml_data = io.BytesIO()
-    tree.write(xml_data, encoding='utf-8', xml_declaration=True)
-    xml_data.seek(0)
+    tree = etree.ElementTree(signed_root)
+
+    signed_root_bytes=etree.tostring(tree, encoding="utf-8", xml_declaration=True) 
 
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
 
-    encoded_file = base64.b64encode(xml_data.read()).decode('utf-8')
+    encoded_file = base64.b64encode(signed_root_bytes).decode('utf-8')
 
     return encoded_file, thumbprint, xml_hash_before_sign
 
@@ -771,7 +777,6 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     content=xml_string
     content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
 
-    # Remover todos os prefixos ns0 das tags
     content = re.sub(r'<ns0:', r'<', content)
     content = re.sub(r'</ns0:', r'</', content)
 
@@ -789,6 +794,15 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     
     rootTemp=ET.fromstring(content)
 
+    new_root = ET.Element(rootTemp.tag, attrib=rootTemp.attrib)
+    new_root.text = rootTemp.text
+
+    new_root.attrib["xmlns:ns2"] = "http://www.w3.org/2000/09/xmldsig#"
+    new_root.attrib["xmlns:ns3"] = "http://uri.etsi.org/01903/v1.3.2#"
+
+    for child in rootTemp:
+        new_root.append(child )
+
     root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
     root_bytes = etree.tostring(root_lxml, method="c14n")
@@ -798,6 +812,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         Description="TSL signature",
         MimeType="text/xml",
     )
+
     signer = XAdESSigner(
         claimed_roles=["signer"],
         data_object_format=data_object_format,
@@ -806,19 +821,13 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         method=methods.enveloped
     )
 
-    signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
-    #verified_data = XMLVerifier().verify(signed_root)
-
-    # with open ("teste.xml", "w") as file: 
-    #     signed_root.write(file, level=0) 
+    signed_root = signer.sign(data=new_root, key=key, cert=cert)
     
-    tree = ET.ElementTree(signed_root)
-    
-    xml_data = io.BytesIO()
-    tree.write(xml_data, encoding='utf-8', xml_declaration=True)
-    xml_data.seek(0)
+    tree = etree.ElementTree(signed_root)
 
-    encoded_file = base64.b64encode(xml_data.read()).decode('utf-8')
+    signed_root_bytes=etree.tostring(tree, encoding="utf-8", xml_declaration=True) 
+
+    encoded_file = base64.b64encode(signed_root_bytes).decode('utf-8')
 
 
     return encoded_file, thumbprint, xml_hash_before_sign
