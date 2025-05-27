@@ -36,6 +36,7 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 import hashlib
 from lxml import etree
+import xml.etree.ElementTree as ET
 from cryptography.hazmat.primitives.serialization import Encoding
 import app.EJBCA_and_DB_func as func
 
@@ -419,11 +420,12 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     root.export(xml_buffer,0,"")
     xml_string=xml_buffer.getvalue()
     
-    # content=xml_string
-    # content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
+    content=xml_string
+    content = re.sub(r'xmlns:ns0="([^"]+)"', r'xmlns="\1"', content)
 
-    # content = re.sub(r'<ns0:', r'<', content)
-    # content = re.sub(r'</ns0:', r'</', content)
+    # Remover todos os prefixos ns0 das tags
+    content = re.sub(r'<ns0:', r'<', content)
+    content = re.sub(r'</ns0:', r'</', content)
 
     # with open ("cert_UT.pem", "rb") as file: 
     #     cert = file.read()
@@ -437,15 +439,13 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         
     key=open(cfgserv.priv_key_UT, "rb").read()
     
-    etree.register_namespace("","http://uri.etsi.org/02231/v2#")
-    etree.register_namespace("tslx","http://uri.etsi.org/02231/v2/additionaltypes#")
-    etree.register_namespace("ds","http://www.w3.org/2000/09/xmldsig#")
-    etree.register_namespace("dsig111","http://www.w3.org/2000/09/xmldsig11#")
-    etree.register_namespace("xades","http://uri.etsi.org/01903/v1.3.2#")
+    ET.register_namespace("", "http://uri.etsi.org/02231/v2#")
 
-    rootTemp=etree.fromstring(xml_string)
+    rootTemp=ET.fromstring(content)
 
-    root_bytes = etree.tostring(rootTemp, method="c14n")
+    root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
+    root_lxml = etree.fromstring(root_temp_str)
+    root_bytes = etree.tostring(root_lxml, method="c14n")
     xml_hash_before_sign = hashlib.sha256(root_bytes).hexdigest()
 
     data_object_format = XAdESDataObjectFormat(
@@ -462,19 +462,17 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
     )
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
-
-    signed_root_bytes=etree.tostring(signed_root, encoding="utf-8", xml_declaration=True, pretty_print=True)
     
-    # tree = ET.ElementTree(signed_root) 
+    tree = ET.ElementTree(signed_root) 
     
-    # xml_data = io.BytesIO()
-    # tree.write(xml_data, encoding='utf-8', xml_declaration=True)
-    # xml_data.seek(0)
+    xml_data = io.BytesIO()
+    tree.write(xml_data, encoding='utf-8', xml_declaration=True)
+    xml_data.seek(0)
 
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
 
-    encoded_file = base64.b64encode(signed_root_bytes).decode('utf-8')
+    encoded_file = base64.b64encode(xml_data.read()).decode('utf-8')
 
     return encoded_file, thumbprint, xml_hash_before_sign
 
@@ -789,9 +787,9 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
         
     key=open(cfgserv.priv_key_UT, "rb").read()
     
-    rootTemp=etree.fromstring(content)
+    rootTemp=ET.fromstring(content)
 
-    root_temp_str = etree.tostring(rootTemp, encoding="utf-8")
+    root_temp_str = ET.tostring(rootTemp, encoding="utf-8")
     root_lxml = etree.fromstring(root_temp_str)
     root_bytes = etree.tostring(root_lxml, method="c14n")
     xml_hash_before_sign = hashlib.sha256(root_bytes).hexdigest()
@@ -814,7 +812,7 @@ def xml_gen_lotl_xml(user_info, tsl_list, dict_tsl_mom, log_id):
     # with open ("teste.xml", "w") as file: 
     #     signed_root.write(file, level=0) 
     
-    tree = etree.ElementTree(signed_root)
+    tree = ET.ElementTree(signed_root)
     
     xml_data = io.BytesIO()
     tree.write(xml_data, encoding='utf-8', xml_declaration=True)
