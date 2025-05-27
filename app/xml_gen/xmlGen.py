@@ -437,7 +437,7 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         
     key=open(cfgserv.priv_key_UT, "rb").read()
     
-    etree.register_namespace("","http://uri.etsi.org/02231/v2#")
+    etree.register_namespace("tsl","http://uri.etsi.org/02231/v2#")
     etree.register_namespace("tslx","http://uri.etsi.org/02231/v2/additionaltypes#")
     etree.register_namespace("ds","http://www.w3.org/2000/09/xmldsig#")
     etree.register_namespace("dsig111","http://www.w3.org/2000/09/xmldsig11#")
