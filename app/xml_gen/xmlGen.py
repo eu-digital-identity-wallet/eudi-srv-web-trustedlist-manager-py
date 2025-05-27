@@ -437,13 +437,12 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         
     key=open(cfgserv.priv_key_UT, "rb").read()
     
-    # etree.register_namespace(None,"http://uri.etsi.org/02231/v2#")
-    # etree.register_namespace("tslx","http://uri.etsi.org/02231/v2/additionaltypes#")
-    # etree.register_namespace("ds","http://www.w3.org/2000/09/xmldsig#")
-    # etree.register_namespace("dsig111","http://www.w3.org/2000/09/xmldsig11#")
-    # etree.register_namespace("xades","http://uri.etsi.org/01903/v1.3.2#")
+    etree.register_namespace("tsl","http://uri.etsi.org/02231/v2#")
+    etree.register_namespace("tslx","http://uri.etsi.org/02231/v2/additionaltypes#")
+    etree.register_namespace("ds","http://www.w3.org/2000/09/xmldsig#")
+    etree.register_namespace("dsig111","http://www.w3.org/2000/09/xmldsig11#")
+    etree.register_namespace("xades","http://uri.etsi.org/01903/v1.3.2#")
 
-    parser = etree.XMLParser(resolve_entities=False)
     rootTemp=etree.fromstring(xml_string)
 
     root_bytes = etree.tostring(rootTemp, method="c14n")
@@ -461,11 +460,10 @@ def xml_gen_xml(user_info, dictFromDB_trusted_lists, tsp_data, service_data, tsl
         signature_algorithm=algorithms.SignatureMethod.ECDSA_SHA256,
         method=methods.enveloped
     )
-    signer.namespaces={None:"http://uri.etsi.org/02231/v2#"}
 
     signed_root = signer.sign(data=rootTemp, key=key, cert=cert)
 
-    signed_root_bytes=etree.tostring(signed_root, encoding="utf-8", xml_declaration=True)
+    signed_root_bytes=etree.tostring(signed_root, encoding="utf-8", xml_declaration=True, pretty_print=True)
     
     # tree = ET.ElementTree(signed_root) 
     
