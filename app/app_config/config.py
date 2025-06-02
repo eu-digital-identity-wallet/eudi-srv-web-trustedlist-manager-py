@@ -23,6 +23,7 @@ NOTE: You should only change it if you understand what you're doing.
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
+import os
 from flask import  session
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -32,21 +33,22 @@ class ConfService:
     
     two_operators = False
 
-    secret_key = "secret_key"
+    secret_key = os.urandom(32).hex()
 
-    #service_url = "http://127.0.0.1:5000/"
-    service_url = "https://trustedlist.serviceproviders.eudiw.dev/"
+    #service_url = "https://trustedlist.serviceproviders.eudiw.dev/"
+    service_url = os.getenv("SERVICE_URL", "https://trustedlist.serviceproviders.eudiw.dev/")
 
     #trusted_CAs_path = "app\certs"
-    trusted_CAs_path = "/etc/eudiw/pid-issuer/cert/"
+    trusted_CAs_path = os.getenv("TRUSTED_CAS_PATH","/etc/eudiw/pid-issuer/cert/")
 
     deffered_expiry = 100
     
     #cert_UT = "app/xml_gen/cert_UT.der"
-    cert_UT = "/etc/eudiw/pid-issuer/cert/PID-DS-0001_UT_cert.der"
+    cert_UT = os.getenv("CERT","/etc/eudiw/pid-issuer/cert/PID-DS-0001_UT_cert.der")
 
     #priv_key_UT = "app/xml_gen/privkey_UT.pem"
-    priv_key_UT = "/etc/eudiw/pid-issuer/privKey/PID-DS-0001_UT.pem"
+    priv_key_UT = os.getenv("PRIV_KEY", "/etc/eudiw/pid-issuer/privkey/PID-DS-0001_UT.pem")
+
 
     roles = {
       "tsp_op":"TSP Operator",
@@ -60,7 +62,8 @@ class ConfService:
       "QCQSCDStatusAsInCert": "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCQSCDStatusAsInCert"
     }
 
-    url_verifier="verifier-backend.eudiw.dev"
+    url_verifier= os.getenv("VERIFIER", "verifier-backend.eudiw.dev")
+
 
     lang = {
       "Portugues": "pt", 
@@ -128,7 +131,7 @@ class ConfService:
     #           "http://uri.etsi.org/TrstSvc/Svctype/NationalRootCA-QC","http://uri.etsi.org/TrstSvc/Svctype/unspecified"]
 
 
-    log_dir = "app/log"
+    log_dir = os.getenv("LOG_PATH", "app/log")
     #log_dir = "/tmp/log"
     log_file_info = "logs.log"
 

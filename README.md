@@ -133,5 +133,84 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
        
   3. When the user accesses the option LoTL Information, they will be presented with the following options:
      +  Add new language Info: To add new information to the data in different language;
-     +  Edit Lotl Information: Update existing LoTL-related data; 
+     +  Edit Lotl Information: Update existing LoTL-related data;
+
+## Run docker
+
+To start Web Trusted List Manager service a docker compose file, [docker-compose.yml](docker/docker-compose.yml), has been implemented that can be found in `docker` directory.
+
+To start the docker compose environment
+
+```
+# From project root directory 
+cd docker
+docker-compose up -d
+```
+
+To stop the docker compose environment
+
+```
+# From project root directory 
+cd docker
+docker-compose down
+````
      
+## Configuration
+
+The Web Trusted List Manager application can be configured using the following environment variables:
+
+Variable: `SERVICE_URL`<br>
+Description: Application service url
+
+Variable: `TRUSTED_CAS_PATH`<br>
+Description: Container path where CA certificates are located for validate vp_token when doing PID login
+
+Variable: `VERIFIER`<br>
+Description: Verifier URL
+
+Variable: `LOG_PATH`<br>
+Description: Path where log files are saved
+
+Variable: `CERT`<br>
+Description: Container path where the XML signing certificate is stored
+
+Variable: `PRIV_KEY`<br>
+Description: Container path where the private key of the XML signing certificate is stored
+
+Variable: `DB_HOST`<br>
+Description: Database URL
+
+Variable: `DB_PORT`<br>
+Description: Port where Database is running
+
+Variable: `DB_USER`<br>
+Description: Username of Database user
+
+Variable: `DB_PASSWORD`<br>
+Description: Password of Database user
+
+Variable: `DB_NAME`<br>
+Description: Name of Database
+
+## How to contribute
+
+We welcome contributions to this project. To ensure that the process is smooth for everyone
+involved, follow the guidelines found in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+### License details
+
+Copyright (c) 2024 European Commission
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
