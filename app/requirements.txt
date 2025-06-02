@@ -1,0 +1,14 @@
+Flask-Cors 
+flask==2.3.3 
+werkzeug==2.3.7 
+requests
+Flask-Session==0.6.0
+segno
+cryptography
+pycose
+pymysql
+cbor2==5.4.6
+requests-pkcs12
+signxml==4.0.3
+lxml
+python-dateutil
