@@ -152,12 +152,6 @@ def authentication():
                     },
                     {
                     "path": [
-                        "$['eu.europa.ec.eudi.pid.1']['age_over_18']"
-                    ],
-                    "intent_to_retain": False
-                    },
-                    {
-                    "path": [
                         "$['eu.europa.ec.eudi.pid.1']['issuing_authority']"
                     ],
                     "intent_to_retain": False
@@ -277,12 +271,6 @@ def authentication_List():
                     {
                     "path": [
                         "$['eu.europa.ec.eudi.pid.1']['birth_date']"
-                    ],
-                    "intent_to_retain": False
-                    },
-                    {
-                    "path": [
-                        "$['eu.europa.ec.eudi.pid.1']['age_over_18']"
                     ],
                     "intent_to_retain": False
                     },
@@ -814,7 +802,7 @@ def xml():
         "PolicyOrLegalNotice":  tsl_info["PolicyOrLegalNotice_lang"],
         #"pointers_to_other_tsl" :   tsl_info["pointers_to_other_tsl"].encode('utf-8'),
         "HistoricalInformationPeriod":  confxml.HistoricalInformationPeriod,
-        "TSLLocation"	:   "https://ec.europa.eu/tools/lotl/eu-lotl.xml",
+        "schemeTerritory": tsl_info["schemeTerritory"],
         #AdditionalInformation,ver
 
         #"DistributionPoints" :  tsl_info["DistributionPoints"],
@@ -1649,7 +1637,7 @@ def create_service():
         "Service Type": "select_type",
         "Service Name": "string",
         #"Qualifier": "select",
-        "Digital Identity" : "string",
+        "Digital Identity" : "textarea",
         "Service Status": "status",
         "Status Start Date": "full-date",
         "Scheme Service Definition URI": "string"
@@ -1659,7 +1647,7 @@ def create_service():
         "Service Type": "Type of service provided",
         "Service Name": "Provide the service name",
         #"Qualifier": "Select applicable qualifiers",
-        "Digital Identity": "Specify the digital identity",
+        "Digital Identity": "Specify the digital Certificate (It's not necessary to include BEGIN or END certificate.)",
         "Status": "Service status",
         "Status Start Date": "Start date of the current status",
         "Uri": "Service URI"
@@ -1913,6 +1901,9 @@ def lotl_xml():
 
     tsl_data = func.get_lotltsl_info(user["id"], session["session_id"])
 
+    if(tsl_data == "err"):
+        flash("You don't have a Lotl Trusted List created, so it's not possible to generate the XML. Please create a new Lotl TSL.", "danger")
+        return redirect('/lotl/list')
     lang_based_fields = [
         "SchemeName_lang",
         "Uri_lang",
@@ -1929,9 +1920,6 @@ def lotl_xml():
             print(f"Error decoding {key}: {tsl_data[key]}")
             tsl_data[key] = []
     
-    if(tsl_data == "err"):
-        flash("You don't have a Trusted List created, so it's not possible to generate the XML. Please create a new TSL.", "danger")
-        return redirect('/lotl/list')
     else:
         tsl_mom = tsl_data
         dict_tsl_mom = {
@@ -1951,13 +1939,22 @@ def lotl_xml():
         }
     
         for each in tsl_info:
+            for key in lang_based_fields:
+                try:
+                    each[key] = json.loads(each[key]) if each[key] else []
+                except json.JSONDecodeError:
+                    extra = {'code': session["session_id"]} 
+                    logger.error(f"Error decoding : {key}: {each[key]}", extra=extra)
+                    print(f"Error decoding {key}: {each[key]}")
+                    each[key] = []
+
             dictFromDB_trusted_lists = {
                 "id": each["tsl_id"],
                 "Version":  confxml.TLSVersionIdentifier,
                 "SequenceNumber":   each["SequenceNumber"],
                 #"TSLType":  confxml.TSLType.get("EU"),
                 "SchemeName":   each["SchemeName_lang"],
-                "SchemeInformationURI": each["Version"],
+                "SchemeInformationURI": each["Uri_lang"],
                 #"StatusDeterminationApproach":  confxml.StatusDeterminationApproach.get("EU"),
                 #"SchemeTypeCommunityRules": each["SchemeTypeCommunityRules_lang"],
                 "PolicyOrLegalNotice":  each["PolicyOrLegalNotice_lang"],
@@ -1985,6 +1982,10 @@ def lotl_xml():
             else:
                 return ("error")
         else:
+            if(role == "lotl_op"):
+                menu= cfgserv.service_url + "menu_lotl"
+                return render_template("download_lotl.html", menu = menu, xml_hash_before_sign = xml_hash_before_sign, thumbprint = thumbprint, tsl_list = tsl_list, file_data = file, temp_user_id = temp_user_id)
+            
             menu= cfgserv.service_url + "menu"
 
         return render_template("download_lotl.html", menu = menu, xml_hash_before_sign = xml_hash_before_sign, thumbprint = thumbprint, tsl_list = tsl_list, file_data = file, temp_user_id = temp_user_id)

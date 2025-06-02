@@ -15,12 +15,14 @@
 # limitations under the License.
 #
 ###############################################################################
+from http.client import HTTPException
 import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
 import sys
 
+import pymysql
 from requests import Session
 
 from app.app_config.config import ConfService
@@ -41,6 +43,7 @@ import os
 from app_config.config import ConfService as cfgserv
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
+from app_config.database import ConfDataBase
 
 def setup_logger():
     log_dir = cfgserv.log_dir
@@ -141,6 +144,10 @@ setup_trusted_CAs()
 
 def handle_exception(e):
 
+    if isinstance(e, HTTPException):
+        return e
+    logger.exception("- WARN - Error 500")
+
     return (
         render_template(
             "500.html",
@@ -152,6 +159,8 @@ def handle_exception(e):
 
 def page_not_found(e):
 
+    logger.exception("- WARN - Error 404")
+
     return (
         render_template(
             "500.html",
@@ -161,12 +170,34 @@ def page_not_found(e):
         404,
     )
 
+def initialize_db():
+    with open('./script_db.sql', 'r') as f:
+        sql = f.read()
+
+    connection = pymysql.connect(
+        host=ConfDataBase.DATABASE['host'],
+        port=ConfDataBase.DATABASE['port'],
+        user=ConfDataBase.DATABASE['user'],
+        password=ConfDataBase.DATABASE['password'],
+    )
+
+    try:
+        with connection.cursor() as cursor:
+            for statement in sql.split(';'):
+                if statement.strip():
+                    cursor.execute(statement)
+        connection.commit()
+    finally:
+        connection.close()
+
+initialize_db()
+
 def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
     app.config['SECRET_KEY'] = ConfService.secret_key
 
-    #app.register_error_handler(Exception, handle_exception)
+    app.register_error_handler(Exception, handle_exception)
     app.register_error_handler(404, page_not_found)
 
     from . import (RPR_routes)

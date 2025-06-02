@@ -41,15 +41,15 @@ class ConfXML:
     }
 
     DistributionPoints={
-        "LoTL":"https://trustedlist.eudiw.dev/lotl/eu-lotl.xml"
+        "LoTL":"https://trustedlist.serviceproviders.eudiw.dev/LOTL/01.xml"
     }
 
-    lotl_location="https://trustedlist.eudiw.dev/lotl/eu-lotl.xml"
+    lotl_location="https://trustedlist.serviceproviders.eudiw.dev/LOTL/01.xml"
 
     HistoricalInformationPeriod=65535
 
     #schema = r"app\xml_gen\ts_119612v020101_xsd_modified.xsd"
-    schema = "app/xml_gen/ts_119612v020101_xsd_modified.xsd"
+    schema = "/app/xml_gen/ts_119612v020101_xsd_modified.xsd"
 
     #months
     validity=6
