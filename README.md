@@ -1,8 +1,69 @@
-# eudi-srv-web-trustedlist-manager-py
+# Trusted List Provider
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## Overview
+
+A Trusted List Provider (TLP) is a body responsible for maintaining, managing, and publishing a Trusted List.
+Within the EUDI Wallet ecosystem, Trusted Lists exist for the following entities:
++ Wallet Providers,
++ PID Providers,
++ QEAA Providers,
++ PuB-EAA Providers,
++ Access Certificate Authorities (for RP),
++ Qualified Electronic Signature Remote Creation (QESRC) Providers.
+
+Trusted Lists contain the trust anchors of the relevant entities. A trust anchor is a combination of a public key and the identifier of the associated entity and may be used to verify signatures created by that entity.
+
+An **entity's status as a trusted entity can be verified by checking whether they are present on the relevant Trusted List**.
+
+### Trusted Lists (TL) and EU List of Trusted Lists (EU LoTL)
+
+The **TL** includes information related to the trust service providers (within the EUDI Wallet ecosystem: Wallet Providers, PID Providers, QEAA Providers, PuB-EAA Providers, Access Certificate Authorities (for RP), and Qualified Electronic Signature Remote Creation (QESRC) Providers) which are supervised by the competent Member State, together with the trust anchor and other information related to the trust services provided by them.
++ A TL is created, electronically signed, published and managed by a Member State.
+
+The **EU LOTL** combines all national Trusted Lists into a single, easily accessible list, simplifying the verification of digital identities across Member States.
++ The EU LOTL is created, electronically signed, published and managed by the EC.
+
+The source of trust of the TLs is the EU List of the Trusted Lists (LOTL). And the source of trust for the LOTL is the Official Journal of the European Union (OJEU)
++ LOTL signing certificates and the location of the LOTL XML file are contained in the LOTL itself, as detailed in the OJEU publication.
+
+### Reference Implementation Trusted List Provider
+
+The Reference Implementation Trusted List Provider has the following features:
+
++ Users:
+  + TSL Operator - Member States
+  + LoTL Operator - EC
++ Functionalities for TSL Operators:
+  + Manage TSPs and their trust services
+  + Create and sign TLs
++ Functionalities for LoTL Operators:
+  + Create and sign LoTL (combining the TL created by the Member States)
+
+Available at: https://trustedlist.serviceproviders.eudiw.dev/ 
+
+## :heavy_exclamation_mark: Disclaimer
+
+The released software is a initial development release version:
+
+-   The initial development release is an early endeavor reflecting the efforts of a short timeboxed
+    period, and by no means can be considered as the final product.
+-   The initial development release may be changed substantially over time, might introduce new
+    features but also may change or remove existing ones, potentially breaking compatibility with your
+    existing code.
+-   The initial development release is limited in functional scope.
+-   The initial development release may contain errors or design flaws and other problems that could
+    cause system or other failures and data loss.
+-   The initial development release has reduced security, privacy, availability, and reliability
+    standards relative to future releases. This could make the software slower, less reliable, or more
+    vulnerable to attacks than mature software.
+-   The initial development release is not yet comprehensively documented.
+-   Users of the software must perform sufficient engineering and additional testing in order to
+    properly evaluate their application and determine whether any of the open-sourced components is
+    suitable for use in that application.
+-   We strongly recommend not putting this version of the software into production use.
+-   Only the latest version of the software will be supported
 
 
 ## Installation
