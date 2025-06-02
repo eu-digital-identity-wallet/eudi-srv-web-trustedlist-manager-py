@@ -77,12 +77,12 @@
 
                         </div>
                         <!-- <status>EID_COUNTRY_SELECTION</status> -->
-                        <h2>Please enter your TSL information</h2>
+                        <h2>Please enter your Service information</h2>
                         <!--bean-ext:form action="" styleClass="mt"-->
                         <form id="selectCountryForm" method="post" action="{{redirect_url}}" onsubmit="return validateImage()" accept-charset="UTF-8" enctype="multipart/form-data" autocapitalize="off" spellcheck="false">
                             <!-- <div class="nodisplay"><input type="hidden" name="TxId" value="ECAS_TX-7404446-Rej9lkLFeXORXm9rG7q4Xqo1xGRJ86gt3hoJcfMG3XyxQrAyn8mu9PbXRCZoKKUbCzLlIzG5jKgHy4vlfgkG5M-rS0vSrmBGYCAxyMeVAWeYi-PVgrhNnzagSfzJvUraGtvIPzqv8cbsV46ZMUiinVIlcDkNWEKzr5uBS6CMnabjUfRGxDHabrZictNyNLy0AsLWy" /></div><input type="hidden" name="loginRequestId" value="ECAS_LR-12907874-lFk8VGOXm5Wv9sTtMFxxCMYjUFYj1oyp1KB0e9CptxxL0NuACxlcyti7UHNPxbdzOqSrnNBPN1ll8kLzi00LRN-rS0vSrmBGYCna66T9IuSKW-P6QgQVzQzxVCzOgIh6P3d1X9xVGnkDA3YFGOAmdliNnzQVzScjsEzc7t8ao1FsJS3VNDfzPNYnzH2FPsp38aFmqD" id="loginRequestId" /> -->
                             <h3>Test Provider Form</h3>
-                            <p>This data is only used for {{title}}  Registration for testing purposes.</p>
+                            <p>This data is only used for {{title}} Registration for testing purposes.</p>
                             <div id="eidasCountries">
                                 {% for name, value in attributes.items() %}
                                         {% if value == 'select' %}
@@ -152,14 +152,23 @@
                                                     <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required >
                                                 </div>
                                             </div>    
-                                            {% elif value == 'binary' %}
-                                                <div class="row g-3">
-                                                    <div class="col-md-12">
-                                                        <label for="{{ name }}">{{ name }}</label>
-                                                        <small class="form-text text-muted">{{ desc[name] }}</small>
-                                                        <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required >
-                                                    </div>
+                                        {% elif value == 'textarea' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <textarea class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" rows="4" style="resize: none; height: 300px;" required></textarea>
                                                 </div>
+                                            </div>
+                                               
+                                        {% elif value == 'binary' %}
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="{{ name }}">{{ name }}</label>
+                                                    <small class="form-text text-muted">{{ desc[name] }}</small>
+                                                    <input type="text" class="form-control" placeholder="{{ name }}" aria-label="{{ name }}" name="{{ name }}" required >
+                                                </div>
+                                            </div>
                                         {% elif value == 'full-date' %}
                                             <div class="row g-3">
                                                 <div class="col-md-12">

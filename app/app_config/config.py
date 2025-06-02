@@ -49,6 +49,7 @@ class ConfService:
     #priv_key_UT = "app/xml_gen/privkey_UT.pem"
     priv_key_UT = os.getenv("PRIV_KEY", "/etc/eudiw/pid-issuer/privkey/PID-DS-0001_UT.pem")
 
+
     roles = {
       "tsp_op":"TSP Operator",
       "tsl_op":"TSL Operator",
@@ -62,6 +63,7 @@ class ConfService:
     }
 
     url_verifier= os.getenv("VERIFIER", "verifier-backend.eudiw.dev")
+
 
     lang = {
       "Portugues": "pt", 
@@ -140,4 +142,4 @@ class ConfService:
     eu_countries = [
     "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
     "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-    "PL", "PT", "RO", "SK", "SI", "ES", "SE","UT"]
+    "PL", "PT", "RO", "SK", "SI", "ES", "SE","UT", "EU"]

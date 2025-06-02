@@ -41,10 +41,10 @@ class ConfXML:
     }
 
     DistributionPoints={
-        "LoTL":"https://trustedlist.eudiw.dev/lotl/eu-lotl.xml"
+        "LoTL":"https://trustedlist.serviceproviders.eudiw.dev/LOTL/01.xml"
     }
 
-    lotl_location="https://trustedlist.eudiw.dev/lotl/eu-lotl.xml"
+    lotl_location="https://trustedlist.serviceproviders.eudiw.dev/LOTL/01.xml"
 
     HistoricalInformationPeriod=65535
 

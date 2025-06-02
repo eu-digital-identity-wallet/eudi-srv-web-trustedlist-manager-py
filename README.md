@@ -89,7 +89,8 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
      + Edit TSL: Update Trusted Lists data that are associated to user;
      + Add new language Info: To add new information to the data in different languages;
      + Add Trust Service Providers: Select Trust Service Providers to be associated with the TSL.
-     + Generate and sign Trusted Service List: Generate the XML of the selected TSL;
+     + Generate and sign Trusted Service List: Generate the XML of the selected TSL (To be able to generate the xml and sign it, the user must associate at least one existing TSP in the system);
+       
        
   ### 4. Menu - Trust Service Provider user
 
@@ -102,6 +103,9 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
       +  Edit Trust Service Provider: Edit Trust Service Providers associated to user;
       +  Add new language Info: To add new information to the data in different language;
       +  Add Services: Select services to be associated with the TSP.
+    
+        
+  After creating a TSP, the user needs to create a service and associate it with it or associate an existing service.
 
   3. When the user accesses the option List Trust Services, they will be presented with a list of all the Trust Services associated with them. It contains the following options:
       +  Create a new Service: Adds a New Service;
@@ -114,14 +118,13 @@ INSERT INTO countries (country_id, country_code, country_name) VALUES (1, 'FC', 
      + Service Status History: List all Service Status History;
      + Export Audit Log: Export Audit Log;
 
-       
   ### 5. Menu - Admin user
   The Admin user is the only user who can create a single LoTL (List of Trusted Lists).
   
   1. Once the user has logged in with the EUDI Wallet, they are presented with a menu. It contains the following options:
      + Add information in new language: Add new info to scheme operator data;
      + Edit Information: Edit scheme Operator data;
-     + Create LoTL: List of all the trust lists that the admin can add to LoTL and generate LoTL xml;
+     + Create LoTL: List of all the trust lists that the admin can add to LoTL and generate LoTL xml (To create a LoTL, the user must associate at least one existing TSL in the system);
      + LoTL Information: Manage Information related to LoTL;
        
   2. When the user accesses the option Create LoTL, they will be presented with a list of all the TSLs in the system. It contains the following options:
