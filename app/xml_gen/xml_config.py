@@ -49,7 +49,7 @@ class ConfXML:
     HistoricalInformationPeriod=65535
 
     #schema = r"app\xml_gen\ts_119612v020101_xsd_modified.xsd"
-    schema = "app/xml_gen/ts_119612v020101_xsd_modified.xsd"
+    schema = "/app/xml_gen/ts_119612v020101_xsd_modified.xsd"
 
     #months
     validity=6
